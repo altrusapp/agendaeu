@@ -7,7 +7,6 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -16,38 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartConfig,
-} from "@/components/ui/chart"
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import Link from "next/link"
-
-const chartData = [
-  { month: "Janeiro", appointments: 186 },
-  { month: "Fevereiro", appointments: 305 },
-  { month: "Março", appointments: 237 },
-  { month: "Abril", appointments: 273 },
-  { month: "Maio", appointments: 209 },
-  { month: "Junho", appointments: 214 },
-]
-
-const chartConfig = {
-  appointments: {
-    label: "Agendamentos",
-    color: "hsl(var(--primary))",
-  },
-} satisfies ChartConfig
 
 export default function DashboardPage() {
   return (
@@ -113,30 +81,6 @@ export default function DashboardPage() {
       </div>
       <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
         <Card className="xl:col-span-2">
-          <CardHeader>
-            <CardTitle>Visão Geral de Agendamentos</CardTitle>
-          </CardHeader>
-          <CardContent className="pl-2">
-             <ChartContainer config={chartConfig} className="h-[300px] w-full">
-                <BarChart data={chartData} accessibilityLayer>
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="month"
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                  />
-                  <YAxis hide/>
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent indicator="dot" />}
-                  />
-                  <Bar dataKey="appointments" fill="var(--color-appointments)" radius={8} />
-                </BarChart>
-              </ChartContainer>
-          </CardContent>
-        </Card>
-        <Card>
           <CardHeader className="flex flex-row items-center">
              <div className="grid gap-2">
               <CardTitle>Próximos Agendamentos</CardTitle>
