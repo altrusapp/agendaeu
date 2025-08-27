@@ -3,6 +3,7 @@
 
 import * as React from "react"
 import Image from "next/image"
+import { useParams } from "next/navigation"
 import { Calendar as CalendarIcon, CheckCircle, Clock, PartyPopper } from "lucide-react"
 import { doc, getDoc, collection, query, getDocs, DocumentData, addDoc, Timestamp } from "firebase/firestore"
 
@@ -23,7 +24,8 @@ type BusinessInfo = { name: string, logoUrl: string, coverImageUrl: string };
 
 const availableTimes = [ "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00" ];
 
-export default function PublicSchedulePage({ params }: { params: { businessId: string } }) {
+export default function PublicSchedulePage() {
+  const params = useParams();
   const { toast } = useToast();
   const [businessInfo, setBusinessInfo] = React.useState<BusinessInfo | null>(null);
   const [services, setServices] = React.useState<Service[]>([]);
@@ -36,14 +38,15 @@ export default function PublicSchedulePage({ params }: { params: { businessId: s
   const [clientName, setClientName] = React.useState("");
   const [clientPhone, setClientPhone] = React.useState("");
   const [step, setStep] = React.useState(1); // 1: Service, 2: Date/Time, 3: Confirmation, 4: Success
+  const businessId = params.businessId as string;
 
   React.useEffect(() => {
-    if (!params.businessId) return;
+    if (!businessId) return;
 
     const fetchBusinessData = async () => {
       setLoading(true);
       try {
-        const businessDocRef = doc(db, "businesses", params.businessId);
+        const businessDocRef = doc(db, "businesses", businessId);
         const businessDocSnap = await getDoc(businessDocRef);
 
         if (businessDocSnap.exists()) {
@@ -57,7 +60,7 @@ export default function PublicSchedulePage({ params }: { params: { businessId: s
           console.error("No such business!");
         }
 
-        const servicesQuery = query(collection(db, `businesses/${params.businessId}/services`));
+        const servicesQuery = query(collection(db, `businesses/${businessId}/services`));
         const servicesSnapshot = await getDocs(servicesQuery);
         const servicesData = servicesSnapshot.docs.map(doc => ({
           id: doc.id,
@@ -73,7 +76,7 @@ export default function PublicSchedulePage({ params }: { params: { businessId: s
     };
 
     fetchBusinessData();
-  }, [params.businessId]);
+  }, [businessId]);
 
 
   const handleSelectService = (serviceId: string) => {
@@ -92,7 +95,7 @@ export default function PublicSchedulePage({ params }: { params: { businessId: s
     
     const selectedServiceInfo = services.find(s => s.id === selectedService);
 
-    if (!params.businessId || !selectedServiceInfo || !date || !selectedTime || !clientName || !clientPhone) {
+    if (!businessId || !selectedServiceInfo || !date || !selectedTime || !clientName || !clientPhone) {
        toast({
         variant: "destructive",
         title: "Erro de Validação",
@@ -107,7 +110,7 @@ export default function PublicSchedulePage({ params }: { params: { businessId: s
     appointmentDate.setHours(hours, minutes, 0, 0);
 
     try {
-      await addDoc(collection(db, `businesses/${params.businessId}/appointments`), {
+      await addDoc(collection(db, `businesses/${businessId}/appointments`), {
         clientName,
         clientPhone,
         serviceId: selectedServiceInfo.id,
@@ -346,5 +349,5 @@ export default function PublicSchedulePage({ params }: { params: { businessId: s
       </footer>
     </div>
   )
+}
 
-    
