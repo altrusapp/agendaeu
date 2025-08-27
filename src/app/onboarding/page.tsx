@@ -1,3 +1,4 @@
+
 "use client"
 
 import Link from "next/link"
@@ -8,7 +9,7 @@ import * as z from "zod"
 import { Upload } from "lucide-react"
 import * as React from "react"
 import { User, onAuthStateChanged } from "firebase/auth"
-import { collection, addDoc } from "firebase/firestore"
+import { doc, setDoc } from "firebase/firestore"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -22,6 +23,18 @@ const onboardingSchema = z.object({
   businessName: z.string().min(2, { message: "O nome do negócio é obrigatório." }),
   logo: z.any().optional(),
 })
+
+const generateSlug = (name: string) => {
+  return name
+    .toLowerCase()
+    .normalize("NFD") // separate accent from letter
+    .replace(/[\u0300-\u036f]/g, "") // remove accents
+    .replace(/[^a-z0-9\s-]/g, "") // remove special characters
+    .trim()
+    .replace(/\s+/g, "-") // replace spaces with hyphens
+    .replace(/-+/g, "-"); // remove consecutive hyphens
+};
+
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -61,18 +74,21 @@ export default function OnboardingPage() {
       return
     }
 
+    const businessId = generateSlug(values.businessName);
+
     try {
-      await addDoc(collection(db, "businesses"), {
+      await setDoc(doc(db, "businesses", businessId), {
         businessName: values.businessName,
         ownerId: user.uid,
         createdAt: new Date(),
+        publicUrl: `/agendar/${businessId}`
       });
 
       toast({
         title: "Tudo pronto!",
         description: "Seu espaço foi criado com sucesso.",
       })
-      router.push("/dashboard")
+      router.push(`/agendar/${businessId}`)
     } catch (error) {
       console.error("Error creating business: ", error)
       toast({
