@@ -39,7 +39,7 @@ type Appointment = {
   time: string;
   status: "Confirmado" | "Pendente" | "Aguardando Sinal" | "Cancelado";
   clientAvatar?: string;
-  clientId: string;
+  clientId?: string;
   serviceId: string;
   date: Timestamp;
 };
@@ -85,8 +85,11 @@ export default function AgendaPage() {
     if (!date || !business?.id) return;
     setLoading(true);
 
-    const startOfDay = new Date(date.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
     
     const startTimestamp = Timestamp.fromDate(startOfDay);
     const endTimestamp = Timestamp.fromDate(endOfDay);
@@ -105,10 +108,18 @@ export default function AgendaPage() {
       })) as Appointment[];
       setAppointments(appointmentsData);
       setLoading(false);
+    }, (error) => {
+      console.error("Error fetching appointments:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao buscar agendamentos",
+        description: "Verifique suas permissões ou tente novamente mais tarde.",
+      });
+      setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [date, business]);
+  }, [date, business, toast]);
   
   const handleAddAppointment = async (e: React.FormEvent) => {
     e.preventDefault();
