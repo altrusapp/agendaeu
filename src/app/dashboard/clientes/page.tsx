@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { MoreHorizontal, PlusCircle } from "lucide-react"
-import { collection, addDoc, query, onSnapshot, DocumentData, orderBy } from "firebase/firestore"
+import { collection, addDoc, query, onSnapshot, DocumentData, orderBy, limit, startAfter, getDocs } from "firebase/firestore"
 
 import { useBusiness } from "@/app/dashboard/layout"
 import { db } from "@/lib/firebase/client"
@@ -56,30 +56,98 @@ type Client = {
   createdAt: any;
 };
 
+const CLIENTS_PER_PAGE = 15;
+
 export default function ClientesPage() {
   const { business } = useBusiness();
   const { toast } = useToast();
 
   const [clients, setClients] = React.useState<Client[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [loadingMore, setLoadingMore] = React.useState(false);
+  const [lastVisible, setLastVisible] = React.useState<DocumentData | null>(null);
+  const [hasMore, setHasMore] = React.useState(true);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
   // Form states
   const [clientName, setClientName] = React.useState("");
   const [clientEmail, setClientEmail] = React.useState("");
   const [clientPhone, setClientPhone] = React.useState("");
+  
+  const fetchInitialClients = async () => {
+    if (!business?.id) return;
+    setLoading(true);
+    try {
+      const first = query(
+        collection(db, `businesses/${business.id}/clients`), 
+        orderBy("createdAt", "desc"), 
+        limit(CLIENTS_PER_PAGE)
+      );
+      const documentSnapshots = await getDocs(first);
+      const clientsData = documentSnapshots.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Client[];
+      
+      setClients(clientsData);
+      setLastVisible(documentSnapshots.docs[documentSnapshots.docs.length - 1]);
+      setHasMore(clientsData.length === CLIENTS_PER_PAGE);
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+       toast({
+        variant: "destructive",
+        title: "Erro ao buscar clientes",
+        description: "Não foi possível carregar a lista de clientes.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const fetchMoreClients = async () => {
+    if (!business?.id || !lastVisible) return;
+    setLoadingMore(true);
+    try {
+      const next = query(
+        collection(db, `businesses/${business.id}/clients`),
+        orderBy("createdAt", "desc"),
+        startAfter(lastVisible),
+        limit(CLIENTS_PER_PAGE)
+      );
+      const documentSnapshots = await getDocs(next);
+      const newClientsData = documentSnapshots.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Client[];
+
+      setClients(prevClients => [...prevClients, ...newClientsData]);
+      setLastVisible(documentSnapshots.docs[documentSnapshots.docs.length - 1]);
+      setHasMore(newClientsData.length === CLIENTS_PER_PAGE);
+    } catch (error) {
+      console.error("Error fetching more clients:", error);
+       toast({
+        variant: "destructive",
+        title: "Erro ao buscar mais clientes",
+        description: "Tente novamente mais tarde.",
+      });
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
 
   React.useEffect(() => {
     if (business?.id) {
+      // Use onSnapshot for the initial load to get real-time updates for the first page
       const clientsCollectionRef = collection(db, `businesses/${business.id}/clients`);
-      const q = query(clientsCollectionRef, orderBy("createdAt", "desc"));
-
+      const q = query(clientsCollectionRef, orderBy("createdAt", "desc"), limit(CLIENTS_PER_PAGE));
+      
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const clientsData = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
         })) as Client[];
+
         setClients(clientsData);
+        setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+        setHasMore(clientsData.length === CLIENTS_PER_PAGE);
+        setLoading(false);
+      }, (error) => {
+        console.error("Error with real-time client fetch:", error);
         setLoading(false);
       });
 
@@ -272,9 +340,14 @@ export default function ClientesPage() {
             </TableBody>
           </Table>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex-col items-start gap-4">
+          {hasMore && (
+            <Button onClick={fetchMoreClients} disabled={loadingMore} className="w-full sm:w-auto">
+              {loadingMore ? 'Carregando...' : 'Carregar Mais Clientes'}
+            </Button>
+          )}
           <div className="text-xs text-muted-foreground">
-            Mostrando <strong>1-{clients.length > 5 ? 5 : clients.length}</strong> de <strong>{clients.length}</strong> clientes
+            Mostrando <strong>{clients.length}</strong> clientes.
           </div>
         </CardFooter>
       </Card>
