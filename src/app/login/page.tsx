@@ -5,14 +5,16 @@ import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
+import { signInWithEmailAndPassword } from "firebase/auth"
+import { FirebaseError } from "firebase/app"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { useToast } from "@/hooks/use-toast"
 import { Logo } from "@/components/logo"
+import { auth } from "@/lib/firebase/client"
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Por favor, insira um email válido." }),
@@ -31,16 +33,31 @@ export default function LoginPage() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof loginSchema>) {
-    // Mock login logic
-    console.log(values)
-    toast({
-      title: "Login bem-sucedido!",
-      description: "Redirecionando para o seu painel...",
-    })
-    // In a real app, you'd handle Firebase auth here.
-    // On success, redirect to the dashboard.
-    router.push("/dashboard")
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
+    try {
+      await signInWithEmailAndPassword(auth, values.email, values.password);
+      toast({
+        title: "Login bem-sucedido!",
+        description: "Redirecionando para o seu painel...",
+      })
+      router.push("/dashboard")
+    } catch (error) {
+       const firebaseError = error as FirebaseError;
+       console.error("Firebase login error:", firebaseError.message);
+       let title = "Erro ao fazer login";
+       let description = "Ocorreu um erro inesperado. Por favor, tente novamente.";
+
+       if (firebaseError.code === 'auth/user-not-found' || firebaseError.code === 'auth/wrong-password' || firebaseError.code === 'auth/invalid-credential') {
+          title = "Credenciais inválidas";
+          description = "O email ou a senha estão incorretos. Verifique seus dados e tente novamente.";
+       }
+       
+       toast({
+        variant: "destructive",
+        title: title,
+        description: description,
+      });
+    }
   }
 
   return (
@@ -86,7 +103,9 @@ export default function LoginPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full">Entrar</Button>
+                <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                   {form.formState.isSubmitting ? "Entrando..." : "Entrar"}
+                </Button>
               </form>
             </Form>
             <div className="mt-4 text-center text-sm">

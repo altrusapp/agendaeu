@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'AgeNails - Scheduling for Beauty Professionals',
-  description: 'The all-in-one platform for scheduling, client management, and payments for beauty salons, aesthetic clinics, and barbershops.',
+  title: 'AgeNails - Agendamento para Profissionais de Beleza',
+  description: 'A plataforma completa para agendamento, gerenciamento de clientes e pagamentos para salões de beleza, clínicas de estética e barbearias.',
 };
 
 export default function RootLayout({
