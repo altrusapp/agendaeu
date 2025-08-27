@@ -8,6 +8,7 @@ import * as z from "zod"
 import { Upload } from "lucide-react"
 import * as React from "react"
 import { User, onAuthStateChanged } from "firebase/auth"
+import { collection, addDoc } from "firebase/firestore"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -15,7 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { useToast } from "@/hooks/use-toast"
 import { Logo } from "@/components/logo"
-import { auth } from "@/lib/firebase/client"
+import { auth, db } from "@/lib/firebase/client"
 
 const onboardingSchema = z.object({
   businessName: z.string().min(2, { message: "O nome do negócio é obrigatório." }),
@@ -50,7 +51,7 @@ export default function OnboardingPage() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof onboardingSchema>) {
+  async function onSubmit(values: z.infer<typeof onboardingSchema>) {
     if (!user) {
       toast({
         variant: "destructive",
@@ -59,15 +60,27 @@ export default function OnboardingPage() {
       })
       return
     }
-    // Mock onboarding logic
-    console.log(values, "para o usuário:", user.uid)
-    const slug = values.businessName.toLowerCase().replace(/\s+/g, '-')
-    toast({
-      title: "Tudo pronto!",
-      description: "Seu espaço foi criado com sucesso.",
-    })
-    // In a real app, you'd save this to Firestore and then redirect.
-    router.push("/dashboard")
+
+    try {
+      await addDoc(collection(db, "businesses"), {
+        businessName: values.businessName,
+        ownerId: user.uid,
+        createdAt: new Date(),
+      });
+
+      toast({
+        title: "Tudo pronto!",
+        description: "Seu espaço foi criado com sucesso.",
+      })
+      router.push("/dashboard")
+    } catch (error) {
+      console.error("Error creating business: ", error)
+      toast({
+        variant: "destructive",
+        title: "Erro ao criar seu espaço.",
+        description: "Ocorreu um problema ao salvar seus dados. Tente novamente.",
+      })
+    }
   }
   
   if (loading) {
