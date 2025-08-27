@@ -81,7 +81,7 @@ export default function DashboardLayout({
         } else {
           // Assuming one business per user for now
           const businessDoc = querySnapshot.docs[0];
-          setBusiness({ id: businessDoc.id, ...businessDoc.data() });
+          setBusiness({ id: businessDoc.id, ...businessDoc.data(), ownerEmail: currentUser.email });
           setLoading(false);
         }
       } else {
@@ -150,6 +150,13 @@ export default function DashboardLayout({
                 >
                   <Users className="h-4 w-4" />
                   Clientes
+                </Link>
+                <Link
+                  href="/dashboard/configuracoes"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                >
+                  <Settings className="h-4 w-4" />
+                  Configurações
                 </Link>
               </nav>
             </div>
@@ -220,6 +227,13 @@ export default function DashboardLayout({
                     <Users className="h-5 w-5" />
                     Clientes
                   </Link>
+                   <Link
+                    href="/dashboard/configuracoes"
+                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                  >
+                    <Settings className="h-5 w-5" />
+                    Configurações
+                  </Link>
                 </nav>
               </SheetContent>
             </Sheet>
@@ -239,7 +253,11 @@ export default function DashboardLayout({
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem><Settings className="mr-2 h-4 w-4"/>Configurações</DropdownMenuItem>
+                 <DropdownMenuItem asChild>
+                  <Link href="/dashboard/configuracoes">
+                    <Settings className="mr-2 h-4 w-4"/>Configurações
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem>Suporte</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => auth.signOut()}><LogOut className="mr-2 h-4 w-4"/>Sair</DropdownMenuItem>
