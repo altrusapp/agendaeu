@@ -1,9 +1,12 @@
+
 "use client"
 
 import * as React from "react"
 import Image from "next/image"
 import { Calendar as CalendarIcon, CheckCircle, Clock } from "lucide-react"
+import { doc, getDoc, collection, query, getDocs, DocumentData } from "firebase/firestore"
 
+import { db } from "@/lib/firebase/client"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -11,30 +14,66 @@ import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Logo } from "@/components/logo"
+import { Skeleton } from "@/components/ui/skeleton"
 
-// Mock Data - In the future, this will come from Firestore based on `params.businessId`
-const businessInfo = {
-  name: "Espaço Beleza Unica",
-  logoUrl: "https://picsum.photos/100",
-  coverImageUrl: "https://picsum.photos/1200/400"
-};
-
-const services = [
-  { id: 1, name: "Corte Feminino", duration: "1h", price: "R$ 120,00" },
-  { id: 2, name: "Manicure", duration: "45min", price: "R$ 40,00" },
-  { id: 3, name: "Coloração", duration: "2h 30min", price: "A partir de R$ 250,00" },
-  { id: 4, name: "Barba Terapia", duration: "1h", price: "R$ 80,00" }
-];
+type Service = { id: string, name: string, duration: string, price: string };
+type BusinessInfo = { name: string, logoUrl: string, coverImageUrl: string };
 
 const availableTimes = [ "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00" ];
 
 export default function PublicSchedulePage({ params }: { params: { businessId: string } }) {
+  const [businessInfo, setBusinessInfo] = React.useState<BusinessInfo | null>(null);
+  const [services, setServices] = React.useState<Service[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
   const [date, setDate] = React.useState<Date | undefined>(new Date());
-  const [selectedService, setSelectedService] = React.useState<number | null>(null);
+  const [selectedService, setSelectedService] = React.useState<string | null>(null);
   const [selectedTime, setSelectedTime] = React.useState<string | null>(null);
   const [step, setStep] = React.useState(1); // 1: Service, 2: Date/Time, 3: Confirmation
 
-  const handleSelectService = (serviceId: number) => {
+  React.useEffect(() => {
+    if (!params.businessId) return;
+
+    const fetchBusinessData = async () => {
+      setLoading(true);
+      try {
+        // Fetch business details
+        const businessDocRef = doc(db, "businesses", params.businessId);
+        const businessDocSnap = await getDoc(businessDocRef);
+
+        if (businessDocSnap.exists()) {
+          const data = businessDocSnap.data() as DocumentData;
+          setBusinessInfo({
+            name: data.businessName || "Negócio sem nome",
+            logoUrl: data.logoUrl || "https://picsum.photos/100",
+            coverImageUrl: data.coverImageUrl || "https://picsum.photos/1200/400"
+          });
+        } else {
+          console.error("No such business!");
+          // Handle case where business is not found
+        }
+
+        // Fetch services
+        const servicesQuery = query(collection(db, `businesses/${params.businessId}/services`));
+        const servicesSnapshot = await getDocs(servicesQuery);
+        const servicesData = servicesSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Service[];
+        setServices(servicesData);
+
+      } catch (error) {
+        console.error("Error fetching business data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBusinessData();
+  }, [params.businessId]);
+
+
+  const handleSelectService = (serviceId: string) => {
     setSelectedService(serviceId);
     setStep(2);
   }
@@ -45,6 +84,36 @@ export default function PublicSchedulePage({ params }: { params: { businessId: s
   }
   
   const selectedServiceInfo = services.find(s => s.id === selectedService);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-muted/40">
+        <header className="w-full">
+          <Skeleton className="h-48 md:h-64 w-full" />
+        </header>
+        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
+          <Card className="max-w-4xl mx-auto shadow-lg">
+            <CardContent className="p-6 space-y-4">
+               <Skeleton className="h-8 w-1/2" />
+               <Skeleton className="h-px w-full" />
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Skeleton className="h-32 w-full" />
+                  <Skeleton className="h-32 w-full" />
+               </div>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    )
+  }
+
+  if (!businessInfo) {
+    return (
+       <div className="flex flex-col min-h-screen bg-muted/40 items-center justify-center">
+         <p>Este negócio não foi encontrado.</p>
+       </div>
+    )
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-muted/40">
@@ -86,7 +155,7 @@ export default function PublicSchedulePage({ params }: { params: { businessId: s
                         <CardDescription>{service.duration}</CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <Badge variant="secondary" className="text-base">{service.price}</Badge>
+                        <Badge variant="secondary" className="text-base">R$ {service.price}</Badge>
                       </CardContent>
                     </Card>
                   ))}
@@ -155,7 +224,7 @@ export default function PublicSchedulePage({ params }: { params: { businessId: s
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">Preço:</span>
-                        <span className="font-bold">{selectedServiceInfo?.price}</span>
+                        <span className="font-bold">R$ {selectedServiceInfo?.price}</span>
                       </div>
                       <Separator/>
                       {/* Form for client details */}
@@ -187,4 +256,5 @@ export default function PublicSchedulePage({ params }: { params: { businessId: s
       </footer>
     </div>
   )
-}
+
+    
