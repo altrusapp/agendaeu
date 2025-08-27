@@ -1,0 +1,27 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Regras para a coleção 'businesses'
+    match /businesses/{businessId} {
+      // PERMITE LEITURA: Qualquer usuário autenticado pode ler os dados de qualquer negócio (para a página pública).
+      // Em uma próxima etapa, podemos restringir isso se necessário.
+      allow read: if request.auth != null;
+
+      // PERMITE CRIAÇÃO: Um usuário só pode criar um negócio se estiver autenticado.
+      // O 'ownerId' do novo negócio DEVE ser o 'uid' do usuário que está fazendo a requisição.
+      allow create: if request.auth != null && request.resource.data.ownerId == request.auth.uid;
+
+      // PERMITE ATUALIZAÇÃO E EXCLUSÃO: Um usuário só pode atualizar ou deletar um negócio
+      // se ele for o proprietário (owner) desse negócio.
+      allow update, delete: if request.auth != null && resource.data.ownerId == request.auth.uid;
+    }
+    
+    // Regra padrão: Nega todo o acesso a outras coleções que não foram definidas.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
