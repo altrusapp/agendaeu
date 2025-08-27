@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { MoreHorizontal, PlusCircle } from "lucide-react"
-import { collection, addDoc, query, where, onSnapshot, DocumentData } from "firebase/firestore"
+import { collection, addDoc, query, onSnapshot, DocumentData } from "firebase/firestore"
 
 import { useBusiness } from "@/app/dashboard/layout"
 import { db } from "@/lib/firebase/client"
