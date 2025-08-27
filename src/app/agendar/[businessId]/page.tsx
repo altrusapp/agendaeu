@@ -5,7 +5,7 @@ import * as React from "react"
 import Image from "next/image"
 import { useParams } from "next/navigation"
 import { Calendar as CalendarIcon, CheckCircle, Clock, PartyPopper } from "lucide-react"
-import { doc, getDoc, collection, query, getDocs, DocumentData, addDoc, Timestamp } from "firebase/firestore"
+import { doc, getDoc, collection, query, getDocs, DocumentData, addDoc, Timestamp, where } from "firebase/firestore"
 
 import { db } from "@/lib/firebase/client"
 import { useToast } from "@/hooks/use-toast"
@@ -20,7 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 
 type Service = { id: string, name: string, duration: string, price: string };
-type BusinessInfo = { name: string, logoUrl: string, coverImageUrl: string };
+type BusinessInfo = { id: string, name: string, logoUrl: string, coverImageUrl: string };
 
 const availableTimes = [ "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00" ];
 
@@ -38,35 +38,41 @@ export default function PublicSchedulePage() {
   const [clientName, setClientName] = React.useState("");
   const [clientPhone, setClientPhone] = React.useState("");
   const [step, setStep] = React.useState(1); // 1: Service, 2: Date/Time, 3: Confirmation, 4: Success
-  const businessId = params.businessId as string;
+  const businessSlug = params.businessId as string;
 
   React.useEffect(() => {
-    if (!businessId) return;
+    if (!businessSlug) return;
 
     const fetchBusinessData = async () => {
       setLoading(true);
       try {
-        const businessDocRef = doc(db, "businesses", businessId);
-        const businessDocSnap = await getDoc(businessDocRef);
+        const businessQuery = query(collection(db, "businesses"), where("slug", "==", businessSlug));
+        const businessSnapshot = await getDocs(businessQuery);
 
-        if (businessDocSnap.exists()) {
-          const data = businessDocSnap.data() as DocumentData;
+
+        if (!businessSnapshot.empty) {
+          const businessDoc = businessSnapshot.docs[0];
+          const data = businessDoc.data() as DocumentData;
+          const businessId = businessDoc.id;
+          
           setBusinessInfo({
+            id: businessId,
             name: data.businessName || "Negócio sem nome",
             logoUrl: data.logoUrl || "https://picsum.photos/100",
             coverImageUrl: data.coverImageUrl || "https://picsum.photos/1200/400"
           });
+
+          const servicesQuery = query(collection(db, `businesses/${businessId}/services`));
+          const servicesSnapshot = await getDocs(servicesQuery);
+          const servicesData = servicesSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as Service[];
+          setServices(servicesData);
         } else {
           console.error("No such business!");
         }
 
-        const servicesQuery = query(collection(db, `businesses/${businessId}/services`));
-        const servicesSnapshot = await getDocs(servicesQuery);
-        const servicesData = servicesSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Service[];
-        setServices(servicesData);
 
       } catch (error) {
         console.error("Error fetching business data:", error);
@@ -76,7 +82,7 @@ export default function PublicSchedulePage() {
     };
 
     fetchBusinessData();
-  }, [businessId]);
+  }, [businessSlug]);
 
 
   const handleSelectService = (serviceId: string) => {
@@ -95,7 +101,7 @@ export default function PublicSchedulePage() {
     
     const selectedServiceInfo = services.find(s => s.id === selectedService);
 
-    if (!businessId || !selectedServiceInfo || !date || !selectedTime || !clientName || !clientPhone) {
+    if (!businessInfo?.id || !selectedServiceInfo || !date || !selectedTime || !clientName || !clientPhone) {
        toast({
         variant: "destructive",
         title: "Erro de Validação",
@@ -110,7 +116,7 @@ export default function PublicSchedulePage() {
     appointmentDate.setHours(hours, minutes, 0, 0);
 
     try {
-      await addDoc(collection(db, `businesses/${businessId}/appointments`), {
+      await addDoc(collection(db, `businesses/${businessInfo.id}/appointments`), {
         clientName,
         clientPhone,
         serviceId: selectedServiceInfo.id,
@@ -350,4 +356,3 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
-

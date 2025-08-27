@@ -1,10 +1,12 @@
+
 "use client"
 
 import * as React from "react"
-import { doc, updateDoc } from "firebase/firestore"
+import { doc, updateDoc, getDoc, collection, query, where, getDocs } from "firebase/firestore"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { AlertCircle } from "lucide-react"
 
 import { useBusiness } from "@/app/dashboard/layout"
 import { db } from "@/lib/firebase/client"
@@ -22,11 +24,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { generateSlug } from "@/lib/utils"
 
 
 const profileFormSchema = z.object({
   businessName: z.string().min(2, {
     message: "O nome do negócio precisa ter pelo menos 2 caracteres.",
+  }),
+  slug: z.string().min(3, {
+    message: "O URL precisa ter pelo menos 3 caracteres.",
+  }).regex(/^[a-z0-9-]+$/, {
+    message: "O URL pode conter apenas letras minúsculas, números e hífens.",
   }),
   description: z.string().max(200).optional(),
   logoUrl: z.string().url({ message: "Por favor, insira uma URL válida para a logo." }).optional().or(z.literal('')),
@@ -43,10 +52,11 @@ export default function ConfiguracoesPage() {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      businessName: business?.businessName || "",
-      description: business?.description || "",
-      logoUrl: business?.logoUrl || "",
-      coverImageUrl: business?.coverImageUrl || "",
+      businessName: "",
+      slug: "",
+      description: "",
+      logoUrl: "",
+      coverImageUrl: "",
     },
     mode: "onChange",
   })
@@ -55,13 +65,18 @@ export default function ConfiguracoesPage() {
     if (business) {
       form.reset({
         businessName: business.businessName || "",
+        slug: business.slug || "",
         description: business.description || "",
         logoUrl: business.logoUrl || "",
         coverImageUrl: business.coverImageUrl || "",
       });
     }
   }, [business, form]);
-
+  
+  const handleSlugBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const slugValue = generateSlug(e.target.value);
+    form.setValue("slug", slugValue, { shouldValidate: true });
+  }
 
   async function onSubmit(data: ProfileFormValues) {
     if (!business?.id) {
@@ -72,15 +87,47 @@ export default function ConfiguracoesPage() {
       });
       return;
     }
+    
+    // Check if slug is changing and has already been changed
+    if (data.slug !== business.slug && business.slugHasBeenChanged) {
+        toast({
+            variant: "destructive",
+            title: "Atenção",
+            description: "Você não pode alterar a URL pública mais de uma vez.",
+        });
+        form.setValue("slug", business.slug); // Reset to original slug
+        return;
+    }
+
+     // Check if the new slug is already taken
+    if (data.slug !== business.slug) {
+        const q = query(collection(db, "businesses"), where("slug", "==", data.slug));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+            form.setError("slug", {
+                type: "manual",
+                message: "Esta URL já está em uso. Por favor, escolha outra.",
+            });
+            return;
+        }
+    }
 
     try {
       const businessRef = doc(db, "businesses", business.id);
-      await updateDoc(businessRef, {
+      
+      const updateData: any = {
         businessName: data.businessName,
         description: data.description,
         logoUrl: data.logoUrl,
         coverImageUrl: data.coverImageUrl,
-      });
+        slug: data.slug,
+      };
+
+      if (data.slug !== business.slug) {
+        updateData.slugHasBeenChanged = true;
+      }
+      
+      await updateDoc(businessRef, updateData);
        toast({
         title: "Sucesso!",
         description: "Seu perfil foi atualizado.",
@@ -130,6 +177,41 @@ export default function ConfiguracoesPage() {
                       </FormItem>
                     )}
                   />
+                  
+                   <div className="space-y-2">
+                     <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertTitle>Atenção</AlertTitle>
+                      <AlertDescription>
+                        A URL da sua página pública só pode ser alterada <strong>uma única vez</strong>. Escolha com cuidado.
+                      </AlertDescription>
+                    </Alert>
+                    <FormField
+                      control={form.control}
+                      name="slug"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>URL da Página Pública</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input 
+                                {...field} 
+                                onBlur={handleSlugBlur}
+                                placeholder="ex: espaco-beleza-unica" 
+                                className="pl-32" 
+                                disabled={business?.slugHasBeenChanged}
+                              />
+                               <p className="absolute inset-y-0 left-0 flex items-center pl-3 text-sm text-muted-foreground">
+                                anotaai.com/agendar/
+                              </p>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                   </div>
+
                    <FormField
                     control={form.control}
                     name="description"

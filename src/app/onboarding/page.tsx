@@ -18,23 +18,12 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { useToast } from "@/hooks/use-toast"
 import { Logo } from "@/components/logo"
 import { auth, db } from "@/lib/firebase/client"
+import { generateSlug } from "@/lib/utils"
 
 const onboardingSchema = z.object({
   businessName: z.string().min(2, { message: "O nome do negócio é obrigatório." }),
   logo: z.any().optional(),
 })
-
-const generateSlug = (name: string) => {
-  return name
-    .toLowerCase()
-    .normalize("NFD") // separate accent from letter
-    .replace(/[\u0300-\u036f]/g, "") // remove accents
-    .replace(/[^a-z0-9\s-]/g, "") // remove special characters
-    .trim()
-    .replace(/\s+/g, "-") // replace spaces with hyphens
-    .replace(/-+/g, "-"); // remove consecutive hyphens
-};
-
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -74,21 +63,26 @@ export default function OnboardingPage() {
       return
     }
 
-    const businessId = generateSlug(values.businessName);
+    const businessId = user.uid; // Use user UID as the stable document ID
+    const slug = generateSlug(values.businessName);
 
     try {
+      // We now use the user's UID as the document ID for stability.
+      // The public-facing URL will be determined by the 'slug' field.
       await setDoc(doc(db, "businesses", businessId), {
         businessName: values.businessName,
         ownerId: user.uid,
+        slug: slug,
+        slugHasBeenChanged: false, // Initial state
         createdAt: new Date(),
-        publicUrl: `/agendar/${businessId}`
+        publicUrl: `/agendar/${slug}` // Store the initial public URL path
       });
 
       toast({
         title: "Tudo pronto!",
         description: "Seu espaço foi criado com sucesso.",
       })
-      router.push(`/agendar/${businessId}`)
+      router.push(`/dashboard`) // Redirect to dashboard after setup
     } catch (error) {
       console.error("Error creating business: ", error)
       toast({
