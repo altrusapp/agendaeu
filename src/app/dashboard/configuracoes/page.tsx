@@ -182,7 +182,7 @@ export default function ConfiguracoesPage() {
                      <Alert variant="destructive">
                       <AlertCircle className="h-4 w-4" />
                       <AlertDescription>
-                          Atenção: A URL da sua página pública só pode ser alterada <strong>uma única vez</strong>. Escolha com cuidado.
+                        Atenção: A URL da sua página pública só pode ser alterada <strong>uma única vez</strong>. Escolha com cuidado.
                       </AlertDescription>
                     </Alert>
                     <FormField
@@ -197,7 +197,7 @@ export default function ConfiguracoesPage() {
                                 {...field} 
                                 onBlur={handleSlugBlur}
                                 placeholder="ex: espaco-beleza-unica" 
-                                className="pl-32" 
+                                className="pl-48" 
                                 disabled={business?.slugHasBeenChanged}
                               />
                                <p className="absolute inset-y-0 left-0 flex items-center pl-3 text-sm text-muted-foreground">
