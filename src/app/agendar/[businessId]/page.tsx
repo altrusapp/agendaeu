@@ -3,10 +3,11 @@
 
 import * as React from "react"
 import Image from "next/image"
-import { Calendar as CalendarIcon, CheckCircle, Clock } from "lucide-react"
-import { doc, getDoc, collection, query, getDocs, DocumentData } from "firebase/firestore"
+import { Calendar as CalendarIcon, CheckCircle, Clock, PartyPopper } from "lucide-react"
+import { doc, getDoc, collection, query, getDocs, DocumentData, addDoc, Timestamp } from "firebase/firestore"
 
 import { db } from "@/lib/firebase/client"
+import { useToast } from "@/hooks/use-toast"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -15,6 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator"
 import { Logo } from "@/components/logo"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Input } from "@/components/ui/input"
 
 type Service = { id: string, name: string, duration: string, price: string };
 type BusinessInfo = { name: string, logoUrl: string, coverImageUrl: string };
@@ -22,14 +24,18 @@ type BusinessInfo = { name: string, logoUrl: string, coverImageUrl: string };
 const availableTimes = [ "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00" ];
 
 export default function PublicSchedulePage({ params }: { params: { businessId: string } }) {
+  const { toast } = useToast();
   const [businessInfo, setBusinessInfo] = React.useState<BusinessInfo | null>(null);
   const [services, setServices] = React.useState<Service[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [selectedService, setSelectedService] = React.useState<string | null>(null);
   const [selectedTime, setSelectedTime] = React.useState<string | null>(null);
-  const [step, setStep] = React.useState(1); // 1: Service, 2: Date/Time, 3: Confirmation
+  const [clientName, setClientName] = React.useState("");
+  const [clientPhone, setClientPhone] = React.useState("");
+  const [step, setStep] = React.useState(1); // 1: Service, 2: Date/Time, 3: Confirmation, 4: Success
 
   React.useEffect(() => {
     if (!params.businessId) return;
@@ -37,7 +43,6 @@ export default function PublicSchedulePage({ params }: { params: { businessId: s
     const fetchBusinessData = async () => {
       setLoading(true);
       try {
-        // Fetch business details
         const businessDocRef = doc(db, "businesses", params.businessId);
         const businessDocSnap = await getDoc(businessDocRef);
 
@@ -50,10 +55,8 @@ export default function PublicSchedulePage({ params }: { params: { businessId: s
           });
         } else {
           console.error("No such business!");
-          // Handle case where business is not found
         }
 
-        // Fetch services
         const servicesQuery = query(collection(db, `businesses/${params.businessId}/services`));
         const servicesSnapshot = await getDocs(servicesQuery);
         const servicesData = servicesSnapshot.docs.map(doc => ({
@@ -82,6 +85,61 @@ export default function PublicSchedulePage({ params }: { params: { businessId: s
     setSelectedTime(time);
     setStep(3);
   }
+
+  const handleConfirmAppointment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    const selectedServiceInfo = services.find(s => s.id === selectedService);
+
+    if (!params.businessId || !selectedServiceInfo || !date || !selectedTime || !clientName || !clientPhone) {
+       toast({
+        variant: "destructive",
+        title: "Erro de Validação",
+        description: "Por favor, preencha todos os campos.",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+    
+    const [hours, minutes] = selectedTime.split(':').map(Number);
+    const appointmentDate = new Date(date);
+    appointmentDate.setHours(hours, minutes, 0, 0);
+
+    try {
+      await addDoc(collection(db, `businesses/${params.businessId}/appointments`), {
+        clientName,
+        clientPhone,
+        serviceId: selectedServiceInfo.id,
+        serviceName: selectedServiceInfo.name,
+        date: Timestamp.fromDate(appointmentDate),
+        time: selectedTime,
+        status: 'Confirmado',
+        createdAt: new Date(),
+      });
+      
+      setStep(4); // Move to success step
+
+    } catch (error) {
+       console.error("Error adding appointment: ", error);
+       toast({
+        variant: "destructive",
+        title: "Erro ao Agendar",
+        description: "Não foi possível confirmar o agendamento. Tente novamente.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  const handleRestart = () => {
+    setSelectedService(null);
+    setSelectedTime(null);
+    setDate(new Date());
+    setClientName("");
+    setClientPhone("");
+    setStep(1);
+  };
   
   const selectedServiceInfo = services.find(s => s.id === selectedService);
 
@@ -159,6 +217,9 @@ export default function PublicSchedulePage({ params }: { params: { businessId: s
                       </CardContent>
                     </Card>
                   ))}
+                   {services.length === 0 && (
+                    <p className="text-muted-foreground col-span-full text-center">Nenhum serviço disponível no momento.</p>
+                  )}
                 </div>
               </div>
             )}
@@ -205,11 +266,54 @@ export default function PublicSchedulePage({ params }: { params: { businessId: s
                     <h2 className="text-2xl font-semibold font-headline">3. Confirme seu Agendamento</h2>
                 </div>
                 <Separator className="my-4" />
-                <Card className="bg-muted/50">
-                  <CardHeader>
+                <form onSubmit={handleConfirmAppointment}>
+                  <Card className="bg-muted/50">
+                    <CardHeader>
+                      <CardTitle>Resumo do Agendamento</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                       <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Serviço:</span>
+                          <span className="font-bold">{selectedServiceInfo?.name}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Data:</span>
+                          <span className="font-bold">{date?.toLocaleDateString('pt-BR')}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Horário:</span>
+                          <span className="font-bold">{selectedTime}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Preço:</span>
+                          <span className="font-bold">R$ {selectedServiceInfo?.price}</span>
+                        </div>
+                        <Separator/>
+                        <div className="space-y-2">
+                          <h3 className="text-lg font-medium">Seus Dados</h3>
+                          <Input type="text" placeholder="Seu nome completo" required value={clientName} onChange={(e) => setClientName(e.target.value)} />
+                          <Input type="tel" placeholder="Seu WhatsApp (para lembretes)" required value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} />
+                        </div>
+                        <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+                          {isSubmitting ? "Confirmando..." : <><CheckCircle className="mr-2" />Confirmar Agendamento</>}
+                        </Button>
+                    </CardContent>
+                  </Card>
+                </form>
+              </div>
+            )}
+
+            {/* Step 4: Success */}
+            {step === 4 && (
+              <div className="text-center py-10">
+                <PartyPopper className="h-16 w-16 mx-auto text-primary" />
+                <h2 className="text-3xl font-bold font-headline mt-4">Tudo Certo!</h2>
+                <p className="text-muted-foreground mt-2 text-lg">Seu agendamento foi confirmado com sucesso.</p>
+                <Card className="max-w-md mx-auto mt-6 text-left bg-muted/50">
+                   <CardHeader>
                     <CardTitle>Resumo do Agendamento</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-2">
                      <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">Serviço:</span>
                         <span className="font-bold">{selectedServiceInfo?.name}</span>
@@ -222,23 +326,9 @@ export default function PublicSchedulePage({ params }: { params: { businessId: s
                         <span className="text-muted-foreground">Horário:</span>
                         <span className="font-bold">{selectedTime}</span>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">Preço:</span>
-                        <span className="font-bold">R$ {selectedServiceInfo?.price}</span>
-                      </div>
-                      <Separator/>
-                      {/* Form for client details */}
-                      <div className="space-y-2">
-                        <h3 className="text-lg font-medium">Seus Dados</h3>
-                        <input type="text" placeholder="Seu nome completo" className="w-full p-2 border rounded-md" />
-                        <input type="tel" placeholder="Seu WhatsApp (para lembretes)" className="w-full p-2 border rounded-md" />
-                      </div>
-                      <Button className="w-full" size="lg">
-                        <CheckCircle className="mr-2" />
-                        Confirmar Agendamento
-                      </Button>
                   </CardContent>
                 </Card>
+                <Button className="mt-8" onClick={handleRestart}>Fazer Novo Agendamento</Button>
               </div>
             )}
 
