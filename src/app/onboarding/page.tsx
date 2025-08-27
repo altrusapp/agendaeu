@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Upload } from "lucide-react"
+import * as React from "react"
+import { User, onAuthStateChanged } from "firebase/auth"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,6 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { useToast } from "@/hooks/use-toast"
 import { Logo } from "@/components/logo"
+import { auth } from "@/lib/firebase/client"
 
 const onboardingSchema = z.object({
   businessName: z.string().min(2, { message: "O nome do negócio é obrigatório." }),
@@ -22,6 +25,23 @@ const onboardingSchema = z.object({
 export default function OnboardingPage() {
   const router = useRouter()
   const { toast } = useToast()
+  const [user, setUser] = React.useState<User | null>(null)
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser)
+      } else {
+        router.push("/login")
+      }
+      setLoading(false)
+    })
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe()
+  }, [router])
+
 
   const form = useForm<z.infer<typeof onboardingSchema>>({
     resolver: zodResolver(onboardingSchema),
@@ -31,8 +51,16 @@ export default function OnboardingPage() {
   })
 
   function onSubmit(values: z.infer<typeof onboardingSchema>) {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Erro de autenticação",
+        description: "Usuário não encontrado. Por favor, faça login novamente.",
+      })
+      return
+    }
     // Mock onboarding logic
-    console.log(values)
+    console.log(values, "para o usuário:", user.uid)
     const slug = values.businessName.toLowerCase().replace(/\s+/g, '-')
     toast({
       title: "Tudo pronto!",
@@ -40,6 +68,17 @@ export default function OnboardingPage() {
     })
     // In a real app, you'd save this to Firestore and then redirect.
     router.push("/dashboard")
+  }
+  
+  if (loading) {
+    return (
+       <div className="flex min-h-screen items-center justify-center bg-background p-4">
+          <div className="flex flex-col items-center gap-4">
+             <Logo className="h-10 w-10 text-primary animate-pulse" />
+             <p className="text-muted-foreground">Carregando...</p>
+          </div>
+       </div>
+    )
   }
 
   return (
@@ -94,7 +133,9 @@ export default function OnboardingPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full">Concluir e ir para o painel</Button>
+                <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                   {form.formState.isSubmitting ? "Salvando..." : "Concluir e ir para o painel"}
+                </Button>
               </form>
             </Form>
           </CardContent>
