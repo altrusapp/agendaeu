@@ -1,8 +1,11 @@
 "use client"
 
+import * as React from "react"
 import { MoreHorizontal, PlusCircle } from "lucide-react"
+import { collection, addDoc, query, onSnapshot, DocumentData, orderBy } from "firebase/firestore"
 
-import { Badge } from "@/components/ui/badge"
+import { useBusiness } from "@/app/dashboard/layout"
+import { db } from "@/lib/firebase/client"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -39,22 +42,100 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useToast } from "@/hooks/use-toast"
+import { Skeleton } from "@/components/ui/skeleton"
 
-
-const clients = [
-  { id: 1, name: "Olivia Martin", email: "olivia.martin@email.com", phone: "(11) 98765-4321", totalAppointments: 12, lastVisit: "2024-07-15", avatar: "https://picsum.photos/100?c1" },
-  { id: 2, name: "Jackson Lee", email: "jackson.lee@email.com", phone: "(21) 91234-5678", totalAppointments: 8, lastVisit: "2024-07-20", avatar: "https://picsum.photos/100?c2" },
-  { id: 3, name: "Isabella Nguyen", email: "isabella.nguyen@email.com", phone: "(31) 98888-7777", totalAppointments: 25, lastVisit: "2024-07-22", avatar: "https://picsum.photos/100?c3" },
-  { id: 4, name: "William Kim", email: "will@email.com", phone: "(41) 99999-6666", totalAppointments: 5, lastVisit: "2024-06-10", avatar: "https://picsum.photos/100?c4" },
-  { id: 5, name: "Sofia Davis", email: "sofia.davis@email.com", phone: "(51) 97654-1234", totalAppointments: 1, lastVisit: "2024-07-28", avatar: "https://picsum.photos/100?c5" },
-];
+type Client = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  totalAppointments: number;
+  lastVisit: string;
+  avatar?: string;
+  createdAt: any;
+};
 
 export default function ClientesPage() {
+  const { business } = useBusiness();
+  const { toast } = useToast();
+
+  const [clients, setClients] = React.useState<Client[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+
+  // Form states
+  const [clientName, setClientName] = React.useState("");
+  const [clientEmail, setClientEmail] = React.useState("");
+  const [clientPhone, setClientPhone] = React.useState("");
+
+  React.useEffect(() => {
+    if (business?.id) {
+      const clientsCollectionRef = collection(db, `businesses/${business.id}/clients`);
+      const q = query(clientsCollectionRef, orderBy("createdAt", "desc"));
+
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const clientsData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Client[];
+        setClients(clientsData);
+        setLoading(false);
+      });
+
+      return () => unsubscribe();
+    }
+  }, [business]);
+
+  const handleAddClient = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!business?.id || !clientName || !clientEmail || !clientPhone) {
+      toast({
+        variant: "destructive",
+        title: "Erro de Validação",
+        description: "Por favor, preencha todos os campos obrigatórios.",
+      });
+      return;
+    }
+
+    try {
+      const clientsCollectionRef = collection(db, `businesses/${business.id}/clients`);
+      await addDoc(clientsCollectionRef, {
+        name: clientName,
+        email: clientEmail,
+        phone: clientPhone,
+        totalAppointments: 0,
+        lastVisit: null,
+        createdAt: new Date(),
+      });
+
+      toast({
+        title: "Cliente Adicionado!",
+        description: "O novo cliente foi salvo com sucesso.",
+      });
+
+      // Reset form and close dialog
+      setClientName("");
+      setClientEmail("");
+      setClientPhone("");
+      setIsDialogOpen(false);
+
+    } catch (error) {
+      console.error("Error adding client: ", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao Salvar",
+        description: "Não foi possível adicionar o cliente. Tente novamente.",
+      });
+    }
+  };
+
   return (
     <>
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold md:text-2xl font-headline">Clientes</h1>
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm" className="gap-1">
               <PlusCircle className="h-3.5 w-3.5" />
@@ -70,28 +151,30 @@ export default function ClientesPage() {
                 Preencha os detalhes do novo cliente.
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Nome
-                </Label>
-                <Input id="name" placeholder="Ex: Ana Silva" className="col-span-3" />
+            <form id="add-client-form" onSubmit={handleAddClient}>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Nome
+                  </Label>
+                  <Input id="name" value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Ex: Ana Silva" className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="email" className="text-right">
+                    Email
+                  </Label>
+                  <Input id="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} type="email" placeholder="ana@email.com" className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="phone" className="text-right">
+                    Telefone
+                  </Label>
+                  <Input id="phone" value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} placeholder="(11) 99999-9999" className="col-span-3" />
+                </div>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="email" className="text-right">
-                  Email
-                </Label>
-                <Input id="email" type="email" placeholder="ana@email.com" className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="phone" className="text-right">
-                  Telefone
-                </Label>
-                <Input id="phone" placeholder="(11) 99999-9999" className="col-span-3" />
-              </div>
-            </div>
+            </form>
             <DialogFooter>
-              <Button type="submit">Salvar Cliente</Button>
+              <Button type="submit" form="add-client-form">Salvar Cliente</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -124,24 +207,36 @@ export default function ClientesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {clients.map(client => (
+              {loading ? (
+                 Array.from({ length: 5 }).map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-11 w-11 rounded-full" /></TableCell>
+                    <TableCell><Skeleton className="h-5 w-3/4" /></TableCell>
+                    <TableCell><div className="flex flex-col gap-1"><Skeleton className="h-4 w-4/5" /><Skeleton className="h-3 w-3/5" /></div></TableCell>
+                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-12" /></TableCell>
+                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-24" /></TableCell>
+                    <TableCell><Skeleton className="h-8 w-8" /></TableCell>
+                  </TableRow>
+                ))
+              ) : clients.length > 0 ? (
+                clients.map(client => (
                 <TableRow key={client.id}>
                   <TableCell className="hidden sm:table-cell">
                     <Avatar className="h-11 w-11">
                       <AvatarImage src={client.avatar} alt={client.name} data-ai-hint="person portrait"/>
-                      <AvatarFallback>{client.name.substring(0,2)}</AvatarFallback>
+                      <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                   </TableCell>
                   <TableCell className="font-medium">{client.name}</TableCell>
                   <TableCell>
                     <div className="font-medium">{client.email}</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">{client.phone}</div>
+                    <div className="text-sm text-muted-foreground">{client.phone}</div>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
                     {client.totalAppointments}
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    {new Date(client.lastVisit).toLocaleDateString('pt-BR')}
+                    {client.lastVisit ? new Date(client.lastVisit).toLocaleDateString('pt-BR') : 'N/A'}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -166,13 +261,20 @@ export default function ClientesPage() {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+              ) : (
+                 <TableRow>
+                   <TableCell colSpan={6} className="h-24 text-center">
+                    Nenhum cliente encontrado. Adicione seu primeiro cliente para começar.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
         <CardFooter>
           <div className="text-xs text-muted-foreground">
-            Mostrando <strong>1-5</strong> de <strong>{clients.length}</strong> clientes
+            Mostrando <strong>1-{clients.length > 5 ? 5 : clients.length}</strong> de <strong>{clients.length}</strong> clientes
           </div>
         </CardFooter>
       </Card>
