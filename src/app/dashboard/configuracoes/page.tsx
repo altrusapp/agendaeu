@@ -381,8 +381,8 @@ export default function ConfiguracoesPage() {
                    <div className="space-y-2">
                      <Alert variant="destructive">
                       <AlertCircle className="h-4 w-4" />
-                      <AlertTitle className="text-destructive-foreground font-semibold">Atenção</AlertTitle>
-                      <AlertDescription className="text-destructive-foreground">
+                      <AlertTitle className="font-semibold">Atenção</AlertTitle>
+                      <AlertDescription>
                         A URL da sua página pública só pode ser alterada <strong>uma única vez</strong>. Escolha com cuidado.
                       </AlertDescription>
                     </Alert>
