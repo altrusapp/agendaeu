@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   title: 'AgeNails - Agendamento para Profissionais de Beleza',
   description: 'A plataforma completa para agendamento, gerenciamento de clientes e pagamentos para salões de beleza, clínicas de estética e barbearias.',
   manifest: '/manifest.webmanifest',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+  },
 };
 
 export default function RootLayout({
