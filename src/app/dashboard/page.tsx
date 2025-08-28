@@ -189,14 +189,14 @@ export default function DashboardPage() {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <Card className="lg:col-span-1">
-          <CardHeader className="flex flex-row items-center">
-             <div className="grid gap-2">
+           <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
               <CardTitle>Próximos Agendamentos</CardTitle>
               <CardDescription>
                 Seus próximos agendamentos confirmados.
               </CardDescription>
             </div>
-            <Button asChild size="sm" className="ml-auto gap-1">
+            <Button asChild size="sm" className="w-full sm:w-auto">
               <Link href="/dashboard/agenda">
                 Ver Agenda Completa
                 <ArrowUpRight className="h-4 w-4" />
