@@ -6,10 +6,11 @@ import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { Upload } from "lucide-react"
+import { Upload, Image as ImageIcon, X } from "lucide-react"
 import * as React from "react"
 import { User, onAuthStateChanged } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
+import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -30,6 +31,9 @@ export default function OnboardingPage() {
   const { toast } = useToast()
   const [user, setUser] = React.useState<User | null>(null)
   const [loading, setLoading] = React.useState(true)
+  const [logoPreview, setLogoPreview] = React.useState<string | null>(null)
+
+  const fileRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -41,7 +45,6 @@ export default function OnboardingPage() {
       setLoading(false)
     })
 
-    // Cleanup subscription on unmount
     return () => unsubscribe()
   }, [router])
 
@@ -63,26 +66,27 @@ export default function OnboardingPage() {
       return
     }
 
-    const businessId = user.uid; // Use user UID as the stable document ID
+    // TODO: Implementar a lógica de upload do arquivo 'values.logo' para o Firebase Storage
+    // e obter a URL da imagem para salvar no Firestore.
+
+    const businessId = user.uid;
     const slug = generateSlug(values.businessName);
 
     try {
-      // We now use the user's UID as the document ID for stability.
-      // The public-facing URL will be determined by the 'slug' field.
       await setDoc(doc(db, "businesses", businessId), {
         businessName: values.businessName,
         ownerId: user.uid,
         slug: slug,
-        slugHasBeenChanged: false, // Initial state
+        slugHasBeenChanged: false,
         createdAt: new Date(),
-        publicUrl: `/agendar/${slug}` // Store the initial public URL path
+        publicUrl: `/agendar/${slug}`
       });
 
       toast({
         title: "Tudo pronto!",
         description: "Seu espaço foi criado com sucesso.",
       })
-      router.push(`/dashboard`) // Redirect to dashboard after setup
+      router.push(`/dashboard`)
     } catch (error) {
       console.error("Error creating business: ", error)
       toast({
@@ -92,6 +96,30 @@ export default function OnboardingPage() {
       })
     }
   }
+
+  const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        toast({
+          variant: "destructive",
+          title: "Arquivo muito grande",
+          description: "Por favor, selecione uma imagem com menos de 2MB.",
+        });
+        return;
+      }
+      form.setValue("logo", file);
+      setLogoPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    form.setValue("logo", null);
+    setLogoPreview(null);
+    if(fileRef.current) {
+      fileRef.current.value = "";
+    }
+  };
   
   if (loading) {
     return (
@@ -137,20 +165,44 @@ export default function OnboardingPage() {
                 <FormField
                   control={form.control}
                   name="logo"
-                  render={({ field }) => (
+                  render={() => (
                     <FormItem>
                       <FormLabel>Sua Logo (Opcional)</FormLabel>
-                      <FormControl>
-                        <div className="flex items-center justify-center w-full">
-                          <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-secondary">
-                              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                  <Upload className="w-8 h-8 mb-4 text-muted-foreground" />
-                                  <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Clique para enviar</span> ou arraste e solte</p>
-                                  <p className="text-xs text-muted-foreground">PNG, JPG (MAX. 800x400px)</p>
-                              </div>
-                              <Input id="dropzone-file" type="file" className="hidden" {...field} />
-                          </label>
-                        </div> 
+                       <FormControl>
+                        <div>
+                          {logoPreview ? (
+                            <div className="relative group w-40 h-40 mx-auto">
+                              <Image 
+                                src={logoPreview} 
+                                alt="Pré-visualização da logo" 
+                                layout="fill" 
+                                objectFit="cover" 
+                                className="rounded-full"
+                              />
+                              <Button 
+                                type="button" 
+                                variant="destructive" 
+                                size="icon"
+                                className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity rounded-full h-8 w-8"
+                                onClick={handleRemoveLogo}
+                              >
+                                <X className="h-4 w-4" />
+                                <span className="sr-only">Remover logo</span>
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-center w-full">
+                              <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-secondary">
+                                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                      <Upload className="w-8 h-8 mb-4 text-muted-foreground" />
+                                      <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Clique para enviar</span> ou arraste e solte</p>
+                                      <p className="text-xs text-muted-foreground">PNG, JPG (MAX. 2MB)</p>
+                                  </div>
+                                  <Input id="dropzone-file" type="file" className="hidden" ref={fileRef} onChange={handleLogoChange} accept="image/png, image/jpeg"/>
+                              </label>
+                            </div> 
+                          )}
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
