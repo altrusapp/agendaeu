@@ -2,11 +2,12 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { FirebaseError } from "firebase/app"
 import { createUserWithEmailAndPassword } from "firebase/auth"
+import { Check } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -15,6 +16,7 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { useToast } from "@/hooks/use-toast"
 import { Logo } from "@/components/logo"
 import { auth } from "@/lib/firebase/client"
+import { cn } from "@/lib/utils"
 
 const signupSchema = z.object({
   name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
@@ -27,6 +29,12 @@ const signupSchema = z.object({
     .regex(/[^A-Za-z0-9]/, { message: "Deve conter pelo menos um caractere especial." }),
 })
 
+const PasswordRequirement = ({ text, met }: { text: string, met: boolean }) => (
+  <p className={cn("text-xs flex items-center gap-2", met ? "text-green-600" : "text-muted-foreground")}>
+    <Check className="h-3.5 w-3.5" /> {text}
+  </p>
+)
+
 export default function SignupPage() {
   const router = useRouter()
   const { toast } = useToast()
@@ -38,7 +46,22 @@ export default function SignupPage() {
       email: "",
       password: "",
     },
+    mode: "onBlur",
   })
+  
+  const passwordValue = useWatch({
+    control: form.control,
+    name: 'password',
+  });
+  
+  const passwordRequirements = {
+    length: (passwordValue || '').length >= 8,
+    uppercase: /[A-Z]/.test(passwordValue || ''),
+    lowercase: /[a-z]/.test(passwordValue || ''),
+    number: /[0-9]/.test(passwordValue || ''),
+    special: /[^A-Za-z0-9]/.test(passwordValue || ''),
+  }
+
 
   async function onSubmit(values: z.infer<typeof signupSchema>) {
     try {
@@ -119,6 +142,12 @@ export default function SignupPage() {
                       <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
                       </FormControl>
+                       <div className="grid grid-cols-2 gap-x-4 gap-y-1 pt-1">
+                          <PasswordRequirement text="Pelo menos 8 caracteres" met={passwordRequirements.length} />
+                          <PasswordRequirement text="Uma letra maiúscula" met={passwordRequirements.uppercase} />
+                          <PasswordRequirement text="Um número" met={passwordRequirements.number} />
+                          <PasswordRequirement text="Um caractere especial" met={passwordRequirements.special} />
+                       </div>
                       <FormMessage />
                     </FormItem>
                   )}
