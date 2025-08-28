@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -35,7 +36,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Logo } from "@/components/logo"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -76,7 +77,6 @@ export default function DashboardLayout({
         
         if (querySnapshot.empty) {
           // No business found for this user, maybe redirect to onboarding
-          console.warn("No business found for user, redirecting to onboarding.");
           router.push("/onboarding");
         } else {
           // Assuming one business per user for now
@@ -191,14 +191,18 @@ export default function DashboardLayout({
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="flex flex-col">
+                <SheetHeader>
+                  <SheetTitle>
+                     <Link
+                      href="/dashboard"
+                      className="flex items-center gap-2 text-lg font-semibold mb-4"
+                    >
+                      <Logo className="h-6 w-6 text-primary" />
+                       <span className="font-headline">{business?.businessName || "AgeNails"}</span>
+                    </Link>
+                  </SheetTitle>
+                </SheetHeader>
                 <nav className="grid gap-2 text-lg font-medium">
-                  <Link
-                    href="#"
-                    className="flex items-center gap-2 text-lg font-semibold mb-4"
-                  >
-                    <Logo className="h-6 w-6 text-primary" />
-                     <span className="font-headline">{business?.businessName || "AgeNails"}</span>
-                  </Link>
                   <Link
                     href="/dashboard"
                     className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
@@ -272,3 +276,5 @@ export default function DashboardLayout({
     </BusinessContext.Provider>
   )
 }
+
+    
