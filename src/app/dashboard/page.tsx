@@ -3,7 +3,8 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { collection, query, where, getDocs, limit, orderBy, Timestamp, startOfMonth, endOfMonth } from "firebase/firestore"
+import { collection, query, where, getDocs, limit, orderBy, Timestamp } from "firebase/firestore"
+import { startOfMonth, endOfMonth } from "date-fns"
 import { Activity, ArrowUpRight, Calendar, CreditCard, DollarSign, Users } from "lucide-react"
 
 import { db } from "@/lib/firebase/client"
@@ -66,7 +67,10 @@ export default function DashboardPage() {
 
         // Fetch new clients for the current month
         const clientsRef = collection(db, `businesses/${business.id}/clients`);
-        const newClientsQuery = query(clientsRef, where("createdAt", ">=", Timestamp.fromDate(startOfCurrentMonth)));
+        const newClientsQuery = query(clientsRef, 
+          where("createdAt", ">=", Timestamp.fromDate(startOfCurrentMonth)),
+          where("createdAt", "<=", Timestamp.fromDate(endOfCurrentMonth))
+        );
         const newClientsSnapshot = await getDocs(newClientsQuery);
 
         setStats({
@@ -90,7 +94,7 @@ export default function DashboardPage() {
          const upcomingQuery = query(appointmentsRef, 
             where("date", ">=", Timestamp.now()), 
             orderBy("date"), 
-            limit(3)
+            limit(5)
         );
         const snapshot = await getDocs(upcomingQuery);
         const appointmentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Appointment));
@@ -123,7 +127,7 @@ export default function DashboardPage() {
             {loadingStats ? (
               <Skeleton className="h-8 w-3/4" />
             ) : (
-              <div className="text-2xl font-bold">R${stats?.totalRevenue.toFixed(2) ?? '0.00'}</div>
+              <div className="text-2xl font-bold">R$ {stats?.totalRevenue.toFixed(2) ?? '0.00'}</div>
             )}
             <p className="text-xs text-muted-foreground">
               Receita total este mês
@@ -241,5 +245,3 @@ export default function DashboardPage() {
     </>
   )
 }
-
-    
