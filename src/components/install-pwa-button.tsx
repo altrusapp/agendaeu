@@ -65,7 +65,7 @@ export function InstallPwaButton() {
     }
   };
   
-  if (isAppInstalled) {
+  if (isAppInstalled || !installPrompt) {
     return null;
   }
 
