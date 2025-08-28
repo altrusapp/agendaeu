@@ -28,6 +28,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import {
   Dialog,
@@ -69,7 +70,7 @@ export default function AgendaPage() {
   const { business } = useBusiness();
   const { toast } = useToast();
 
-  const [date, setDate] = React.useState<Date | undefined>();
+  const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [appointments, setAppointments] = React.useState<Appointment[]>([]);
   const [clients, setClients] = React.useState<Client[]>([]);
   const [services, setServices] = React.useState<Service[]>([]);
