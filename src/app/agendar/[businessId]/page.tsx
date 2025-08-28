@@ -51,7 +51,6 @@ export default function PublicSchedulePage() {
         const businessQuery = query(collection(db, "businesses"), where("slug", "==", businessSlug));
         const businessSnapshot = await getDocs(businessQuery);
 
-
         if (!businessSnapshot.empty) {
           const businessDoc = businessSnapshot.docs[0];
           const data = businessDoc.data() as DocumentData;
@@ -71,20 +70,21 @@ export default function PublicSchedulePage() {
             ...doc.data()
           })) as Service[];
           setServices(servicesData);
-        } else {
-          console.error("No such business!");
         }
 
-
       } catch (error) {
-        console.error("Error fetching business data:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar dados",
+          description: "Não foi possível carregar as informações do negócio. Tente novamente.",
+        });
       } finally {
         setLoading(false);
       }
     };
 
     fetchBusinessData();
-  }, [businessSlug]);
+  }, [businessSlug, toast]);
   
   React.useEffect(() => {
     if (!date || !businessInfo?.id) return;
@@ -110,7 +110,6 @@ export default function PublicSchedulePage() {
         const booked = querySnapshot.docs.map(doc => doc.data().time as string);
         setBookedTimes(booked);
       } catch (error) {
-        console.error("Error fetching booked times: ", error);
         toast({
           variant: "destructive",
           title: "Erro ao carregar horários",
@@ -194,7 +193,6 @@ export default function PublicSchedulePage() {
       setStep(4); // Move to success step
 
     } catch (error) {
-       console.error("Error adding appointment: ", error);
        toast({
         variant: "destructive",
         title: "Erro ao Agendar",
@@ -240,8 +238,13 @@ export default function PublicSchedulePage() {
 
   if (!businessInfo) {
     return (
-       <div className="flex flex-col min-h-screen bg-muted/40 items-center justify-center">
-         <p>Este negócio não foi encontrado.</p>
+       <div className="flex flex-col min-h-screen bg-muted/40 items-center justify-center text-center p-4">
+         <Logo className="h-12 w-12 text-destructive mb-4" />
+         <h1 className="text-2xl font-bold">Negócio não encontrado</h1>
+         <p className="text-muted-foreground">O link que você acessou pode estar quebrado ou o negócio pode ter sido removido.</p>
+         <Button asChild className="mt-6">
+           <a href="/">Voltar para a página inicial</a>
+         </Button>
        </div>
     )
   }

@@ -133,7 +133,6 @@ export default function ConfiguracoesPage() {
         description: "Seu perfil foi atualizado.",
       });
     } catch (error) {
-      console.error("Error updating profile:", error)
        toast({
         variant: "destructive",
         title: "Erro ao atualizar",
@@ -197,11 +196,11 @@ export default function ConfiguracoesPage() {
                                 {...field} 
                                 onBlur={handleSlugBlur}
                                 placeholder="ex: espaco-beleza-unica" 
-                                className="pl-48" 
+                                className="pl-2"
                                 disabled={business?.slugHasBeenChanged}
                               />
-                               <p className="absolute inset-y-0 left-0 flex items-center pl-3 text-sm text-muted-foreground">
-                                anotaai.com/agendar/
+                               <p className="absolute inset-y-0 left-0 flex items-center pl-3 text-sm text-muted-foreground bg-muted pr-2 rounded-l-md border border-r-0">
+                                /agendar/
                               </p>
                             </div>
                           </FormControl>
@@ -280,3 +279,5 @@ export default function ConfiguracoesPage() {
     </>
   )
 }
+
+    
