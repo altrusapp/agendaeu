@@ -174,6 +174,7 @@ export default function DashboardLayout({
                     {navItems.find(item => item.href === pathname)?.label || desktopNavItems.find(item => item.href === pathname)?.label}
                 </h1>
             </div>
+             <InstallPwaButton />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="secondary" size="icon" className="rounded-full" aria-label="Abrir menu do usuário">
@@ -187,7 +188,6 @@ export default function DashboardLayout({
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <InstallPwaButton />
                  <DropdownMenuItem asChild>
                   <Link href="/dashboard/configuracoes">
                     <Settings className="mr-2 h-4 w-4"/>Configurações
