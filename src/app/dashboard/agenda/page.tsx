@@ -70,7 +70,7 @@ export default function AgendaPage() {
   const { business } = useBusiness();
   const { toast } = useToast();
 
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
+  const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [appointments, setAppointments] = React.useState<Appointment[]>([]);
   const [clients, setClients] = React.useState<Client[]>([]);
   const [services, setServices] = React.useState<Service[]>([]);
@@ -310,7 +310,7 @@ export default function AgendaPage() {
           </DialogContent>
          </Dialog>
       </div>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-7">
         <Card className="lg:col-span-4 xl:col-span-3">
           <CardContent className="p-0">
             <Calendar
