@@ -205,14 +205,14 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="grid gap-6">
             {loadingAppointments ? (
-              Array.from({ length_of_loading_skeleton: 3 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-4 p-2">
-                  <Skeleton className="h-11 w-11 rounded-full" />
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-4">
+                  <Skeleton className="h-9 w-9 rounded-full" />
                   <div className="grid gap-1 flex-1">
                     <Skeleton className="h-4 w-1/2" />
-                    <Skeleton className="h-3 w-1/3" />
+                    <Skeleton className="h-3 w-2/5" />
                   </div>
-                  <Skeleton className="h-4 w-12" />
+                  <Skeleton className="h-4 w-10" />
                 </div>
               ))
             ) : recentAppointments.length > 0 ? (
@@ -245,5 +245,3 @@ export default function DashboardPage() {
     </>
   )
 }
-
-    

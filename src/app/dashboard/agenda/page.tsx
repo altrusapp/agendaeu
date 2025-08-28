@@ -340,12 +340,13 @@ export default function AgendaPage() {
             {loading ? (
                Array.from({ length: 3 }).map((_, i) => (
                   <div key={i} className="flex items-center gap-4 p-2">
-                     <Skeleton className="h-11 w-11 rounded-full" />
+                    <Skeleton className="h-11 w-11 rounded-full" />
                     <div className="grid gap-1 flex-1">
-                      <Skeleton className="h-4 w-1/2" />
-                      <Skeleton className="h-3 w-1/3" />
+                      <Skeleton className="h-4 w-3/5" />
+                      <Skeleton className="h-3 w-2/5" />
                     </div>
                     <Skeleton className="h-4 w-12" />
+                    <Skeleton className="h-8 w-8" />
                   </div>
                ))
             ) : appointments.length > 0 ? (
@@ -362,7 +363,7 @@ export default function AgendaPage() {
                   <div className="text-sm text-muted-foreground">{app.time}</div>
                    <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button aria-haspopup="true" size="icon" variant="ghost" aria-label="Abrir menu de ações">
+                        <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
                           <MoreHorizontal className="h-4 w-4" />
                           <span className="sr-only">Toggle menu</span>
                         </Button>
@@ -423,5 +424,3 @@ export default function AgendaPage() {
     </>
   )
 }
-
-    

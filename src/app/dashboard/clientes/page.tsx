@@ -294,10 +294,10 @@ export default function ClientesPage() {
                  Array.from({ length: 5 }).map((_, i) => (
                   <TableRow key={i}>
                     <TableCell className="hidden sm:table-cell"><Skeleton className="h-11 w-11 rounded-full" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-3/4" /></TableCell>
-                    <TableCell><div className="flex flex-col gap-1"><Skeleton className="h-4 w-4/5" /><Skeleton className="h-3 w-3/5" /></div></TableCell>
-                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-12" /></TableCell>
-                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-24" /></TableCell>
+                    <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                    <TableCell><div className="flex flex-col gap-1"><Skeleton className="h-4 w-32" /><Skeleton className="h-3 w-24" /></div></TableCell>
+                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-8" /></TableCell>
+                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-20" /></TableCell>
                     <TableCell><Skeleton className="h-8 w-8" /></TableCell>
                   </TableRow>
                 ))
