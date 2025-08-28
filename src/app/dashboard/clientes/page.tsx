@@ -131,6 +131,13 @@ export default function ClientesPage() {
   const [clientPhone, setClientPhone] = React.useState("");
 
   const searchInputRef = React.useRef<HTMLInputElement>(null);
+  const [searchTerm, setSearchTerm] = React.useState("");
+
+  React.useEffect(() => {
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, []);
   
   const resetForm = () => {
     setClientName("");
@@ -169,6 +176,7 @@ export default function ClientesPage() {
 
   React.useEffect(() => {
     if (business?.id) {
+      setLoading(true);
       const clientsCollectionRef = collection(db, `businesses/${business.id}/clients`);
       const q = query(clientsCollectionRef, orderBy("createdAt", "desc"), limit(CLIENTS_PER_PAGE));
       
@@ -183,6 +191,7 @@ export default function ClientesPage() {
         setHasMore(clientsData.length === CLIENTS_PER_PAGE);
         setLoading(false);
       }, (error) => {
+        toast({ variant: "destructive", title: "Erro ao carregar clientes", description: "Não foi possível buscar os dados."});
         setLoading(false);
       });
 
@@ -260,6 +269,12 @@ export default function ClientesPage() {
     const date = new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
     return date.toLocaleDateString('pt-BR');
   }
+  
+  const filteredClients = clients.filter(client =>
+    client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    client.phone.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <>
@@ -273,7 +288,8 @@ export default function ClientesPage() {
                   placeholder="Buscar cliente..."
                   className="pl-8 sm:w-[300px]"
                   ref={searchInputRef}
-                  autoFocus
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
             <Dialog open={isAddDialogOpen} onOpenChange={(isOpen) => {
@@ -341,8 +357,8 @@ export default function ClientesPage() {
                     <TableCell><Skeleton className="h-8 w-8" /></TableCell>
                   </TableRow>
                 ))
-              ) : clients.length > 0 ? (
-                clients.map(client => (
+              ) : filteredClients.length > 0 ? (
+                filteredClients.map(client => (
                 <TableRow key={client.id}>
                   <TableCell className="hidden sm:table-cell p-2 align-middle">
                     <Avatar className="h-11 w-11">
@@ -393,19 +409,19 @@ export default function ClientesPage() {
               ))
               ) : (
                  <TableRow>
-                   <TableCell colSpan={6} className="h-24 text-center">Nenhum cliente encontrado. Adicione seu primeiro cliente para começar.</TableCell>
+                   <TableCell colSpan={6} className="h-24 text-center">Nenhum cliente encontrado. Adicione seu primeiro cliente para começar ou ajuste sua busca.</TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
         </CardContent>
         <CardFooter className="flex-col items-start gap-4">
-          {hasMore && (
+          {hasMore && !searchTerm && (
             <Button onClick={fetchMoreClients} disabled={loadingMore} className="w-full sm:w-auto">
               {loadingMore ? 'Carregando...' : 'Carregar Mais Clientes'}
             </Button>
           )}
-          <div className="text-xs text-muted-foreground">Mostrando <strong>{clients.length}</strong> clientes.</div>
+          <div className="text-xs text-muted-foreground">Mostrando <strong>{filteredClients.length}</strong> de <strong>{clients.length}</strong> clientes.</div>
         </CardFooter>
       </Card>
       

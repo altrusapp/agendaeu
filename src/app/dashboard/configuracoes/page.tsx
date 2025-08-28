@@ -2,11 +2,11 @@
 "use client"
 
 import * as React from "react"
-import { doc, updateDoc, getDoc, collection, query, where, getDocs } from "firebase/firestore"
+import { doc, updateDoc, collection, query, where, getDocs } from "firebase/firestore"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import * as z from "zod"
-import { AlertCircle, Clock, PlusCircle, Trash2 } from "lucide-react"
+import { AlertCircle, PlusCircle, Trash2 } from "lucide-react"
 
 import { useBusiness } from "@/app/dashboard/layout"
 import { db } from "@/lib/firebase/client"
@@ -100,6 +100,60 @@ const dayNames: Record<keyof typeof defaultBusinessHours, string> = {
   saturday: 'Sábado'
 };
 
+function DaySlots({ day, form }: { day: string, form: any }) {
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: `businessHours.${day}.slots`
+  });
+
+  return (
+    <div className="space-y-4">
+      {fields.map((item, index) => (
+        <div key={item.id} className="flex items-end gap-2">
+           <FormField
+              control={form.control}
+              name={`businessHours.${day}.slots.${index}.start` as const}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Início</FormLabel>
+                  <FormControl>
+                    <Input type="time" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name={`businessHours.${day}.slots.${index}.end` as const}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Fim</FormLabel>
+                  <FormControl>
+                    <Input type="time" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      ))}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={() => append({ start: '09:00', end: '18:00' })}
+      >
+        <PlusCircle className="mr-2 h-4 w-4" />
+        Adicionar turno
+      </Button>
+    </div>
+  )
+}
+
 function BusinessHoursForm() {
   const { business } = useBusiness();
   const { toast } = useToast();
@@ -113,14 +167,9 @@ function BusinessHoursForm() {
 
   React.useEffect(() => {
     if (business?.businessHours) {
-      form.reset({ businessHours: business.businessHours });
+      form.reset({ businessHours: { ...defaultBusinessHours, ...business.businessHours} });
     }
   }, [business, form]);
-  
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "businessHours.monday",
-  });
 
   async function onSubmit(data: HoursFormValues) {
     if (!business?.id) return;
@@ -177,7 +226,7 @@ function BusinessHoursForm() {
                       <DaySlots day={day} form={form} />
                   </div>
                 )}
-                <Separator />
+                {day !== 'saturday' && <Separator />}
               </div>
             ))}
              <Button type="submit" disabled={form.formState.isSubmitting}>
@@ -189,61 +238,6 @@ function BusinessHoursForm() {
     </Card>
   )
 }
-
-function DaySlots({ day, form }: { day: string, form: any }) {
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: `businessHours.${day}.slots`
-  });
-
-  return (
-    <div className="space-y-4">
-      {fields.map((item, index) => (
-        <div key={item.id} className="flex items-end gap-2">
-           <FormField
-              control={form.control}
-              name={`businessHours.${day}.slots.${index}.start` as const}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Início</FormLabel>
-                  <FormControl>
-                    <Input type="time" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={`businessHours.${day}.slots.${index}.end` as const}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Fim</FormLabel>
-                  <FormControl>
-                    <Input type="time" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      ))}
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={() => append({ start: '09:00', end: '18:00' })}
-      >
-        <PlusCircle className="mr-2 h-4 w-4" />
-        Adicionar turno
-      </Button>
-    </div>
-  )
-}
-
 
 export default function ConfiguracoesPage() {
   const { business } = useBusiness();
@@ -288,18 +282,16 @@ export default function ConfiguracoesPage() {
       return;
     }
     
-    // Check if slug is changing and has already been changed
     if (data.slug !== business.slug && business.slugHasBeenChanged) {
         toast({
             variant: "destructive",
             title: "Atenção",
             description: "Você não pode alterar a URL pública mais de uma vez.",
         });
-        profileForm.setValue("slug", business.slug); // Reset to original slug
+        profileForm.setValue("slug", business.slug);
         return;
     }
 
-     // Check if the new slug is already taken
     if (data.slug !== business.slug) {
         const q = query(collection(db, "businesses"), where("slug", "==", data.slug));
         const querySnapshot = await getDocs(q);
@@ -381,7 +373,7 @@ export default function ConfiguracoesPage() {
                    <div className="space-y-2">
                      <Alert variant="destructive">
                       <AlertCircle className="h-4 w-4" />
-                      <AlertTitle className="font-semibold">Atenção</AlertTitle>
+                      <AlertTitle>Atenção</AlertTitle>
                       <AlertDescription>
                         A URL da sua página pública só pode ser alterada <strong>uma única vez</strong>. Escolha com cuidado.
                       </AlertDescription>
