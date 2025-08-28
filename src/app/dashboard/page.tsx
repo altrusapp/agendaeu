@@ -1,23 +1,111 @@
+
 "use client"
 
+import * as React from "react"
+import Link from "next/link"
+import { collection, query, where, getDocs, limit, orderBy, Timestamp, startOfMonth, endOfMonth } from "firebase/firestore"
 import { Activity, ArrowUpRight, Calendar, CreditCard, DollarSign, Users } from "lucide-react"
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { db } from "@/lib/firebase/client"
+import { useBusiness } from "@/app/dashboard/layout"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import Link from "next/link"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+
+type Appointment = {
+  id: string;
+  clientName: string;
+  serviceName: string;
+  time: string;
+  price: number;
+  date: Timestamp;
+  clientAvatar?: string;
+};
+
+type DashboardStats = {
+  totalRevenue: number;
+  newClients: number;
+  monthlyAppointments: number;
+  attendanceRate: number;
+};
 
 export default function DashboardPage() {
+  const { business } = useBusiness();
+  const [stats, setStats] = React.useState<DashboardStats | null>(null);
+  const [recentAppointments, setRecentAppointments] = React.useState<Appointment[]>([]);
+  const [loadingStats, setLoadingStats] = React.useState(true);
+  const [loadingAppointments, setLoadingAppointments] = React.useState(true);
+
+  React.useEffect(() => {
+    if (!business?.id) return;
+
+    async function fetchDashboardData() {
+      setLoadingStats(true);
+      try {
+        const now = new Date();
+        const startOfCurrentMonth = startOfMonth(now);
+        const endOfCurrentMonth = endOfMonth(now);
+        
+        // Fetch appointments for the current month
+        const appointmentsRef = collection(db, `businesses/${business.id}/appointments`);
+        const monthAppointmentsQuery = query(appointmentsRef, 
+          where("date", ">=", Timestamp.fromDate(startOfCurrentMonth)), 
+          where("date", "<=", Timestamp.fromDate(endOfCurrentMonth))
+        );
+        const monthAppointmentsSnapshot = await getDocs(monthAppointmentsQuery);
+        
+        let totalRevenue = 0;
+        monthAppointmentsSnapshot.forEach(doc => {
+            const appointmentData = doc.data();
+            // Ensure price is a number before adding
+            if (typeof appointmentData.price === 'number') {
+                totalRevenue += appointmentData.price;
+            }
+        });
+
+        // Fetch new clients for the current month
+        const clientsRef = collection(db, `businesses/${business.id}/clients`);
+        const newClientsQuery = query(clientsRef, where("createdAt", ">=", Timestamp.fromDate(startOfCurrentMonth)));
+        const newClientsSnapshot = await getDocs(newClientsQuery);
+
+        setStats({
+          totalRevenue: totalRevenue,
+          newClients: newClientsSnapshot.size,
+          monthlyAppointments: monthAppointmentsSnapshot.size,
+          attendanceRate: 92, // Static for now as we don't have status tracking for this yet
+        });
+
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error);
+      } finally {
+        setLoadingStats(false);
+      }
+    }
+
+    async function fetchRecentAppointments() {
+      setLoadingAppointments(true);
+      try {
+         const appointmentsRef = collection(db, `businesses/${business.id}/appointments`);
+         const upcomingQuery = query(appointmentsRef, 
+            where("date", ">=", Timestamp.now()), 
+            orderBy("date"), 
+            limit(3)
+        );
+        const snapshot = await getDocs(upcomingQuery);
+        const appointmentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Appointment));
+        setRecentAppointments(appointmentsData);
+      } catch (error) {
+        console.error("Error fetching recent appointments:", error);
+      } finally {
+        setLoadingAppointments(false);
+      }
+    }
+
+    fetchDashboardData();
+    fetchRecentAppointments();
+  }, [business]);
+
   return (
     <>
       <div className="flex items-center">
@@ -27,28 +115,36 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Receita Total
+              Receita (Mês)
             </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">R$45.231,89</div>
+            {loadingStats ? (
+              <Skeleton className="h-8 w-3/4" />
+            ) : (
+              <div className="text-2xl font-bold">R${stats?.totalRevenue.toFixed(2) ?? '0.00'}</div>
+            )}
             <p className="text-xs text-muted-foreground">
-              +20.1% em relação ao mês passado
+              Receita total este mês
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Novos Clientes
+              Novos Clientes (Mês)
             </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+23</div>
+             {loadingStats ? (
+              <Skeleton className="h-8 w-1/4" />
+            ) : (
+              <div className="text-2xl font-bold">+{stats?.newClients ?? 0}</div>
+            )}
             <p className="text-xs text-muted-foreground">
-              +18.1% em relação ao mês passado
+              Clientes cadastrados este mês
             </p>
           </CardContent>
         </Card>
@@ -58,9 +154,13 @@ export default function DashboardPage() {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+124</div>
+             {loadingStats ? (
+              <Skeleton className="h-8 w-1/4" />
+            ) : (
+              <div className="text-2xl font-bold">+{stats?.monthlyAppointments ?? 0}</div>
+            )}
             <p className="text-xs text-muted-foreground">
-              +19% em relação ao mês passado
+              Agendamentos realizados este mês
             </p>
           </CardContent>
         </Card>
@@ -72,9 +172,13 @@ export default function DashboardPage() {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">92%</div>
+             {loadingStats ? (
+              <Skeleton className="h-8 w-1/4" />
+            ) : (
+              <div className="text-2xl font-bold">{stats?.attendanceRate ?? 0}%</div>
+            )}
             <p className="text-xs text-muted-foreground">
-              +2% em relação ao mês passado
+              (Funcionalidade em breve)
             </p>
           </CardContent>
         </Card>
@@ -85,59 +189,57 @@ export default function DashboardPage() {
              <div className="grid gap-2">
               <CardTitle>Próximos Agendamentos</CardTitle>
               <CardDescription>
-                Seus próximos 3 agendamentos.
+                Seus próximos agendamentos confirmados.
               </CardDescription>
             </div>
             <Button asChild size="sm" className="ml-auto gap-1">
               <Link href="/dashboard/agenda">
-                Ver Todos
+                Ver Agenda Completa
                 <ArrowUpRight className="h-4 w-4" />
               </Link>
             </Button>
           </CardHeader>
-          <CardContent className="grid gap-8">
-            <div className="flex items-center gap-4">
-              <Avatar className="hidden h-9 w-9 sm:flex">
-                <AvatarImage data-ai-hint="woman smiling" src="https://picsum.photos/100/100" alt="Avatar" />
-                <AvatarFallback>OM</AvatarFallback>
-              </Avatar>
-              <div className="grid gap-1">
-                <p className="text-sm font-medium leading-none">Olivia Martin</p>
-                <p className="text-sm text-muted-foreground">
-                  Corte e Escova
-                </p>
-              </div>
-              <div className="ml-auto font-medium">10:00</div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Avatar className="hidden h-9 w-9 sm:flex">
-                <AvatarImage data-ai-hint="man portrait" src="https://picsum.photos/101/101" alt="Avatar" />
-                <AvatarFallback>JL</AvatarFallback>
-              </Avatar>
-              <div className="grid gap-1">
-                <p className="text-sm font-medium leading-none">Jackson Lee</p>
-                <p className="text-sm text-muted-foreground">
-                  Barba
-                </p>
-              </div>
-              <div className="ml-auto font-medium">11:30</div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Avatar className="hidden h-9 w-9 sm:flex">
-                <AvatarImage data-ai-hint="woman portrait" src="https://picsum.photos/102/102" alt="Avatar" />
-                <AvatarFallback>IN</AvatarFallback>
-              </Avatar>
-              <div className="grid gap-1">
-                <p className="text-sm font-medium leading-none">Isabella Nguyen</p>
-                <p className="text-sm text-muted-foreground">
-                  Manicure e Pedicure
-                </p>
-              </div>
-              <div className="ml-auto font-medium">14:00</div>
-            </div>
+          <CardContent className="grid gap-6">
+            {loadingAppointments ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-4">
+                  <Skeleton className="h-9 w-9 rounded-full" />
+                  <div className="grid gap-1 flex-1">
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-3 w-1/3" />
+                  </div>
+                  <Skeleton className="h-4 w-12" />
+                </div>
+              ))
+            ) : recentAppointments.length > 0 ? (
+                recentAppointments.map(app => (
+                  <div key={app.id} className="flex items-center gap-4">
+                    <Avatar className="hidden h-9 w-9 sm:flex">
+                      <AvatarImage data-ai-hint="person portrait" src={app.clientAvatar} alt={app.clientName} />
+                      <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                    <div className="grid gap-1">
+                      <p className="text-sm font-medium leading-none">{app.clientName}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {app.serviceName}
+                      </p>
+                    </div>
+                    <div className="ml-auto font-medium">{app.time}</div>
+                  </div>
+                ))
+            ) : (
+                <div className="text-center text-muted-foreground py-10">
+                  <p>Nenhum agendamento futuro encontrado.</p>
+                   <Button asChild variant="link">
+                     <Link href="/dashboard/agenda">Criar novo agendamento</Link>
+                   </Button>
+                </div>
+            )}
           </CardContent>
         </Card>
       </div>
     </>
   )
 }
+
+    
