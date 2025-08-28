@@ -31,6 +31,8 @@ export default function PublicSchedulePage() {
   const [services, setServices] = React.useState<Service[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [bookedTimes, setBookedTimes] = React.useState<string[]>([]);
+  const [loadingTimes, setLoadingTimes] = React.useState(false);
 
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [selectedService, setSelectedService] = React.useState<string | null>(null);
@@ -83,6 +85,44 @@ export default function PublicSchedulePage() {
 
     fetchBusinessData();
   }, [businessSlug]);
+  
+  React.useEffect(() => {
+    if (!date || !businessInfo?.id) return;
+  
+    const fetchBookedTimes = async () => {
+      setLoadingTimes(true);
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const startTimestamp = Timestamp.fromDate(startOfDay);
+      const endTimestamp = Timestamp.fromDate(endOfDay);
+      
+      try {
+        const appointmentsRef = collection(db, `businesses/${businessInfo.id}/appointments`);
+        const q = query(appointmentsRef, 
+          where("date", ">=", startTimestamp),
+          where("date", "<=", endTimestamp)
+        );
+
+        const querySnapshot = await getDocs(q);
+        const booked = querySnapshot.docs.map(doc => doc.data().time as string);
+        setBookedTimes(booked);
+      } catch (error) {
+        console.error("Error fetching booked times: ", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar horários",
+          description: "Não foi possível verificar os horários disponíveis. Tente novamente.",
+        });
+      } finally {
+        setLoadingTimes(false);
+      }
+    };
+  
+    fetchBookedTimes();
+  }, [date, businessInfo?.id, toast]);
 
 
   const handleSelectService = (serviceId: string) => {
@@ -111,6 +151,30 @@ export default function PublicSchedulePage() {
       return;
     }
     
+    // Final check to prevent race condition
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    const finalCheckQuery = query(collection(db, `businesses/${businessInfo.id}/appointments`),
+        where("date", ">=", Timestamp.fromDate(startOfDay)),
+        where("date", "<=", Timestamp.fromDate(endOfDay)),
+        where("time", "==", selectedTime)
+    );
+
+    const existingAppointmentSnapshot = await getDocs(finalCheckQuery);
+    if (!existingAppointmentSnapshot.empty) {
+        toast({
+            variant: "destructive",
+            title: "Horário Indisponível",
+            description: `O horário das ${selectedTime} foi agendado por outra pessoa. Por favor, escolha um novo horário.`,
+        });
+        setStep(2); // Go back to time selection
+        setBookedTimes(prev => [...prev, selectedTime]); // Update UI immediately
+        setIsSubmitting(false);
+        return;
+    }
+
     const [hours, minutes] = selectedTime.split(':').map(Number);
     const appointmentDate = new Date(date);
     appointmentDate.setHours(hours, minutes, 0, 0);
@@ -255,13 +319,24 @@ export default function PublicSchedulePage() {
                   </div>
                    <div>
                      <h3 className="text-lg font-medium mb-2 text-center"><Clock className="inline-block mr-2" />Horários disponíveis</h3>
-                     <div className="grid grid-cols-3 gap-2">
-                      {availableTimes.map(time => (
-                        <Button key={time} variant="outline" onClick={() => handleSelectTime(time)}>
-                          {time}
-                        </Button>
-                      ))}
-                     </div>
+                     {loadingTimes ? (
+                        <div className="grid grid-cols-3 gap-2">
+                            {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+                        </div>
+                     ) : (
+                        <div className="grid grid-cols-3 gap-2">
+                        {availableTimes.map(time => (
+                          <Button 
+                            key={time} 
+                            variant="outline" 
+                            onClick={() => handleSelectTime(time)}
+                            disabled={bookedTimes.includes(time)}
+                          >
+                            {time}
+                          </Button>
+                        ))}
+                      </div>
+                     )}
                    </div>
                 </div>
               </div>
@@ -355,3 +430,6 @@ export default function PublicSchedulePage() {
       </footer>
     </div>
   )
+}
+
+    
