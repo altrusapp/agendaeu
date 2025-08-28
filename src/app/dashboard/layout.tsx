@@ -3,14 +3,13 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { onAuthStateChanged, User } from "firebase/auth"
 import { collection, query, where, getDocs, DocumentData } from "firebase/firestore"
 import {
   Bell,
   Calendar,
   Home,
-  LineChart,
   Package2,
   Scissors,
   Users,
@@ -20,7 +19,6 @@ import {
 } from "lucide-react"
 
 import { auth, db } from "@/lib/firebase/client"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -37,10 +35,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Logo } from "@/components/logo"
 import { Skeleton } from "@/components/ui/skeleton"
+import { BottomBar } from "@/components/ui/bottom-bar"
 
 type BusinessContextType = {
   business: DocumentData | null;
@@ -57,6 +55,14 @@ export const useBusiness = () => {
   return context;
 };
 
+const navItems = [
+  { href: "/dashboard", icon: Home, label: "Dashboard" },
+  { href: "/dashboard/agenda", icon: Calendar, label: "Agenda" },
+  { href: "/dashboard/servicos", icon: Scissors, label: "Serviços" },
+  { href: "/dashboard/clientes", icon: Users, label: "Clientes" },
+  { href: "/dashboard/configuracoes", icon: Settings, label: "Configurações" },
+];
+
 
 export default function DashboardLayout({
   children,
@@ -67,6 +73,7 @@ export default function DashboardLayout({
   const [business, setBusiness] = React.useState<DocumentData | null>(null);
   const [loading, setLoading] = React.useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   React.useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -124,41 +131,18 @@ export default function DashboardLayout({
             </div>
             <div className="flex-1">
               <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-                <Link
-                  href="/dashboard"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                >
-                  <Home className="h-4 w-4" />
-                  Dashboard
-                </Link>
-                <Link
-                  href="/dashboard/agenda"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                >
-                  <Calendar className="h-4 w-4" />
-                  Agenda
-                </Link>
-                <Link
-                  href="/dashboard/servicos"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                >
-                  <Scissors className="h-4 w-4" />
-                  Serviços{" "}
-                </Link>
-                <Link
-                  href="/dashboard/clientes"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                >
-                  <Users className="h-4 w-4" />
-                  Clientes
-                </Link>
-                <Link
-                  href="/dashboard/configuracoes"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                >
-                  <Settings className="h-4 w-4" />
-                  Configurações
-                </Link>
+                {navItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${
+                        pathname === item.href ? 'bg-muted text-primary' : 'text-muted-foreground'
+                      }`}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      {item.label}
+                    </Link>
+                ))}
               </nav>
             </div>
             <div className="mt-auto p-4">
@@ -179,72 +163,11 @@ export default function DashboardLayout({
           </div>
         </div>
         <div className="flex flex-col">
-          <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="shrink-0 md:hidden"
-                  aria-label="Abrir menu de navegação"
-                >
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Toggle navigation menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="flex flex-col">
-                <SheetHeader>
-                   <SheetTitle className="self-start">
-                     <Link
-                      href="/dashboard"
-                      className="flex items-center gap-2 text-lg font-semibold mb-4"
-                    >
-                      <Logo className="h-6 w-6 text-primary" />
-                       <span className="font-headline">{business?.businessName || "AgeNails"}</span>
-                    </Link>
-                  </SheetTitle>
-                </SheetHeader>
-                <nav className="grid gap-2 text-lg font-medium">
-                  <Link
-                    href="/dashboard"
-                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <Home className="h-5 w-5" />
-                    Dashboard
-                  </Link>
-                  <Link
-                    href="/dashboard/agenda"
-                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <Calendar className="h-5 w-5" />
-                    Agenda
-                  </Link>
-                  <Link
-                    href="/dashboard/servicos"
-                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <Scissors className="h-5 w-5" />
-                    Serviços
-                  </Link>
-                  <Link
-                    href="/dashboard/clientes"
-                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <Users className="h-5 w-5" />
-                    Clientes
-                  </Link>
-                   <Link
-                    href="/dashboard/configuracoes"
-                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <Settings className="h-5 w-5" />
-                    Configurações
-                  </Link>
-                </nav>
-              </SheetContent>
-            </Sheet>
-            <div className="w-full flex-1">
-               {/* Can add a search bar here if needed */}
+          <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
+             <div className="w-full flex-1">
+                <h1 className="text-lg font-semibold md:text-xl">
+                    {navItems.find(item => item.href === pathname)?.label}
+                </h1>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -270,11 +193,12 @@ export default function DashboardLayout({
               </DropdownMenuContent>
             </DropdownMenu>
           </header>
-          <main className="flex flex-1 flex-col gap-6 p-4 lg:p-6 bg-background">
+          <main className="flex flex-1 flex-col gap-6 p-4 lg:p-6 bg-background mb-[72px] md:mb-0">
             {children}
           </main>
         </div>
       </div>
+      <BottomBar navItems={navItems} pathname={pathname} />
     </BusinessContext.Provider>
   )
 }
