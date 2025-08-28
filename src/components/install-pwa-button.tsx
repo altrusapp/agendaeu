@@ -3,8 +3,8 @@
 import * as React from "react";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
-// Extend the Window interface to include our custom event type
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
   readonly userChoice: Promise<{
@@ -22,24 +22,26 @@ declare global {
 
 export function InstallPwaButton() {
   const [installPrompt, setInstallPrompt] = React.useState<BeforeInstallPromptEvent | null>(null);
+  const [isAppInstalled, setIsAppInstalled] = React.useState(false);
+  const { toast } = useToast();
 
   React.useEffect(() => {
     const handleBeforeInstallPrompt = (event: BeforeInstallPromptEvent) => {
-      // Prevent the default browser prompt
       event.preventDefault();
-      // Stash the event so it can be triggered later.
       setInstallPrompt(event);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    // Add a listener for when the app is successfully installed
     const handleAppInstalled = () => {
-      // Clear the install prompt event
+      setIsAppInstalled(true);
       setInstallPrompt(null);
     };
-    
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
+
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setIsAppInstalled(true);
+    }
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -48,29 +50,27 @@ export function InstallPwaButton() {
   }, []);
   
   const handleInstallClick = async () => {
-    if (!installPrompt) {
-        return;
-    }
-    // Show the install prompt
-    await installPrompt.prompt();
-    // Wait for the user to respond to the prompt
-    const { outcome } = await installPrompt.userChoice;
-    if (outcome === 'accepted') {
-      console.log('User accepted the install prompt');
+    if (installPrompt) {
+      await installPrompt.prompt();
+      const { outcome } = await installPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setIsAppInstalled(true);
+      }
     } else {
-      console.log('User dismissed the install prompt');
+      toast({
+        title: "Como instalar o aplicativo",
+        description: "Toque no ícone de compartilhamento do seu navegador e selecione 'Adicionar à Tela de Início'.",
+        duration: 8000, 
+      });
     }
-    // We can only use the prompt once, so clear it.
-    setInstallPrompt(null);
   };
-
-  // Only render the button if the install prompt event has been fired.
-  if (!installPrompt) {
+  
+  if (isAppInstalled) {
     return null;
   }
 
   return (
-    <Button onClick={handleInstallClick} size="sm">
+    <Button onClick={handleInstallClick} size="sm" variant="outline">
       <Download className="mr-2 h-4 w-4"/>
       <span className="hidden sm:inline">Instalar App</span>
       <span className="sr-only sm:hidden">Instalar App</span>
