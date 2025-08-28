@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { MoreHorizontal, PlusCircle } from "lucide-react"
+import { MoreHorizontal, PlusCircle, Search } from "lucide-react"
 import { collection, addDoc, query, onSnapshot, DocumentData, orderBy, limit, startAfter, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore"
 
 import { useBusiness } from "@/app/dashboard/layout"
@@ -51,7 +51,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -89,6 +88,8 @@ export default function ClientesPage() {
   const [clientName, setClientName] = React.useState("");
   const [clientEmail, setClientEmail] = React.useState("");
   const [clientPhone, setClientPhone] = React.useState("");
+
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
   
   const resetForm = () => {
     setClientName("");
@@ -233,30 +234,42 @@ export default function ClientesPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold font-headline">Clientes</h1>
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogTrigger asChild>
-            <Button size="sm" className="gap-1">
-              <PlusCircle className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Novo Cliente</span>
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Adicionar Novo Cliente</DialogTitle>
-              <DialogDescription>Preencha os detalhes do novo cliente.</DialogDescription>
-            </DialogHeader>
-            <ClientForm onSubmit={handleAddClient} formId="add-client-form" />
-            <DialogFooter>
-              <Button type="submit" form="add-client-form">Salvar Cliente</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <div className="flex items-center gap-2">
+            <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                type="search"
+                placeholder="Buscar cliente..."
+                className="pl-8 sm:w-[300px]"
+                ref={searchInputRef}
+                autoFocus
+                />
+            </div>
+            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <DialogTrigger asChild>
+                <Button size="sm" className="gap-1 shrink-0">
+                <PlusCircle className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Novo Cliente</span>
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                <DialogTitle>Adicionar Novo Cliente</DialogTitle>
+                <DialogDescription>Preencha os detalhes do novo cliente.</DialogDescription>
+                </DialogHeader>
+                <ClientForm onSubmit={handleAddClient} formId="add-client-form" />
+                <DialogFooter>
+                <Button type="submit" form="add-client-form">Salvar Cliente</Button>
+                </DialogFooter>
+            </DialogContent>
+            </Dialog>
+        </div>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">Sua Carteira de Clientes</CardTitle>
+          <CardTitle>Sua Carteira de Clientes</CardTitle>
           <CardDescription>Gerencie seus clientes e veja o histórico de agendamentos.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -302,7 +315,7 @@ export default function ClientesPage() {
                     <div className="text-sm text-muted-foreground">{client.phone}</div>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">{client.totalAppointments}</TableCell>
-                  <TableCell className="hidden md:table-cell">
+                  <TableCell className="hidden md-table-cell">
                     {client.lastVisit ? new Date(client.lastVisit).toLocaleDateString('pt-BR') : 'N/A'}
                   </TableCell>
                   <TableCell>
@@ -374,3 +387,5 @@ export default function ClientesPage() {
     </>
   )
 }
+
+    

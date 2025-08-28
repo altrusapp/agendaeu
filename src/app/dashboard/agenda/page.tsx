@@ -28,7 +28,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import {
   Dialog,
@@ -70,7 +69,7 @@ export default function AgendaPage() {
   const { business } = useBusiness();
   const { toast } = useToast();
 
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
+  const [date, setDate] = React.useState<Date | undefined>();
   const [appointments, setAppointments] = React.useState<Appointment[]>([]);
   const [clients, setClients] = React.useState<Client[]>([]);
   const [services, setServices] = React.useState<Service[]>([]);
@@ -103,7 +102,11 @@ export default function AgendaPage() {
 
   // Fetch appointments for the selected date
   React.useEffect(() => {
-    if (!date || !business?.id) return;
+    if (!date || !business?.id) {
+        setAppointments([]);
+        setLoading(false);
+        return;
+    };
     setLoading(true);
 
     const startOfDay = new Date(date);
@@ -278,7 +281,10 @@ export default function AgendaPage() {
     <>
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold font-headline">Agenda</h1>
-         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+         <Dialog open={isAddDialogOpen} onOpenChange={(isOpen) => {
+            setIsAddDialogOpen(isOpen);
+            if (!isOpen) resetForm();
+         }}>
           <DialogTrigger asChild>
              <Button>
               <PlusCircle className="h-4 w-4 mr-2"/>
@@ -289,7 +295,7 @@ export default function AgendaPage() {
              <DialogHeader>
               <DialogTitle>Novo Agendamento</DialogTitle>
               <DialogDescription>
-                Selecione o cliente, o serviço e o horário. A data selecionada é {date?.toLocaleDateString('pt-BR')}.
+                Selecione o cliente, o serviço e o horário. A data selecionada é {date?.toLocaleDateString('pt-BR') || "Nenhuma"}.
               </DialogDescription>
             </DialogHeader>
             <AppointmentForm onSubmit={handleAddAppointment} formId="add-appointment-form" />
@@ -322,7 +328,7 @@ export default function AgendaPage() {
               {date ? date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }) : "..."}
             </CardTitle>
             <CardDescription>
-              {loading ? "Carregando..." : `${appointments.length} agendamento(s) para hoje.`}
+               {!date ? "Selecione um dia no calendário para ver os agendamentos." : loading ? "Carregando..." : `${appointments.length} agendamento(s) para este dia.`}
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
@@ -384,7 +390,7 @@ export default function AgendaPage() {
               ))
             ) : (
               <div className="text-center text-muted-foreground py-10">
-                <p>Nenhum agendamento para a data selecionada.</p>
+                <p>{date ? "Nenhum agendamento para a data selecionada." : "Selecione uma data para começar."}</p>
               </div>
             )}
           </CardContent>
