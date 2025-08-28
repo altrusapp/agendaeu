@@ -153,7 +153,7 @@ export default function DashboardLayout({
             </div>
           </div>
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col md:h-screen md:overflow-y-auto">
           <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
              <div className="w-full flex-1">
                 <h1 className="text-lg font-semibold md:text-xl">
@@ -188,7 +188,7 @@ export default function DashboardLayout({
               </DropdownMenuContent>
             </DropdownMenu>
           </header>
-          <main className="flex flex-1 flex-col gap-6 p-4 lg:p-6 bg-background pb-[72px] md:pb-6">
+          <main className="flex flex-1 flex-col gap-6 p-4 lg:p-6 bg-background pb-24">
             {children}
           </main>
         </div>
