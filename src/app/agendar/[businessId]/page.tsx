@@ -187,15 +187,13 @@ export default function PublicSchedulePage() {
       return;
     }
     
+    const [hours, minutes] = selectedTime.split(':').map(Number);
+    const appointmentDate = new Date(date);
+    appointmentDate.setHours(hours, minutes, 0, 0);
+    
     // Final check to prevent race condition
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
     const finalCheckQuery = query(collection(db, `businesses/${businessInfo.id}/appointments`),
-        where("date", ">=", Timestamp.fromDate(startOfDay)),
-        where("date", "<=", Timestamp.fromDate(endOfDay)),
-        where("time", "==", selectedTime)
+        where("date", "==", Timestamp.fromDate(appointmentDate)),
     );
 
     const existingAppointmentSnapshot = await getDocs(finalCheckQuery);
@@ -210,10 +208,6 @@ export default function PublicSchedulePage() {
         setIsSubmitting(false);
         return;
     }
-
-    const [hours, minutes] = selectedTime.split(':').map(Number);
-    const appointmentDate = new Date(date);
-    appointmentDate.setHours(hours, minutes, 0, 0);
 
     try {
       await addDoc(collection(db, `businesses/${businessInfo.id}/appointments`), {
@@ -476,5 +470,7 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
+
+    
 
     
