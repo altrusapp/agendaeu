@@ -74,6 +74,43 @@ type Client = {
 
 const CLIENTS_PER_PAGE = 15;
 
+const ClientForm = ({ 
+  onSubmit, 
+  formId,
+  clientName,
+  setClientName,
+  clientEmail,
+  setClientEmail,
+  clientPhone,
+  setClientPhone
+}: { 
+  onSubmit: (e: React.FormEvent) => void; 
+  formId: string;
+  clientName: string;
+  setClientName: (value: string) => void;
+  clientEmail: string;
+  setClientEmail: (value: string) => void;
+  clientPhone: string;
+  setClientPhone: (value: string) => void;
+}) => (
+    <form id={formId} onSubmit={onSubmit}>
+      <div className="grid gap-4 py-4">
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="name" className="text-right">Nome</Label>
+          <Input id="name" value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Ex: Ana Silva" className="col-span-3" />
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="email" className="text-right">Email</Label>
+          <Input id="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} type="email" placeholder="ana@email.com" className="col-span-3" />
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="phone" className="text-right">Telefone</Label>
+          <Input id="phone" value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} placeholder="(11) 99999-9999" className="col-span-3" />
+        </div>
+      </div>
+    </form>
+  )
+
 export default function ClientesPage() {
   const { business } = useBusiness();
   const { toast } = useToast();
@@ -151,7 +188,7 @@ export default function ClientesPage() {
 
       return () => unsubscribe();
     }
-  }, [business]);
+  }, [business, toast]);
 
   const handleAddClient = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -217,24 +254,6 @@ export default function ClientesPage() {
     setIsEditDialogOpen(true);
   };
   
-  const ClientForm = ({ onSubmit, formId }: { onSubmit: (e: React.FormEvent) => void, formId: string }) => (
-    <form id={formId} onSubmit={onSubmit}>
-      <div className="grid gap-4 py-4">
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="name" className="text-right">Nome</Label>
-          <Input id="name" value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Ex: Ana Silva" className="col-span-3" />
-        </div>
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="email" className="text-right">Email</Label>
-          <Input id="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} type="email" placeholder="ana@email.com" className="col-span-3" />
-        </div>
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="phone" className="text-right">Telefone</Label>
-          <Input id="phone" value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} placeholder="(11) 99999-9999" className="col-span-3" />
-        </div>
-      </div>
-    </form>
-  )
 
   const formatDate = (timestamp: Client['lastVisit']) => {
     if (!timestamp) return 'N/A';
@@ -257,7 +276,10 @@ export default function ClientesPage() {
                   autoFocus
                 />
             </div>
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <Dialog open={isAddDialogOpen} onOpenChange={(isOpen) => {
+              setIsAddDialogOpen(isOpen);
+              if (!isOpen) resetForm();
+            }}>
             <DialogTrigger asChild>
                 <Button size="sm" className="gap-1 shrink-0">
                 <PlusCircle className="h-3.5 w-3.5" />
@@ -269,7 +291,16 @@ export default function ClientesPage() {
                 <DialogTitle>Adicionar Novo Cliente</DialogTitle>
                 <DialogDescription>Preencha os detalhes do novo cliente.</DialogDescription>
                 </DialogHeader>
-                <ClientForm onSubmit={handleAddClient} formId="add-client-form" />
+                <ClientForm 
+                    onSubmit={handleAddClient} 
+                    formId="add-client-form"
+                    clientName={clientName}
+                    setClientName={setClientName}
+                    clientEmail={clientEmail}
+                    setClientEmail={setClientEmail}
+                    clientPhone={clientPhone}
+                    setClientPhone={setClientPhone}
+                />
                 <DialogFooter>
                 <Button type="submit" form="add-client-form">Salvar Cliente</Button>
                 </DialogFooter>
@@ -388,7 +419,16 @@ export default function ClientesPage() {
             <DialogTitle>Editar Cliente</DialogTitle>
             <DialogDescription>Altere os detalhes do cliente.</DialogDescription>
           </DialogHeader>
-          <ClientForm onSubmit={handleEditClient} formId="edit-client-form" />
+          <ClientForm 
+            onSubmit={handleEditClient} 
+            formId="edit-client-form" 
+            clientName={clientName}
+            setClientName={setClientName}
+            clientEmail={clientEmail}
+            setClientEmail={setClientEmail}
+            clientPhone={clientPhone}
+            setClientPhone={setClientPhone}
+            />
           <DialogFooter>
             <Button type="submit" form="edit-client-form">Salvar Alterações</Button>
           </DialogFooter>
@@ -397,5 +437,3 @@ export default function ClientesPage() {
     </>
   )
 }
-
-    

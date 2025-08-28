@@ -66,6 +66,53 @@ type Service = {
   active: boolean;
 };
 
+// Moved ServiceForm outside of the main component to prevent re-renders
+const ServiceForm = ({ 
+  onSubmit, 
+  formId, 
+  serviceName, 
+  setServiceName, 
+  duration, 
+  setDuration, 
+  price, 
+  setPrice 
+}: { 
+  onSubmit: (e: React.FormEvent) => void, 
+  formId: string,
+  serviceName: string,
+  setServiceName: (value: string) => void,
+  duration: string,
+  setDuration: (value: string) => void,
+  price: number | "",
+  setPrice: (value: number | "") => void
+}) => (
+    <form id={formId} onSubmit={onSubmit}>
+      <div className="grid gap-4 py-4">
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="name" className="text-right">Nome</Label>
+          <Input id="name" value={serviceName} onChange={(e) => setServiceName(e.target.value)} placeholder="Ex: Corte Feminino" className="col-span-3" />
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="duration" className="text-right">Duração</Label>
+          <Input id="duration" value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="Ex: 1h 30min" className="col-span-3" />
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="price" className="text-right">Preço (R$)</Label>
+          <Input 
+            id="price" 
+            value={price} 
+            onChange={(e) => setPrice(e.target.value === '' ? '' : Number(e.target.value))} 
+            type="number" 
+            placeholder="120.00" 
+            className="col-span-3" 
+            step="0.01"
+          />
+        </div>
+      </div>
+    </form>
+  )
+
+
 export default function ServicosPage() {
   const { business } = useBusiness();
   const { toast } = useToast();
@@ -187,38 +234,15 @@ export default function ServicosPage() {
     setIsEditDialogOpen(true);
   };
   
-  const ServiceForm = ({ onSubmit, formId }: { onSubmit: (e: React.FormEvent) => void, formId: string }) => (
-    <form id={formId} onSubmit={onSubmit}>
-      <div className="grid gap-4 py-4">
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="name" className="text-right">Nome</Label>
-          <Input id="name" value={serviceName} onChange={(e) => setServiceName(e.target.value)} placeholder="Ex: Corte Feminino" className="col-span-3" />
-        </div>
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="duration" className="text-right">Duração</Label>
-          <Input id="duration" value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="Ex: 1h 30min" className="col-span-3" />
-        </div>
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="price" className="text-right">Preço (R$)</Label>
-          <Input 
-            id="price" 
-            value={price} 
-            onChange={(e) => setPrice(e.target.value === '' ? '' : Number(e.target.value))} 
-            type="number" 
-            placeholder="120.00" 
-            className="col-span-3" 
-            step="0.01"
-          />
-        </div>
-      </div>
-    </form>
-  )
 
   return (
     <>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold font-headline">Serviços</h1>
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <Dialog open={isAddDialogOpen} onOpenChange={(isOpen) => {
+          setIsAddDialogOpen(isOpen);
+          if (!isOpen) resetForm();
+        }}>
           <DialogTrigger asChild>
             <Button size="sm" className="gap-1">
               <PlusCircle className="h-3.5 w-3.5" />
@@ -230,7 +254,16 @@ export default function ServicosPage() {
               <DialogTitle>Adicionar Novo Serviço</DialogTitle>
               <DialogDescription>Preencha os detalhes do novo serviço que você oferece.</DialogDescription>
             </DialogHeader>
-            <ServiceForm onSubmit={handleAddService} formId="add-service-form" />
+            <ServiceForm 
+                onSubmit={handleAddService} 
+                formId="add-service-form"
+                serviceName={serviceName}
+                setServiceName={setServiceName}
+                duration={duration}
+                setDuration={setDuration}
+                price={price}
+                setPrice={setPrice}
+            />
             <DialogFooter>
               <Button type="submit" form="add-service-form">Salvar Serviço</Button>
             </DialogFooter>
@@ -332,7 +365,16 @@ export default function ServicosPage() {
             <DialogTitle>Editar Serviço</DialogTitle>
             <DialogDescription>Altere os detalhes do serviço.</DialogDescription>
           </DialogHeader>
-          <ServiceForm onSubmit={handleEditService} formId="edit-service-form" />
+          <ServiceForm 
+            onSubmit={handleEditService} 
+            formId="edit-service-form"
+            serviceName={serviceName}
+            setServiceName={setServiceName}
+            duration={duration}
+            setDuration={setDuration}
+            price={price}
+            setPrice={setPrice}
+            />
           <DialogFooter>
             <Button type="submit" form="edit-service-form">Salvar Alterações</Button>
           </DialogFooter>
