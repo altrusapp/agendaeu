@@ -17,8 +17,8 @@ interface BottomBarProps {
 
 export function BottomBar({ navItems, pathname }: BottomBarProps) {
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 h-[72px] bg-background border-t z-50">
-      <nav className="flex h-full items-center justify-around">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 h-auto bg-background border-t z-50 pb-[env(safe-area-inset-bottom)]">
+      <nav className="flex h-[72px] items-center justify-around">
         {navItems.map((item) => (
           <Link
             key={item.href}
