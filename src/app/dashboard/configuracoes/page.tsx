@@ -4,9 +4,9 @@
 import * as React from "react"
 import { doc, updateDoc, getDoc, collection, query, where, getDocs } from "firebase/firestore"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useFieldArray, useForm } from "react-hook-form"
 import * as z from "zod"
-import { AlertCircle } from "lucide-react"
+import { AlertCircle, Clock, PlusCircle, Trash2 } from "lucide-react"
 
 import { useBusiness } from "@/app/dashboard/layout"
 import { db } from "@/lib/firebase/client"
@@ -26,7 +26,8 @@ import { useToast } from "@/hooks/use-toast"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { generateSlug } from "@/lib/utils"
-
+import { Switch } from "@/components/ui/switch"
+import { Separator } from "@/components/ui/separator"
 
 const profileFormSchema = z.object({
   businessName: z.string().min(2, {
@@ -44,12 +45,211 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
+const hoursFormSchema = z.object({
+  businessHours: z.object({
+    sunday: z.object({
+      active: z.boolean(),
+      slots: z.array(z.object({ start: z.string(), end: z.string() }))
+    }),
+    monday: z.object({
+      active: z.boolean(),
+      slots: z.array(z.object({ start: z.string(), end: z.string() }))
+    }),
+    tuesday: z.object({
+      active: z.boolean(),
+      slots: z.array(z.object({ start: z.string(), end: z.string() }))
+    }),
+    wednesday: z.object({
+      active: z.boolean(),
+      slots: z.array(z.object({ start: z.string(), end: z.string() }))
+    }),
+    thursday: z.object({
+      active: z.boolean(),
+      slots: z.array(z.object({ start: z.string(), end: z.string() }))
+    }),
+    friday: z.object({
+      active: z.boolean(),
+      slots: z.array(z.object({ start: z.string(), end: z.string() }))
+    }),
+    saturday: z.object({
+      active: z.boolean(),
+      slots: z.array(z.object({ start: z.string(), end: z.string() }))
+    }),
+  })
+})
+
+type HoursFormValues = z.infer<typeof hoursFormSchema>
+
+const defaultBusinessHours: HoursFormValues["businessHours"] = {
+  sunday: { active: false, slots: [{ start: "09:00", end: "18:00" }] },
+  monday: { active: true, slots: [{ start: "09:00", end: "18:00" }] },
+  tuesday: { active: true, slots: [{ start: "09:00", end: "18:00" }] },
+  wednesday: { active: true, slots: [{ start: "09:00", end: "18:00" }] },
+  thursday: { active: true, slots: [{ start: "09:00", end: "18:00" }] },
+  friday: { active: true, slots: [{ start: "09:00", end: "18:00" }] },
+  saturday: { active: true, slots: [{ start: "09:00", end: "14:00" }] },
+}
+
+const dayNames: Record<keyof typeof defaultBusinessHours, string> = {
+  sunday: 'Domingo',
+  monday: 'Segunda-feira',
+  tuesday: 'Terça-feira',
+  wednesday: 'Quarta-feira',
+  thursday: 'Quinta-feira',
+  friday: 'Sexta-feira',
+  saturday: 'Sábado'
+};
+
+function BusinessHoursForm() {
+  const { business } = useBusiness();
+  const { toast } = useToast();
+
+  const form = useForm<HoursFormValues>({
+    resolver: zodResolver(hoursFormSchema),
+    defaultValues: {
+      businessHours: defaultBusinessHours,
+    },
+  });
+
+  React.useEffect(() => {
+    if (business?.businessHours) {
+      form.reset({ businessHours: business.businessHours });
+    }
+  }, [business, form]);
+  
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "businessHours.monday",
+  });
+
+  async function onSubmit(data: HoursFormValues) {
+    if (!business?.id) return;
+    try {
+      const businessRef = doc(db, "businesses", business.id);
+      await updateDoc(businessRef, {
+        businessHours: data.businessHours
+      });
+      toast({
+        title: "Sucesso!",
+        description: "Seus horários de funcionamento foram atualizados.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao atualizar horários",
+        description: "Não foi possível salvar as alterações. Tente novamente.",
+      });
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Horários de Atendimento</CardTitle>
+        <CardDescription>Defina os dias e horários que você atende. Isso será refletido na sua página pública de agendamento.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            {Object.keys(dayNames).map((day) => (
+              <div key={day} className="space-y-4">
+                 <FormField
+                  control={form.control}
+                  name={`businessHours.${day}.active` as const}
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">
+                          {dayNames[day as keyof typeof dayNames]}
+                        </FormLabel>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                 {form.watch(`businessHours.${day}.active`) && (
+                  <div className="pl-4 ml-4 border-l space-y-4">
+                      <DaySlots day={day} form={form} />
+                  </div>
+                )}
+                <Separator />
+              </div>
+            ))}
+             <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? "Salvando..." : "Salvar Horários"}
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  )
+}
+
+function DaySlots({ day, form }: { day: string, form: any }) {
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: `businessHours.${day}.slots`
+  });
+
+  return (
+    <div className="space-y-4">
+      {fields.map((item, index) => (
+        <div key={item.id} className="flex items-end gap-2">
+           <FormField
+              control={form.control}
+              name={`businessHours.${day}.slots.${index}.start` as const}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Início</FormLabel>
+                  <FormControl>
+                    <Input type="time" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name={`businessHours.${day}.slots.${index}.end` as const}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Fim</FormLabel>
+                  <FormControl>
+                    <Input type="time" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      ))}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={() => append({ start: '09:00', end: '18:00' })}
+      >
+        <PlusCircle className="mr-2 h-4 w-4" />
+        Adicionar turno
+      </Button>
+    </div>
+  )
+}
+
 
 export default function ConfiguracoesPage() {
   const { business } = useBusiness();
   const { toast } = useToast();
 
-  const form = useForm<ProfileFormValues>({
+  const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       businessName: "",
@@ -63,7 +263,7 @@ export default function ConfiguracoesPage() {
   
    React.useEffect(() => {
     if (business) {
-      form.reset({
+      profileForm.reset({
         businessName: business.businessName || "",
         slug: business.slug || "",
         description: business.description || "",
@@ -71,14 +271,14 @@ export default function ConfiguracoesPage() {
         coverImageUrl: business.coverImageUrl || "",
       });
     }
-  }, [business, form]);
+  }, [business, profileForm]);
   
   const handleSlugBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const slugValue = generateSlug(e.target.value);
-    form.setValue("slug", slugValue, { shouldValidate: true });
+    profileForm.setValue("slug", slugValue, { shouldValidate: true });
   }
 
-  async function onSubmit(data: ProfileFormValues) {
+  async function onProfileSubmit(data: ProfileFormValues) {
     if (!business?.id) {
        toast({
         variant: "destructive",
@@ -95,7 +295,7 @@ export default function ConfiguracoesPage() {
             title: "Atenção",
             description: "Você não pode alterar a URL pública mais de uma vez.",
         });
-        form.setValue("slug", business.slug); // Reset to original slug
+        profileForm.setValue("slug", business.slug); // Reset to original slug
         return;
     }
 
@@ -104,7 +304,7 @@ export default function ConfiguracoesPage() {
         const q = query(collection(db, "businesses"), where("slug", "==", data.slug));
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
-            form.setError("slug", {
+            profileForm.setError("slug", {
                 type: "manual",
                 message: "Esta URL já está em uso. Por favor, escolha outra.",
             });
@@ -149,6 +349,7 @@ export default function ConfiguracoesPage() {
       <Tabs defaultValue="profile" className="space-y-4">
         <TabsList>
           <TabsTrigger value="profile">Perfil do Negócio</TabsTrigger>
+          <TabsTrigger value="hours">Horários</TabsTrigger>
           <TabsTrigger value="account">Minha Conta</TabsTrigger>
         </TabsList>
         
@@ -161,10 +362,10 @@ export default function ConfiguracoesPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <Form {...profileForm}>
+                <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-8">
                   <FormField
-                    control={form.control}
+                    control={profileForm.control}
                     name="businessName"
                     render={({ field }) => (
                       <FormItem>
@@ -185,25 +386,23 @@ export default function ConfiguracoesPage() {
                       </AlertDescription>
                     </Alert>
                     <FormField
-                      control={form.control}
+                      control={profileForm.control}
                       name="slug"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>URL da Página Pública</FormLabel>
-                          <FormControl>
-                            <div className="relative">
+                           <div className="flex items-center gap-2">
+                            <span className="p-2 rounded-l-md bg-muted text-muted-foreground text-sm">/agendar/</span>
+                            <FormControl>
                               <Input 
                                 {...field} 
                                 onBlur={handleSlugBlur}
-                                placeholder="ex: espaco-beleza-unica" 
-                                className="pl-2"
+                                placeholder="ex-espaco-beleza" 
+                                className="rounded-l-none"
                                 disabled={business?.slugHasBeenChanged}
                               />
-                               <p className="absolute inset-y-0 left-0 flex items-center pl-3 text-sm text-muted-foreground bg-muted pr-2 rounded-l-md border border-r-0">
-                                /agendar/
-                              </p>
-                            </div>
-                          </FormControl>
+                            </FormControl>
+                          </div>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -211,7 +410,7 @@ export default function ConfiguracoesPage() {
                    </div>
 
                    <FormField
-                    control={form.control}
+                    control={profileForm.control}
                     name="description"
                     render={({ field }) => (
                       <FormItem>
@@ -224,7 +423,7 @@ export default function ConfiguracoesPage() {
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={profileForm.control}
                     name="logoUrl"
                     render={({ field }) => (
                       <FormItem>
@@ -237,7 +436,7 @@ export default function ConfiguracoesPage() {
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={profileForm.control}
                     name="coverImageUrl"
                     render={({ field }) => (
                       <FormItem>
@@ -249,13 +448,17 @@ export default function ConfiguracoesPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" disabled={form.formState.isSubmitting}>
-                     {form.formState.isSubmitting ? "Salvando..." : "Salvar Alterações"}
+                  <Button type="submit" disabled={profileForm.formState.isSubmitting}>
+                     {profileForm.formState.isSubmitting ? "Salvando..." : "Salvar Alterações"}
                   </Button>
                 </form>
               </Form>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="hours" className="space-y-4">
+          <BusinessHoursForm />
         </TabsContent>
 
          <TabsContent value="account" className="space-y-4">
@@ -279,5 +482,3 @@ export default function ConfiguracoesPage() {
     </>
   )
 }
-
-    
