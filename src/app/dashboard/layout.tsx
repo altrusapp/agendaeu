@@ -60,7 +60,6 @@ const navItems = [
   { href: "/dashboard/agenda", icon: Calendar, label: "Agenda" },
   { href: "/dashboard/servicos", icon: Scissors, label: "Serviços" },
   { href: "/dashboard/clientes", icon: Users, label: "Clientes" },
-  { href: "/dashboard/configuracoes", icon: Settings, label: "Configurações" },
 ];
 
 
@@ -114,6 +113,11 @@ export default function DashboardLayout({
     )
   }
 
+  const desktopNavItems = [
+    ...navItems,
+    { href: "/dashboard/configuracoes", icon: Settings, label: "Configurações" },
+  ]
+
   return (
     <BusinessContext.Provider value={{ business, loading }}>
       <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -131,7 +135,7 @@ export default function DashboardLayout({
             </div>
             <div className="flex-1">
               <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-                {navItems.map((item) => (
+                {desktopNavItems.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
@@ -166,7 +170,7 @@ export default function DashboardLayout({
           <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
              <div className="w-full flex-1">
                 <h1 className="text-lg font-semibold md:text-xl">
-                    {navItems.find(item => item.href === pathname)?.label}
+                    {navItems.find(item => item.href === pathname)?.label || desktopNavItems.find(item => item.href === pathname)?.label}
                 </h1>
             </div>
             <DropdownMenu>
