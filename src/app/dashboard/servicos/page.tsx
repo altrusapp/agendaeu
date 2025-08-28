@@ -271,7 +271,7 @@ export default function ServicosPage() {
                   <TableRow key={service.id}>
                     <TableCell className="font-medium">{service.name}</TableCell>
                     <TableCell>
-                      <Badge variant={service.active ? "default" : "outline"} className={service.active ? "bg-green-500/80 text-white hover:bg-green-500" : ""}>
+                      <Badge variant={service.active ? "default" : "outline"} className={service.active ? "bg-green-100 text-green-800 border-green-200 hover:bg-green-200" : ""}>
                         {service.active ? "Ativo" : "Inativo"}
                       </Badge>
                     </TableCell>

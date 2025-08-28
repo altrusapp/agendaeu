@@ -481,7 +481,7 @@ export default function PublicSchedulePage() {
             {/* Step 4: Success */}
             {step === 4 && (
               <div className="text-center py-10">
-                <PartyPopper className="h-16 w-16 mx-auto text-primary" />
+                <PartyPopper className="h-16 w-16 mx-auto text-green-600" />
                 <h2 className="text-3xl font-bold font-headline mt-4">Tudo Certo!</h2>
                 <p className="text-muted-foreground mt-2 text-lg">Seu agendamento foi confirmado com sucesso.</p>
                 <Card className="max-w-md mx-auto mt-6 text-left bg-muted/50">
