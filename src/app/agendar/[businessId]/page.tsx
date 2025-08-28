@@ -5,7 +5,7 @@ import * as React from "react"
 import Image from "next/image"
 import { useParams } from "next/navigation"
 import { Calendar as CalendarIcon, CheckCircle, Clock, PartyPopper, User, Phone, Tag, Calendar as CalendarIconInfo, DollarSign } from "lucide-react"
-import { doc, getDoc, collection, query, getDocs, DocumentData, addDoc, Timestamp, where, updateDoc, increment } from "firebase/firestore"
+import { doc, getDoc, collection, query, getDocs, DocumentData, addDoc, Timestamp, where, updateDoc, increment, limit } from "firebase/firestore"
 import { getDay } from "date-fns"
 
 import { db } from "@/lib/firebase/client"
@@ -57,7 +57,7 @@ const AppointmentSummary = ({ service, date, time }: { service: Service | undefi
       </div>
       <Separator />
       <div className="flex items-center gap-3">
-        <DollarSign className="h-5 w-5 text-muted-foreground" />
+        <DollarSign className="h-5 w-5 text-accent-foreground" />
         <div>
           <p className="text-sm text-muted-foreground">Preço</p>
           <p className="font-semibold">{service ? `R$ ${service.price}` : "R$ 0,00"}</p>
@@ -233,7 +233,7 @@ export default function PublicSchedulePage() {
               name: clientName,
               phone: clientPhone,
               email: "", // email is not collected on this form
-              createdAt: new Date(),
+              createdAt: Timestamp.now(),
               lastVisit: Timestamp.fromDate(appointmentDate),
               totalAppointments: 1,
           });
@@ -294,7 +294,7 @@ export default function PublicSchedulePage() {
         date: appointmentTimestamp,
         time: selectedTime,
         status: 'Confirmado',
-        createdAt: new Date(),
+        createdAt: Timestamp.now(),
       });
       
       setStep(4);
