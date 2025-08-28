@@ -164,7 +164,7 @@ export default function DashboardLayout({
             <div className="mt-auto p-4">
               <Card>
                 <CardHeader className="p-2 pt-0 md:p-4">
-                  <CardTitle className="text-xl">Precisa de Ajuda?</CardTitle>
+                  <CardTitle>Precisa de Ajuda?</CardTitle>
                   <CardDescription>
                     Fale com nosso suporte ou acesse nossa central de ajuda.
                   </CardDescription>
@@ -250,7 +250,7 @@ export default function DashboardLayout({
               <DropdownMenuTrigger asChild>
                 <Button variant="secondary" size="icon" className="rounded-full" aria-label="Abrir menu do usuário">
                    <Avatar>
-                      <AvatarImage src={user?.photoURL || "https://picsum.photos/100"} alt="Avatar do usuário" />
+                      <AvatarImage src={user?.photoURL || "https://picsum.photos/100"} alt={`Avatar de ${user?.displayName || user?.email}`} />
                       <AvatarFallback>{user?.email?.substring(0,2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                   <span className="sr-only">Toggle user menu</span>
@@ -278,3 +278,5 @@ export default function DashboardLayout({
     </BusinessContext.Provider>
   )
 }
+
+    

@@ -70,7 +70,7 @@ export default function AgendaPage() {
   const { business } = useBusiness();
   const { toast } = useToast();
 
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
+  const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [appointments, setAppointments] = React.useState<Appointment[]>([]);
   const [clients, setClients] = React.useState<Client[]>([]);
   const [services, setServices] = React.useState<Service[]>([]);
@@ -247,7 +247,9 @@ export default function AgendaPage() {
      <form id={formId} onSubmit={onSubmit} className="space-y-4 py-4">
       <div>
         <Label htmlFor="client">Cliente</Label>
-        <Select value={selectedClientId} onValueChange={setSelectedClientId}>
+        <Select value={selectedClientId} onValueChange={(value) => {
+          setSelectedClientId(value);
+        }}>
           <SelectTrigger id="client">
             <SelectValue placeholder="Selecione um cliente" />
           </SelectTrigger>
@@ -260,7 +262,9 @@ export default function AgendaPage() {
       </div>
        <div>
         <Label htmlFor="service">Serviço</Label>
-        <Select value={selectedServiceId} onValueChange={setSelectedServiceId}>
+        <Select value={selectedServiceId} onValueChange={(value) => {
+          setSelectedServiceId(value);
+        }}>
           <SelectTrigger id="service">
             <SelectValue placeholder="Selecione um serviço" />
           </SelectTrigger>
@@ -348,7 +352,7 @@ export default function AgendaPage() {
               appointments.map((app) => (
                 <div key={app.id} className="flex items-center gap-4 p-2 rounded-lg hover:bg-muted">
                    <Avatar className="hidden h-11 w-11 sm:flex">
-                     <AvatarImage src={app.clientAvatar} alt={app.clientName} data-ai-hint="person portrait" />
+                     <AvatarImage src={app.clientAvatar} alt={`Avatar de ${app.clientName}`} data-ai-hint="person portrait" />
                     <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <div className="grid gap-1 flex-1">
@@ -419,3 +423,5 @@ export default function AgendaPage() {
     </>
   )
 }
+
+    

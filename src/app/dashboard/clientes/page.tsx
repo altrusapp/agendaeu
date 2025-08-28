@@ -305,7 +305,7 @@ export default function ClientesPage() {
                 <TableRow key={client.id}>
                   <TableCell className="hidden sm:table-cell">
                     <Avatar className="h-11 w-11">
-                      <AvatarImage src={client.avatar} alt={client.name} data-ai-hint="person portrait"/>
+                      <AvatarImage src={client.avatar} alt={`Avatar de ${client.name}`} data-ai-hint="person portrait"/>
                       <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                   </TableCell>
@@ -315,7 +315,7 @@ export default function ClientesPage() {
                     <div className="text-sm text-muted-foreground">{client.phone}</div>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">{client.totalAppointments}</TableCell>
-                  <TableCell className="hidden md-table-cell">
+                  <TableCell className="hidden md:table-cell">
                     {client.lastVisit ? new Date(client.lastVisit).toLocaleDateString('pt-BR') : 'N/A'}
                   </TableCell>
                   <TableCell>

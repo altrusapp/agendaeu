@@ -239,7 +239,7 @@ export default function ServicosPage() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">Seus Serviços</CardTitle>
+          <CardTitle>Seus Serviços</CardTitle>
           <CardDescription>Gerencie os serviços oferecidos em seu estabelecimento.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -341,3 +341,5 @@ export default function ServicosPage() {
     </>
   )
 }
+
+    

@@ -205,7 +205,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="grid gap-6">
             {loadingAppointments ? (
-              Array.from({ length: 3 }).map((_, i) => (
+              Array.from({ length_of_loading_skeleton: 3 }).map((_, i) => (
                 <div key={i} className="flex items-center gap-4 p-2">
                   <Skeleton className="h-11 w-11 rounded-full" />
                   <div className="grid gap-1 flex-1">
@@ -219,7 +219,7 @@ export default function DashboardPage() {
                 recentAppointments.map(app => (
                   <div key={app.id} className="flex items-center gap-4">
                     <Avatar className="hidden h-9 w-9 sm:flex">
-                      <AvatarImage data-ai-hint="person portrait" src={app.clientAvatar} alt={app.clientName} />
+                      <AvatarImage data-ai-hint="person portrait" src={app.clientAvatar} alt={`Avatar de ${app.clientName}`} />
                       <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div className="grid gap-1">
@@ -245,3 +245,5 @@ export default function DashboardPage() {
     </>
   )
 }
+
+    
