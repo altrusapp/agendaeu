@@ -115,7 +115,7 @@ export default function DashboardPage() {
       <div className="flex items-center">
         <h1 className="text-2xl font-semibold font-headline">Dashboard</h1>
       </div>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -187,8 +187,8 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-6 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
-        <Card className="xl:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center">
              <div className="grid gap-2">
               <CardTitle>Próximos Agendamentos</CardTitle>

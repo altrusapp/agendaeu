@@ -388,9 +388,9 @@ export default function PublicSchedulePage() {
                   <h2 className="text-2xl font-semibold font-headline">2. Escolha a Data e Horário</h2>
                 </div>
                 <Separator className="my-4" />
-                <div className="grid md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="md:col-span-2">
-                    <div className="grid md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                        <div>
                         <h3 className="text-lg font-medium mb-2 text-center"><CalendarIcon className="inline-block mr-2" />Selecione o dia</h3>
                          <Calendar
@@ -447,7 +447,7 @@ export default function PublicSchedulePage() {
                     <h2 className="text-2xl font-semibold font-headline">3. Confirme seus Dados</h2>
                 </div>
                 <Separator className="my-4" />
-                <div className="grid md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                    <div className="md:col-span-2">
                       <form onSubmit={handleConfirmAppointment}>
                         <Card>
