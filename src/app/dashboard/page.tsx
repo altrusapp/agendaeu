@@ -112,10 +112,10 @@ export default function DashboardPage() {
 
   return (
     <>
-      <div className="flex items-center">
+      <div className="flex items-center mb-6">
         <h1 className="text-2xl font-semibold font-headline">Dashboard</h1>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -203,7 +203,7 @@ export default function DashboardPage() {
               </Link>
             </Button>
           </CardHeader>
-          <CardContent className="grid gap-6">
+          <CardContent className="grid gap-4">
             {loadingAppointments ? (
               Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="flex items-center gap-4">

@@ -235,7 +235,7 @@ export default function ClientesPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-semibold font-headline">Clientes</h1>
         <div className="flex items-center gap-2">
             <div className="relative">
@@ -304,7 +304,7 @@ export default function ClientesPage() {
               ) : clients.length > 0 ? (
                 clients.map(client => (
                 <TableRow key={client.id}>
-                  <TableCell className="hidden sm:table-cell">
+                  <TableCell className="hidden sm:table-cell p-2 align-middle">
                     <Avatar className="h-11 w-11">
                       <AvatarImage src={client.avatar} alt={`Avatar de ${client.name}`} data-ai-hint="person portrait"/>
                       <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>

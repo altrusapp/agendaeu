@@ -284,7 +284,7 @@ export default function AgendaPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold font-headline">Agenda</h1>
          <Dialog open={isAddDialogOpen} onOpenChange={(isOpen) => {
             setIsAddDialogOpen(isOpen);
@@ -310,8 +310,8 @@ export default function AgendaPage() {
           </DialogContent>
          </Dialog>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-7 gap-6">
-        <Card className="lg:col-span-4 xl:col-span-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-6">
+        <Card className="lg:col-span-3">
           <CardContent className="p-0">
             <Calendar
               mode="single"
@@ -326,7 +326,7 @@ export default function AgendaPage() {
             />
           </CardContent>
         </Card>
-        <Card className="md:col-span-4">
+        <Card className="md:col-span-1 lg:col-span-4">
           <CardHeader>
             <CardTitle className="text-xl">
               Agendamentos para{" "}
