@@ -17,9 +17,30 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['"Nunito Sans"', 'sans-serif'],
-        headline: ['"Nunito Sans"', 'sans-serif'],
-        code: ['monospace'],
+        sans: [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Segoe UI"',
+          'Roboto',
+          'Helvetica',
+          'Arial',
+          'sans-serif',
+          '"Apple Color Emoji"',
+          '"Segoe UI Emoji"',
+          '"Segoe UI Symbol"',
+        ],
+        headline: [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Segoe UI"',
+          'Roboto',
+          'Helvetica',
+          'Arial',
+          'sans-serif',
+          '"Apple Color Emoji"',
+          '"Segoe UI Emoji"',
+          '"Segoe UI Symbol"',
+        ],
       },
       colors: {
         background: 'hsl(var(--background))',
