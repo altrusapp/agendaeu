@@ -6,6 +6,7 @@ import Image from "next/image"
 import { useParams } from "next/navigation"
 import { Calendar as CalendarIcon, CheckCircle, Clock, PartyPopper, User, Phone, Tag, Calendar as CalendarIconInfo, DollarSign } from "lucide-react"
 import { doc, getDoc, collection, query, getDocs, DocumentData, addDoc, Timestamp, where } from "firebase/firestore"
+import { getDay } from "date-fns"
 
 import { db } from "@/lib/firebase/client"
 import { useToast } from "@/hooks/use-toast"
@@ -20,9 +21,15 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 
 type Service = { id: string, name: string, duration: string, price: string };
-type BusinessInfo = { id: string, name: string, logoUrl: string, coverImageUrl: string };
+type BusinessInfo = { 
+  id: string;
+  name: string;
+  logoUrl: string;
+  coverImageUrl: string;
+  businessHours?: any;
+};
 
-const availableTimes = [ "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00" ];
+const dayMapping = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
 const AppointmentSummary = ({ service, date, time }: { service: Service | undefined, date: Date | undefined, time: string | null }) => (
   <Card className="bg-muted/50">
@@ -70,6 +77,7 @@ export default function PublicSchedulePage() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [bookedTimes, setBookedTimes] = React.useState<string[]>([]);
   const [loadingTimes, setLoadingTimes] = React.useState(false);
+  const [availableTimes, setAvailableTimes] = React.useState<string[]>([]);
 
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [selectedService, setSelectedService] = React.useState<string | null>(null);
@@ -97,7 +105,8 @@ export default function PublicSchedulePage() {
             id: businessId,
             name: data.businessName || "Negócio sem nome",
             logoUrl: data.logoUrl || "https://picsum.photos/100",
-            coverImageUrl: data.coverImageUrl || "https://picsum.photos/1200/400"
+            coverImageUrl: data.coverImageUrl || "https://picsum.photos/1200/400",
+            businessHours: data.businessHours
           });
 
           const servicesQuery = query(collection(db, `businesses/${businessId}/services`));
@@ -124,41 +133,74 @@ export default function PublicSchedulePage() {
   }, [businessSlug, toast]);
   
   React.useEffect(() => {
-    if (!date || !businessInfo?.id) return;
-  
-    const fetchBookedTimes = async () => {
-      setLoadingTimes(true);
-      const startOfDay = new Date(date);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(date);
-      endOfDay.setHours(23, 59, 59, 999);
+    if (!date || !businessInfo?.id || !selectedService) return;
 
-      const startTimestamp = Timestamp.fromDate(startOfDay);
-      const endTimestamp = Timestamp.fromDate(endOfDay);
-      
-      try {
-        const appointmentsRef = collection(db, `businesses/${businessInfo.id}/appointments`);
-        const q = query(appointmentsRef, 
-          where("date", ">=", startTimestamp),
-          where("date", "<=", endTimestamp)
-        );
+    const generateAndFetchTimes = async () => {
+        setLoadingTimes(true);
+        const selectedServiceInfo = services.find(s => s.id === selectedService);
+        if (!selectedServiceInfo) {
+            setLoadingTimes(false);
+            return;
+        }
 
-        const querySnapshot = await getDocs(q);
-        const booked = querySnapshot.docs.map(doc => doc.data().time as string);
-        setBookedTimes(booked);
-      } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "Erro ao carregar horários",
-          description: "Não foi possível verificar os horários disponíveis. Tente novamente.",
-        });
-      } finally {
-        setLoadingTimes(false);
-      }
+        // 1. Generate all possible time slots based on business hours
+        const generatedTimes: string[] = [];
+        const dayOfWeek = dayMapping[getDay(date)];
+        const businessDay = businessInfo.businessHours?.[dayOfWeek];
+
+        if (businessDay && businessDay.active && businessDay.slots) {
+            // Simple duration parsing (e.g., "1h" -> 60, "30min" -> 30)
+            const durationParts = selectedServiceInfo.duration.match(/(\d+)\s*(h|min)/) || [];
+            const durationValue = parseInt(durationParts[1] || "60", 10);
+            const durationUnit = durationParts[2] || "min";
+            const serviceDurationInMinutes = durationUnit === 'h' ? durationValue * 60 : durationValue;
+
+            businessDay.slots.forEach((slot: { start: string, end: string }) => {
+                let currentTime = new Date(`${date.toDateString()} ${slot.start}`);
+                const endTime = new Date(`${date.toDateString()} ${slot.end}`);
+
+                while (currentTime < endTime) {
+                    generatedTimes.push(
+                        currentTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+                    );
+                    currentTime.setMinutes(currentTime.getMinutes() + serviceDurationInMinutes);
+                }
+            });
+        }
+        setAvailableTimes(generatedTimes);
+        
+        // 2. Fetch already booked times for that day
+        const startOfDay = new Date(date);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(date);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const startTimestamp = Timestamp.fromDate(startOfDay);
+        const endTimestamp = Timestamp.fromDate(endOfDay);
+        
+        try {
+            const appointmentsRef = collection(db, `businesses/${businessInfo.id}/appointments`);
+            const q = query(appointmentsRef, 
+                where("date", ">=", startTimestamp),
+                where("date", "<=", endTimestamp)
+            );
+
+            const querySnapshot = await getDocs(q);
+            const booked = querySnapshot.docs.map(doc => doc.data().time as string);
+            setBookedTimes(booked);
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Erro ao carregar horários",
+                description: "Não foi possível verificar os horários disponíveis. Tente novamente.",
+            });
+        } finally {
+            setLoadingTimes(false);
+        }
     };
   
-    fetchBookedTimes();
-  }, [date, businessInfo?.id, toast]);
+    generateAndFetchTimes();
+  }, [date, businessInfo, selectedService, services, toast]);
 
 
   const handleSelectService = (serviceId: string) => {
@@ -365,7 +407,7 @@ export default function PublicSchedulePage() {
                             </div>
                          ) : (
                             <div className="grid grid-cols-3 gap-2">
-                            {availableTimes.map(time => (
+                            {availableTimes.length > 0 ? availableTimes.map(time => (
                               <Button 
                                 key={time} 
                                 variant="outline" 
@@ -374,7 +416,9 @@ export default function PublicSchedulePage() {
                               >
                                 {time}
                               </Button>
-                            ))}
+                            )) : (
+                                <p className="col-span-3 text-center text-muted-foreground">Nenhum horário disponível para este dia.</p>
+                            )}
                           </div>
                          )}
                        </div>
@@ -470,7 +514,3 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
-
-    
-
-    
