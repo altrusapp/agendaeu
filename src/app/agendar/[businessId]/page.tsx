@@ -322,6 +322,11 @@ export default function PublicSchedulePage() {
                   </div>
                    <div>
                      <h3 className="text-lg font-medium mb-2 text-center"><Clock className="inline-block mr-2" />Horários disponíveis</h3>
+                      {date && (
+                        <p className="text-center text-muted-foreground mb-4 text-sm capitalize">
+                          Para {date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}
+                        </p>
+                      )}
                      {loadingTimes ? (
                         <div className="grid grid-cols-3 gap-2">
                             {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
@@ -434,5 +439,3 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
-
-    
