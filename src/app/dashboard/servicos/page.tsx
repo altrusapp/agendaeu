@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -79,7 +80,7 @@ export default function ServicosPage() {
   // Form states
   const [serviceName, setServiceName] = React.useState("");
   const [duration, setDuration] = React.useState("");
-  const [price, setPrice] = React.useState("");
+  const [price, setPrice] = React.useState<number | "">("");
   
   const resetForm = () => {
     setServiceName("");
@@ -111,7 +112,7 @@ export default function ServicosPage() {
   const handleAddService = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!business?.id || !serviceName || !duration || !price) {
+    if (!business?.id || !serviceName || !duration || price === "") {
       toast({ variant: "destructive", title: "Erro de Validação", description: "Por favor, preencha todos os campos." });
       return;
     }
@@ -134,7 +135,7 @@ export default function ServicosPage() {
   
   const handleEditService = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!business?.id || !selectedService || !serviceName || !duration || !price) {
+    if (!business?.id || !selectedService || !serviceName || !duration || price === "") {
       toast({ variant: "destructive", title: "Erro de Validação", description: "Por favor, preencha todos os campos." });
       return;
     }
@@ -182,7 +183,7 @@ export default function ServicosPage() {
     setSelectedService(service);
     setServiceName(service.name);
     setDuration(service.duration);
-    setPrice(String(service.price));
+    setPrice(service.price);
     setIsEditDialogOpen(true);
   };
   
@@ -199,7 +200,15 @@ export default function ServicosPage() {
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="price" className="text-right">Preço (R$)</Label>
-          <Input id="price" value={price} onChange={(e) => setPrice(e.target.value)} type="number" placeholder="120.00" className="col-span-3" />
+          <Input 
+            id="price" 
+            value={price} 
+            onChange={(e) => setPrice(e.target.value === '' ? '' : Number(e.target.value))} 
+            type="number" 
+            placeholder="120.00" 
+            className="col-span-3" 
+            step="0.01"
+          />
         </div>
       </div>
     </form>
@@ -267,7 +276,7 @@ export default function ServicosPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">{service.duration}</TableCell>
-                    <TableCell className="hidden md:table-cell">R$ {service.price.toFixed(2)}</TableCell>
+                    <TableCell className="hidden md:table-cell">R$ {typeof service.price === 'number' ? service.price.toFixed(2) : '0.00'}</TableCell>
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
