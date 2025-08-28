@@ -18,7 +18,6 @@ export default {
     extend: {
       fontFamily: {
         sans: [
-          'PT Sans',
           '-apple-system',
           'BlinkMacSystemFont',
           '"Segoe UI"',
@@ -31,7 +30,6 @@ export default {
           '"Segoe UI Symbol"',
         ],
         headline: [
-          'PT Sans',
           '-apple-system',
           'BlinkMacSystemFont',
           '"Segoe UI"',
