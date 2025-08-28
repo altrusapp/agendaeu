@@ -115,13 +115,13 @@ export default function DashboardPage() {
       <div className="flex items-center mb-6">
         <h1 className="text-2xl font-semibold font-headline">Dashboard</h1>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Receita (Mês)
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <DollarSign className="h-4 w-4 text-accent-foreground" />
           </CardHeader>
           <CardContent>
             {loadingStats ? (
@@ -139,7 +139,7 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">
               Novos Clientes (Mês)
             </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
              {loadingStats ? (
@@ -155,7 +155,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Agendamentos (Mês)</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <Calendar className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
              {loadingStats ? (
@@ -173,7 +173,7 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">
               Taxa de Comparecimento
             </CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+            <Activity className="h-4 w-4 text-accent-foreground" />
           </CardHeader>
           <CardContent>
              {loadingStats ? (
@@ -187,8 +187,8 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <Card className="lg:col-span-1">
           <CardHeader className="flex flex-row items-center">
              <div className="grid gap-2">
               <CardTitle>Próximos Agendamentos</CardTitle>
