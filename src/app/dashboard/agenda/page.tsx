@@ -88,12 +88,16 @@ export default function AgendaPage() {
   // Fetch clients and services for the dropdowns
   React.useEffect(() => {
     if (business?.id) {
-      const clientsUnsub = onSnapshot(query(collection(db, `businesses/${business.id}/clients`)), (snapshot) => {
+      const clientsQuery = query(collection(db, `businesses/${business.id}/clients`));
+      const clientsUnsub = onSnapshot(clientsQuery, (snapshot) => {
         setClients(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client)));
       });
-      const servicesUnsub = onSnapshot(query(collection(db, `businesses/${business.id}/services`)), (snapshot) => {
+      
+      const servicesQuery = query(collection(db, `businesses/${business.id}/services`));
+      const servicesUnsub = onSnapshot(servicesQuery, (snapshot) => {
         setServices(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Service)));
       });
+
       return () => {
         clientsUnsub();
         servicesUnsub();

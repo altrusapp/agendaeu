@@ -138,6 +138,7 @@ export default function ServicosPage() {
 
   React.useEffect(() => {
     if (business?.id) {
+      setLoading(true);
       const servicesCollectionRef = collection(db, `businesses/${business.id}/services`);
       const q = query(servicesCollectionRef);
 
@@ -149,12 +150,14 @@ export default function ServicosPage() {
         setServices(servicesData);
         setLoading(false);
       }, (error) => {
+        console.error("Error fetching services:", error);
+        toast({ variant: "destructive", title: "Erro ao carregar serviços", description: "Não foi possível buscar os dados." });
         setLoading(false);
       });
 
       return () => unsubscribe();
     }
-  }, [business]);
+  }, [business, toast]);
 
   const handleAddService = async (e: React.FormEvent) => {
     e.preventDefault();

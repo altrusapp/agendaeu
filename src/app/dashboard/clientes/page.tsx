@@ -191,6 +191,7 @@ export default function ClientesPage() {
         setHasMore(clientsData.length === CLIENTS_PER_PAGE);
         setLoading(false);
       }, (error) => {
+        console.error("Error fetching clients:", error);
         toast({ variant: "destructive", title: "Erro ao carregar clientes", description: "Não foi possível buscar os dados."});
         setLoading(false);
       });
