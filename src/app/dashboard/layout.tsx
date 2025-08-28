@@ -15,7 +15,8 @@ import {
   Users,
   LogOut,
   Settings,
-  Menu
+  Menu,
+  LifeBuoy
 } from "lucide-react"
 
 import { auth, db } from "@/lib/firebase/client"
@@ -150,21 +151,6 @@ export default function DashboardLayout({
                 ))}
               </nav>
             </div>
-            <div className="mt-auto p-4">
-              <Card>
-                <CardHeader className="p-2 pt-0 md:p-4">
-                  <CardTitle>Precisa de Ajuda?</CardTitle>
-                  <CardDescription>
-                    Fale com nosso suporte ou acesse nossa central de ajuda.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
-                  <Button size="sm" className="w-full">
-                    Suporte
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
           </div>
         </div>
         <div className="flex flex-col">
@@ -193,13 +179,16 @@ export default function DashboardLayout({
                     <Settings className="mr-2 h-4 w-4"/>Configurações
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>Suporte</DropdownMenuItem>
+                <DropdownMenuItem>
+                  <LifeBuoy className="mr-2 h-4 w-4" />
+                  Suporte
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => auth.signOut()}><LogOut className="mr-2 h-4 w-4"/>Sair</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </header>
-          <main className="flex flex-1 flex-col gap-6 p-4 lg:p-6 bg-background pb-[88px] md:pb-6">
+          <main className="flex flex-1 flex-col gap-6 p-4 lg:p-6 bg-background pb-[72px] md:pb-6">
             {children}
           </main>
         </div>
