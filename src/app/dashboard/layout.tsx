@@ -199,7 +199,7 @@ export default function DashboardLayout({
               </DropdownMenuContent>
             </DropdownMenu>
           </header>
-          <main className="flex flex-1 flex-col gap-6 p-4 lg:p-6 bg-background mb-[72px] md:mb-0">
+          <main className="flex flex-1 flex-col gap-6 p-4 lg:p-6 bg-background pb-[88px] md:pb-6">
             {children}
           </main>
         </div>
