@@ -239,7 +239,7 @@ export default function ServicosPage() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Seus Serviços</CardTitle>
+          <CardTitle className="text-xl">Seus Serviços</CardTitle>
           <CardDescription>Gerencie os serviços oferecidos em seu estabelecimento.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -280,7 +280,7 @@ export default function ServicosPage() {
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button aria-haspopup="true" size="icon" variant="ghost">
+                          <Button aria-haspopup="true" size="icon" variant="ghost" aria-label="Abrir menu de ações">
                             <MoreHorizontal className="h-4 w-4" />
                             <span className="sr-only">Toggle menu</span>
                           </Button>
@@ -341,5 +341,3 @@ export default function ServicosPage() {
     </>
   )
 }
-
-    

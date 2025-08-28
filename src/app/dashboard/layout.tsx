@@ -117,7 +117,7 @@ export default function DashboardLayout({
                 <Logo className="h-6 w-6 text-primary" />
                 <span className="font-headline">{business?.businessName || "AgeNails"}</span>
               </Link>
-              <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
+              <Button variant="outline" size="icon" className="ml-auto h-8 w-8" aria-label="Ver notificações">
                 <Bell className="h-4 w-4" />
                 <span className="sr-only">Toggle notifications</span>
               </Button>
@@ -164,7 +164,7 @@ export default function DashboardLayout({
             <div className="mt-auto p-4">
               <Card>
                 <CardHeader className="p-2 pt-0 md:p-4">
-                  <CardTitle>Precisa de Ajuda?</CardTitle>
+                  <CardTitle className="text-xl">Precisa de Ajuda?</CardTitle>
                   <CardDescription>
                     Fale com nosso suporte ou acesse nossa central de ajuda.
                   </CardDescription>
@@ -186,6 +186,7 @@ export default function DashboardLayout({
                   variant="outline"
                   size="icon"
                   className="shrink-0 md:hidden"
+                  aria-label="Abrir menu de navegação"
                 >
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle navigation menu</span>
@@ -247,7 +248,7 @@ export default function DashboardLayout({
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="secondary" size="icon" className="rounded-full">
+                <Button variant="secondary" size="icon" className="rounded-full" aria-label="Abrir menu do usuário">
                    <Avatar>
                       <AvatarImage src={user?.photoURL || "https://picsum.photos/100"} alt="Avatar do usuário" />
                       <AvatarFallback>{user?.email?.substring(0,2).toUpperCase()}</AvatarFallback>

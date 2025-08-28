@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -255,7 +256,7 @@ export default function ClientesPage() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Sua Carteira de Clientes</CardTitle>
+          <CardTitle className="text-xl">Sua Carteira de Clientes</CardTitle>
           <CardDescription>Gerencie seus clientes e veja o histórico de agendamentos.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -307,7 +308,7 @@ export default function ClientesPage() {
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button aria-haspopup="true" size="icon" variant="ghost">
+                        <Button aria-haspopup="true" size="icon" variant="ghost" aria-label="Abrir menu de ações">
                           <MoreHorizontal className="h-4 w-4" />
                           <span className="sr-only">Toggle menu</span>
                         </Button>
@@ -373,5 +374,3 @@ export default function ClientesPage() {
     </>
   )
 }
-
-    

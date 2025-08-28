@@ -356,15 +356,22 @@ export default function PublicSchedulePage() {
                 <Separator className="my-4" />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {services.map((service) => (
-                    <Card key={service.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => handleSelectService(service.id)}>
-                      <CardHeader>
-                        <CardTitle className="text-lg">{service.name}</CardTitle>
-                        <CardDescription>{service.duration}</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <Badge variant="secondary" className="text-base">R$ {service.price}</Badge>
-                      </CardContent>
-                    </Card>
+                    <button
+                      key={service.id}
+                      onClick={() => handleSelectService(service.id)}
+                      className="w-full text-left rounded-xl border bg-card text-card-foreground shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:shadow-md transition-shadow"
+                      aria-label={`Selecionar serviço ${service.name}`}
+                    >
+                      <Card className="border-0 shadow-none">
+                        <CardHeader>
+                          <CardTitle className="text-lg">{service.name}</CardTitle>
+                          <CardDescription>{service.duration}</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <Badge variant="secondary" className="text-base">R$ {service.price}</Badge>
+                        </CardContent>
+                      </Card>
+                    </button>
                   ))}
                    {services.length === 0 && (
                     <p className="text-muted-foreground col-span-full text-center">Nenhum serviço disponível no momento.</p>
@@ -413,6 +420,7 @@ export default function PublicSchedulePage() {
                                 variant="outline" 
                                 onClick={() => handleSelectTime(time)}
                                 disabled={bookedTimes.includes(time)}
+                                aria-label={`Agendar às ${time}`}
                               >
                                 {time}
                               </Button>
@@ -478,7 +486,7 @@ export default function PublicSchedulePage() {
                 <p className="text-muted-foreground mt-2 text-lg">Seu agendamento foi confirmado com sucesso.</p>
                 <Card className="max-w-md mx-auto mt-6 text-left bg-muted/50">
                    <CardHeader>
-                    <CardTitle>Resumo do Agendamento</CardTitle>
+                    <CardTitle className="text-xl">Resumo do Agendamento</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
                      <div className="flex justify-between items-center">

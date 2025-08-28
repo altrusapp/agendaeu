@@ -26,6 +26,9 @@ const onboardingSchema = z.object({
   logo: z.any().optional(),
 })
 
+type OnboardingValues = z.infer<typeof onboardingSchema>;
+
+
 export default function OnboardingPage() {
   const router = useRouter()
   const { toast } = useToast()
@@ -49,14 +52,14 @@ export default function OnboardingPage() {
   }, [router])
 
 
-  const form = useForm<z.infer<typeof onboardingSchema>>({
+  const form = useForm<OnboardingValues>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
       businessName: "",
     },
   })
 
-  async function onSubmit(values: z.infer<typeof onboardingSchema>) {
+  async function onSubmit(values: OnboardingValues) {
     if (!user) {
       toast({
         variant: "destructive",
@@ -175,7 +178,7 @@ export default function OnboardingPage() {
                               <Image 
                                 src={logoPreview} 
                                 alt="Pré-visualização da logo" 
-                                layout="fill" 
+                                fill 
                                 objectFit="cover" 
                                 className="rounded-full"
                               />
@@ -185,6 +188,7 @@ export default function OnboardingPage() {
                                 size="icon"
                                 className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity rounded-full h-8 w-8"
                                 onClick={handleRemoveLogo}
+                                aria-label="Remover logo"
                               >
                                 <X className="h-4 w-4" />
                                 <span className="sr-only">Remover logo</span>

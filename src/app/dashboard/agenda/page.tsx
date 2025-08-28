@@ -317,7 +317,7 @@ export default function AgendaPage() {
         </Card>
         <Card className="lg:col-span-3 xl:col-span-4">
           <CardHeader>
-            <CardTitle>
+            <CardTitle className="text-xl">
               Agendamentos para{" "}
               {date ? date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }) : "..."}
             </CardTitle>
@@ -351,7 +351,7 @@ export default function AgendaPage() {
                   <div className="text-sm text-muted-foreground">{app.time}</div>
                    <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button aria-haspopup="true" size="icon" variant="ghost">
+                        <Button aria-haspopup="true" size="icon" variant="ghost" aria-label="Abrir menu de ações">
                           <MoreHorizontal className="h-4 w-4" />
                           <span className="sr-only">Toggle menu</span>
                         </Button>
@@ -412,5 +412,3 @@ export default function AgendaPage() {
     </>
   )
 }
-
-    
