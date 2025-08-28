@@ -39,6 +39,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Logo } from "@/components/logo"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BottomBar } from "@/components/ui/bottom-bar"
+import { InstallPwaButton } from "@/components/install-pwa-button"
 
 type BusinessContextType = {
   business: DocumentData | null;
@@ -186,6 +187,7 @@ export default function DashboardLayout({
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <InstallPwaButton />
                  <DropdownMenuItem asChild>
                   <Link href="/dashboard/configuracoes">
                     <Settings className="mr-2 h-4 w-4"/>Configurações
