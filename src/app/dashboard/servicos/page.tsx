@@ -217,7 +217,7 @@ export default function ServicosPage() {
   return (
     <>
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold md:text-2xl font-headline">Serviços</h1>
+        <h1 className="text-2xl font-semibold font-headline">Serviços</h1>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm" className="gap-1">

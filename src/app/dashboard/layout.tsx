@@ -15,7 +15,8 @@ import {
   Scissors,
   Users,
   LogOut,
-  Settings
+  Settings,
+  Menu
 } from "lucide-react"
 
 import { auth, db } from "@/lib/firebase/client"
@@ -186,13 +187,13 @@ export default function DashboardLayout({
                   size="icon"
                   className="shrink-0 md:hidden"
                 >
-                  <Package2 className="h-5 w-5" />
+                  <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle navigation menu</span>
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="flex flex-col">
                 <SheetHeader>
-                  <SheetTitle>
+                   <SheetTitle className="self-start">
                      <Link
                       href="/dashboard"
                       className="flex items-center gap-2 text-lg font-semibold mb-4"
@@ -268,7 +269,7 @@ export default function DashboardLayout({
               </DropdownMenuContent>
             </DropdownMenu>
           </header>
-          <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 bg-background">
+          <main className="flex flex-1 flex-col gap-6 p-4 lg:p-6 bg-background">
             {children}
           </main>
         </div>
@@ -276,5 +277,3 @@ export default function DashboardLayout({
     </BusinessContext.Provider>
   )
 }
-
-    

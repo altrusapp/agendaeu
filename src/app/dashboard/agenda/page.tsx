@@ -277,7 +277,7 @@ export default function AgendaPage() {
   return (
     <>
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold md:text-2xl font-headline">Agenda</h1>
+        <h1 className="text-2xl font-semibold font-headline">Agenda</h1>
          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
              <Button>
@@ -299,14 +299,14 @@ export default function AgendaPage() {
           </DialogContent>
          </Dialog>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
         <Card className="lg:col-span-4 xl:col-span-3">
-          <CardContent className="p-2">
+          <CardContent className="p-0">
             <Calendar
               mode="single"
               selected={date}
               onSelect={setDate}
-              className="rounded-md"
+              className="w-full"
               classNames={{
                 day_selected: "bg-primary text-primary-foreground hover:bg-primary/90 focus:bg-primary",
                 day_today: "bg-accent/50 text-accent-foreground",

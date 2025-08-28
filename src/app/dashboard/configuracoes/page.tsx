@@ -344,7 +344,7 @@ export default function ConfiguracoesPage() {
   return (
     <>
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold md:text-2xl font-headline">Configurações</h1>
+        <h1 className="text-2xl font-semibold font-headline">Configurações</h1>
       </div>
       <Tabs defaultValue="profile" className="space-y-4">
         <TabsList>
