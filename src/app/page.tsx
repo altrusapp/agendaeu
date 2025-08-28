@@ -39,7 +39,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="features" className="bg-white dark:bg-card">
+        <section id="features" className="bg-muted/50 dark:bg-card">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
             <div className="text-center">
               <h2 className="text-3xl font-bold font-headline tracking-tight">Tudo que você precisa para crescer</h2>
@@ -81,8 +81,8 @@ export default function Home() {
               </Card>
                <Card className="text-center border-0 shadow-lg hover:shadow-xl transition-shadow">
                 <CardHeader>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-                    <Bell className="h-6 w-6 text-accent" />
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/20">
+                    <Bell className="h-6 w-6 text-accent-foreground" />
                   </div>
                   <CardTitle className="mt-4">Lembretes Automáticos</CardTitle>
                 </CardHeader>
@@ -92,8 +92,8 @@ export default function Home() {
               </Card>
               <Card className="text-center border-0 shadow-lg hover:shadow-xl transition-shadow">
                 <CardHeader>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-                    <CreditCard className="h-6 w-6 text-accent" />
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/20">
+                    <CreditCard className="h-6 w-6 text-accent-foreground" />
                   </div>
                   <CardTitle className="mt-4">Pagamento Integrado</CardTitle>
                 </CardHeader>
@@ -103,8 +103,8 @@ export default function Home() {
               </Card>
                <Card className="text-center border-0 shadow-lg hover:shadow-xl transition-shadow">
                 <CardHeader>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-                    <Palette className="h-6 w-6 text-accent" />
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/20">
+                    <Palette className="h-6 w-6 text-accent-foreground" />
                   </div>
                   <CardTitle className="mt-4">Sua Marca, Seu Estilo</CardTitle>
                 </CardHeader>
@@ -147,7 +147,7 @@ export default function Home() {
 
       </main>
 
-      <footer className="bg-white dark:bg-card">
+      <footer className="bg-card">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex justify-between items-center text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <Logo className="h-6 w-6" />
