@@ -278,5 +278,3 @@ export default function DashboardLayout({
     </BusinessContext.Provider>
   )
 }
-
-    

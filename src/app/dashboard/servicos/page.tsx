@@ -280,7 +280,7 @@ export default function ServicosPage() {
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button aria-haspopup="true" size="icon" variant="ghost" aria-label="Abrir menu de ações">
+                          <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
                             <MoreHorizontal className="h-4 w-4" />
                             <span className="sr-only">Toggle menu</span>
                           </Button>
@@ -341,5 +341,3 @@ export default function ServicosPage() {
     </>
   )
 }
-
-    

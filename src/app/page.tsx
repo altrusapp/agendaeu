@@ -1,3 +1,4 @@
+
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -50,7 +51,7 @@ export default function Home() {
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                     <Calendar className="h-6 w-6 text-primary" />
                   </div>
-                  <CardTitle className="mt-4 font-headline">Agenda Inteligente</CardTitle>
+                  <CardTitle className="mt-4">Agenda Inteligente</CardTitle>
                 </CardHeader>
                 <CardContent className="text-muted-foreground">
                   Seus clientes agendam online 24/7. Você tem controle total dos seus horários e serviços.
@@ -61,7 +62,7 @@ export default function Home() {
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                     <Users className="h-6 w-6 text-primary" />
                   </div>
-                  <CardTitle className="mt-4 font-headline">Gestão de Clientes</CardTitle>
+                  <CardTitle className="mt-4">Gestão de Clientes</CardTitle>
                 </CardHeader>
                 <CardContent className="text-muted-foreground">
                   Mantenha um histórico completo de seus clientes, serviços realizados e preferências.
@@ -72,7 +73,7 @@ export default function Home() {
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                     <BarChart className="h-6 w-6 text-primary" />
                   </div>
-                  <CardTitle className="mt-4 font-headline">Relatórios Simples</CardTitle>
+                  <CardTitle className="mt-4">Relatórios Simples</CardTitle>
                 </CardHeader>
                 <CardContent className="text-muted-foreground">
                   Acompanhe seu desempenho com relatórios de agendamentos, faturamento e muito mais.
@@ -83,7 +84,7 @@ export default function Home() {
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
                     <Bell className="h-6 w-6 text-accent" />
                   </div>
-                  <CardTitle className="mt-4 font-headline">Lembretes Automáticos</CardTitle>
+                  <CardTitle className="mt-4">Lembretes Automáticos</CardTitle>
                 </CardHeader>
                 <CardContent className="text-muted-foreground">
                   Reduza as faltas com lembretes automáticos por WhatsApp para seus clientes.
@@ -94,7 +95,7 @@ export default function Home() {
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
                     <CreditCard className="h-6 w-6 text-accent" />
                   </div>
-                  <CardTitle className="mt-4 font-headline">Pagamento Integrado</CardTitle>
+                  <CardTitle className="mt-4">Pagamento Integrado</CardTitle>
                 </CardHeader>
                 <CardContent className="text-muted-foreground">
                   Receba um sinal no agendamento e garanta o compromisso do seu cliente.
@@ -105,7 +106,7 @@ export default function Home() {
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
                     <Palette className="h-6 w-6 text-accent" />
                   </div>
-                  <CardTitle className="mt-4 font-headline">Sua Marca, Seu Estilo</CardTitle>
+                  <CardTitle className="mt-4">Sua Marca, Seu Estilo</CardTitle>
                 </CardHeader>
                 <CardContent className="text-muted-foreground">
                    Configure sua página de agendamento com seu nome e logo em menos de 1 minuto.

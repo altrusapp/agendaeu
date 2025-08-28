@@ -51,6 +51,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -240,11 +241,11 @@ export default function ClientesPage() {
             <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                type="search"
-                placeholder="Buscar cliente..."
-                className="pl-8 sm:w-[300px]"
-                ref={searchInputRef}
-                autoFocus
+                  type="search"
+                  placeholder="Buscar cliente..."
+                  className="pl-8 sm:w-[300px]"
+                  ref={searchInputRef}
+                  autoFocus
                 />
             </div>
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -321,7 +322,7 @@ export default function ClientesPage() {
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button aria-haspopup="true" size="icon" variant="ghost" aria-label="Abrir menu de ações">
+                        <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
                           <MoreHorizontal className="h-4 w-4" />
                           <span className="sr-only">Toggle menu</span>
                         </Button>
@@ -387,5 +388,3 @@ export default function ClientesPage() {
     </>
   )
 }
-
-    
