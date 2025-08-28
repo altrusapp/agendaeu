@@ -5,7 +5,7 @@ import * as React from "react"
 import Image from "next/image"
 import { useParams } from "next/navigation"
 import { Calendar as CalendarIcon, CheckCircle, Clock, PartyPopper, User, Phone, Tag, Calendar as CalendarIconInfo, DollarSign } from "lucide-react"
-import { doc, getDoc, collection, query, getDocs, DocumentData, addDoc, Timestamp, where } from "firebase/firestore"
+import { doc, getDoc, collection, query, getDocs, DocumentData, addDoc, Timestamp, where, updateDoc, increment } from "firebase/firestore"
 import { getDay } from "date-fns"
 
 import { db } from "@/lib/firebase/client"
@@ -143,13 +143,11 @@ export default function PublicSchedulePage() {
             return;
         }
 
-        // 1. Generate all possible time slots based on business hours
         const generatedTimes: string[] = [];
         const dayOfWeek = dayMapping[getDay(date)];
         const businessDay = businessInfo.businessHours?.[dayOfWeek];
 
         if (businessDay && businessDay.active && businessDay.slots) {
-            // Simple duration parsing (e.g., "1h" -> 60, "30min" -> 30)
             const durationParts = selectedServiceInfo.duration.match(/(\d+)\s*(h|min)/) || [];
             const durationValue = parseInt(durationParts[1] || "60", 10);
             const durationUnit = durationParts[2] || "min";
@@ -169,7 +167,6 @@ export default function PublicSchedulePage() {
         }
         setAvailableTimes(generatedTimes);
         
-        // 2. Fetch already booked times for that day
         const startOfDay = new Date(date);
         startOfDay.setHours(0, 0, 0, 0);
         const endOfDay = new Date(date);
@@ -213,6 +210,37 @@ export default function PublicSchedulePage() {
     setStep(3);
   }
 
+  // "Find or Create" client logic
+  const findOrCreateClient = async (appointmentDate: Date) => {
+      if (!businessInfo?.id || !clientName || !clientPhone) return null;
+
+      const clientsRef = collection(db, `businesses/${businessInfo.id}/clients`);
+      const q = query(clientsRef, where("phone", "==", clientPhone), limit(1));
+      const clientSnapshot = await getDocs(q);
+
+      if (!clientSnapshot.empty) {
+          // Client found, update their history
+          const clientDoc = clientSnapshot.docs[0];
+          const clientRef = doc(db, `businesses/${businessInfo.id}/clients`, clientDoc.id);
+          await updateDoc(clientRef, {
+              lastVisit: Timestamp.fromDate(appointmentDate),
+              totalAppointments: increment(1)
+          });
+          return clientDoc.id;
+      } else {
+          // Client not found, create a new one
+          const newClientDoc = await addDoc(clientsRef, {
+              name: clientName,
+              phone: clientPhone,
+              email: "", // email is not collected on this form
+              createdAt: new Date(),
+              lastVisit: Timestamp.fromDate(appointmentDate),
+              totalAppointments: 1,
+          });
+          return newClientDoc.id;
+      }
+  };
+
   const handleConfirmAppointment = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -232,10 +260,10 @@ export default function PublicSchedulePage() {
     const [hours, minutes] = selectedTime.split(':').map(Number);
     const appointmentDate = new Date(date);
     appointmentDate.setHours(hours, minutes, 0, 0);
+    const appointmentTimestamp = Timestamp.fromDate(appointmentDate);
     
-    // Final check to prevent race condition
     const finalCheckQuery = query(collection(db, `businesses/${businessInfo.id}/appointments`),
-        where("date", "==", Timestamp.fromDate(appointmentDate)),
+        where("date", "==", appointmentTimestamp),
     );
 
     const existingAppointmentSnapshot = await getDocs(finalCheckQuery);
@@ -245,27 +273,34 @@ export default function PublicSchedulePage() {
             title: "Horário Indisponível",
             description: `O horário das ${selectedTime} foi agendado por outra pessoa. Por favor, escolha um novo horário.`,
         });
-        setStep(2); // Go back to time selection
-        setBookedTimes(prev => [...prev, selectedTime]); // Update UI immediately
+        setStep(2);
+        setBookedTimes(prev => [...prev, selectedTime]);
         setIsSubmitting(false);
         return;
     }
 
     try {
+      // Find or create the client and get their ID
+      const clientId = await findOrCreateClient(appointmentDate);
+
+      // Create the appointment with the client ID
       await addDoc(collection(db, `businesses/${businessInfo.id}/appointments`), {
+        clientId: clientId, // Link to the client document
         clientName,
         clientPhone,
         serviceId: selectedServiceInfo.id,
         serviceName: selectedServiceInfo.name,
-        date: Timestamp.fromDate(appointmentDate),
+        price: Number(selectedServiceInfo.price) || 0,
+        date: appointmentTimestamp,
         time: selectedTime,
         status: 'Confirmado',
         createdAt: new Date(),
       });
       
-      setStep(4); // Move to success step
+      setStep(4);
 
     } catch (error) {
+       console.error("Error confirming appointment:", error);
        toast({
         variant: "destructive",
         title: "Erro ao Agendar",
@@ -349,7 +384,6 @@ export default function PublicSchedulePage() {
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
         <Card className="max-w-4xl mx-auto shadow-lg">
           <CardContent className="p-6">
-            {/* Step 1: Select Service */}
             {step === 1 && (
               <div>
                 <h2 className="text-2xl font-semibold font-headline">1. Escolha o Serviço</h2>
@@ -380,7 +414,6 @@ export default function PublicSchedulePage() {
               </div>
             )}
             
-            {/* Step 2: Select Date and Time */}
             {step === 2 && (
                <div>
                 <div className="flex items-center gap-2 mb-4">
@@ -439,7 +472,6 @@ export default function PublicSchedulePage() {
               </div>
             )}
 
-            {/* Step 3: Confirmation */}
             {step === 3 && (
               <div>
                 <div className="flex items-center gap-2 mb-4">
@@ -478,7 +510,6 @@ export default function PublicSchedulePage() {
               </div>
             )}
 
-            {/* Step 4: Success */}
             {step === 4 && (
               <div className="text-center py-10">
                 <PartyPopper className="h-16 w-16 mx-auto text-green-600" />
@@ -522,3 +553,5 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
+
+    

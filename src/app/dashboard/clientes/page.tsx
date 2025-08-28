@@ -64,7 +64,10 @@ type Client = {
   email: string;
   phone: string;
   totalAppointments: number;
-  lastVisit: string | null;
+  lastVisit: {
+    seconds: number;
+    nanoseconds: number;
+  } | null;
   avatar?: string;
   createdAt: any;
 };
@@ -233,6 +236,12 @@ export default function ClientesPage() {
     </form>
   )
 
+  const formatDate = (timestamp: Client['lastVisit']) => {
+    if (!timestamp) return 'N/A';
+    const date = new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
+    return date.toLocaleDateString('pt-BR');
+  }
+
   return (
     <>
       <div className="flex items-center justify-between gap-4 mb-6">
@@ -317,7 +326,7 @@ export default function ClientesPage() {
                   </TableCell>
                   <TableCell className="hidden md:table-cell">{client.totalAppointments}</TableCell>
                   <TableCell className="hidden md:table-cell">
-                    {client.lastVisit ? new Date(client.lastVisit).toLocaleDateString('pt-BR') : 'N/A'}
+                    {formatDate(client.lastVisit)}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -388,3 +397,5 @@ export default function ClientesPage() {
     </>
   )
 }
+
+    
