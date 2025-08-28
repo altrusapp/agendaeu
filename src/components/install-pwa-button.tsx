@@ -1,9 +1,9 @@
+
 "use client"
 
 import * as React from "react";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -22,8 +22,6 @@ declare global {
 
 export function InstallPwaButton() {
   const [installPrompt, setInstallPrompt] = React.useState<BeforeInstallPromptEvent | null>(null);
-  const [isAppInstalled, setIsAppInstalled] = React.useState(false);
-  const { toast } = useToast();
 
   React.useEffect(() => {
     const handleBeforeInstallPrompt = (event: BeforeInstallPromptEvent) => {
@@ -31,21 +29,10 @@ export function InstallPwaButton() {
       setInstallPrompt(event);
     };
 
-    const handleAppInstalled = () => {
-      setIsAppInstalled(true);
-      setInstallPrompt(null);
-    };
-
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', handleAppInstalled);
-
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setIsAppInstalled(true);
-    }
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
   
@@ -54,18 +41,12 @@ export function InstallPwaButton() {
       await installPrompt.prompt();
       const { outcome } = await installPrompt.userChoice;
       if (outcome === 'accepted') {
-        setIsAppInstalled(true);
+        setInstallPrompt(null);
       }
-    } else {
-      toast({
-        title: "Como instalar o aplicativo",
-        description: "Toque no ícone de compartilhamento do seu navegador e selecione 'Adicionar à Tela de Início'.",
-        duration: 8000, 
-      });
     }
   };
   
-  if (isAppInstalled || !installPrompt) {
+  if (!installPrompt) {
     return null;
   }
 
