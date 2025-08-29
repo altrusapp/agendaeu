@@ -45,6 +45,13 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
+const accountFormSchema = z.object({
+  ownerAvatarUrl: z.string().url({ message: "Por favor, insira uma URL válida para o avatar." }).optional().or(z.literal('')),
+});
+
+type AccountFormValues = z.infer<typeof accountFormSchema>;
+
+
 const hoursFormSchema = z.object({
   businessHours: z.object({
     sunday: z.object({
@@ -255,6 +262,14 @@ export default function ConfiguracoesPage() {
     mode: "onChange",
   })
   
+  const accountForm = useForm<AccountFormValues>({
+    resolver: zodResolver(accountFormSchema),
+    defaultValues: {
+      ownerAvatarUrl: "",
+    },
+    mode: "onChange",
+  });
+  
    React.useEffect(() => {
     if (business) {
       profileForm.reset({
@@ -264,8 +279,11 @@ export default function ConfiguracoesPage() {
         logoUrl: business.logoUrl || "",
         coverImageUrl: business.coverImageUrl || "",
       });
+      accountForm.reset({
+        ownerAvatarUrl: business.ownerAvatarUrl || "",
+      });
     }
-  }, [business, profileForm]);
+  }, [business, profileForm, accountForm]);
   
   const handleSlugBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const slugValue = generateSlug(e.target.value);
@@ -332,6 +350,35 @@ export default function ConfiguracoesPage() {
       });
     }
   }
+
+  async function onAccountSubmit(data: AccountFormValues) {
+    if (!business?.id) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "ID do negócio não encontrado.",
+      });
+      return;
+    }
+
+    try {
+      const businessRef = doc(db, "businesses", business.id);
+      await updateDoc(businessRef, {
+        ownerAvatarUrl: data.ownerAvatarUrl,
+      });
+      toast({
+        title: "Sucesso!",
+        description: "As configurações da sua conta foram atualizadas.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao atualizar",
+        description: "Não foi possível salvar as alterações da conta. Tente novamente.",
+      });
+    }
+  }
+
 
   return (
     <>
@@ -461,12 +508,35 @@ export default function ConfiguracoesPage() {
                 Gerencie as configurações da sua conta pessoal.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <Label>Email</Label>
-              <Input value={business?.ownerEmail || "Carregando..."} disabled />
-              <p className="text-sm text-muted-foreground">
-                Para alterar seu email ou senha, entre em contato com o suporte.
-              </p>
+            <CardContent className="space-y-4">
+                <Form {...accountForm}>
+                  <form onSubmit={accountForm.handleSubmit(onAccountSubmit)} className="space-y-8">
+                    <FormField
+                      control={accountForm.control}
+                      name="ownerAvatarUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>URL do seu Avatar</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://exemplo.com/minha-foto.png" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="space-y-2">
+                       <Label>Email</Label>
+                        <Input value={business?.ownerEmail || "Carregando..."} disabled />
+                        <p className="text-sm text-muted-foreground">
+                            Para alterar seu email ou senha, entre em contato com o suporte.
+                        </p>
+                    </div>
+
+                    <Button type="submit" disabled={accountForm.formState.isSubmitting}>
+                      {accountForm.formState.isSubmitting ? "Salvando..." : "Salvar Alterações da Conta"}
+                    </Button>
+                  </form>
+                </Form>
             </CardContent>
           </Card>
          </TabsContent>
@@ -474,5 +544,3 @@ export default function ConfiguracoesPage() {
     </>
   )
 }
-
-    
