@@ -252,13 +252,8 @@ export default function PublicSchedulePage() {
       const clientSnapshot = await getDocs(q);
 
       if (!clientSnapshot.empty) {
-          // Client found, update their history
+          // Client found, return existing client ID
           const clientDoc = clientSnapshot.docs[0];
-          const clientRef = doc(db, `businesses/${businessInfo.id}/clients`, clientDoc.id);
-          await updateDoc(clientRef, {
-              lastVisit: Timestamp.fromDate(appointmentDate),
-              totalAppointments: increment(1)
-          });
           return clientDoc.id;
       } else {
           // Client not found, create a new one
@@ -334,7 +329,7 @@ export default function PublicSchedulePage() {
        toast({
         variant: "destructive",
         title: "Erro ao Agendar",
-        description: "Não foi possível confirmar o agendamento. Tente novamente.",
+        description: "Não foi possível confirmar o agendamento. Verifique sua conexão ou tente novamente.",
       });
     } finally {
       setIsSubmitting(false);
@@ -586,3 +581,5 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
+
+    
