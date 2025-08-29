@@ -7,6 +7,7 @@ import { useParams } from "next/navigation"
 import { Calendar as CalendarIcon, CheckCircle, Clock, PartyPopper, User, Phone, Tag, Calendar as CalendarIconInfo, DollarSign, ChevronRight } from "lucide-react"
 import { doc, getDoc, collection, query, getDocs, DocumentData, addDoc, Timestamp, where, updateDoc, increment, limit } from "firebase/firestore"
 import { getDay } from "date-fns"
+import { ptBR } from "date-fns/locale"
 
 import { db } from "@/lib/firebase/client"
 import { useToast } from "@/hooks/use-toast"
@@ -252,6 +253,9 @@ export default function PublicSchedulePage() {
 
       if (!clientSnapshot.empty) {
           const clientDoc = clientSnapshot.docs[0];
+          const clientRef = doc(db, `businesses/${businessInfo.id}/clients`, clientDoc.id);
+          // Removed updateDoc to avoid permission issues for public users
+          // This logic can be moved to a Cloud Function in the future
           return clientDoc.id;
       } else {
           const newClientDoc = await addDoc(clientsRef, {
@@ -501,13 +505,16 @@ export default function PublicSchedulePage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div>
                                         <h4 className="font-medium text-center mb-2">Selecione o dia</h4>
-                                        <Calendar
-                                            mode="single"
-                                            selected={date}
-                                            onSelect={setDate}
-                                            className="rounded-md border mx-auto"
-                                            disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
-                                        />
+                                        <div className="flex justify-center">
+                                            <Calendar
+                                                mode="single"
+                                                selected={date}
+                                                onSelect={setDate}
+                                                className="rounded-md border"
+                                                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
+                                                locale={ptBR}
+                                            />
+                                        </div>
                                     </div>
                                     <div>
                                         <h4 className="font-medium text-center mb-2">Horários disponíveis</h4>
@@ -582,5 +589,3 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
-
-    

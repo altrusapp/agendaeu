@@ -34,13 +34,13 @@ const profileFormSchema = z.object({
     message: "O nome do negócio precisa ter pelo menos 2 caracteres.",
   }),
   slug: z.string().min(3, {
-    message: "O URL precisa ter pelo menos 3 caracteres.",
+    message: "O link precisa ter pelo menos 3 caracteres.",
   }).regex(/^[a-z0-9-]+$/, {
-    message: "O URL pode conter apenas letras minúsculas, números e hífens.",
+    message: "O link pode conter apenas letras minúsculas, números e hífens.",
   }),
   description: z.string().max(200).optional(),
-  logoUrl: z.string().url({ message: "Por favor, insira uma URL válida para a logo." }).optional().or(z.literal('')),
-  coverImageUrl: z.string().url({ message: "Por favor, insira uma URL válida para a imagem de capa." }).optional().or(z.literal('')),
+  logoUrl: z.string().url({ message: "Por favor, insira um link válida para a logo." }).optional().or(z.literal('')),
+  coverImageUrl: z.string().url({ message: "Por favor, insira um link válida para a imagem de capa." }).optional().or(z.literal('')),
 })
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
@@ -286,7 +286,7 @@ export default function ConfiguracoesPage() {
         toast({
             variant: "destructive",
             title: "Atenção",
-            description: "Você não pode alterar a URL pública mais de uma vez.",
+            description: "Você não pode alterar o link público mais de uma vez.",
         });
         profileForm.setValue("slug", business.slug);
         return;
@@ -298,7 +298,7 @@ export default function ConfiguracoesPage() {
         if (!querySnapshot.empty) {
             profileForm.setError("slug", {
                 type: "manual",
-                message: "Esta URL já está em uso. Por favor, escolha outra.",
+                message: "Este link já está em uso. Por favor, escolha outra.",
             });
             return;
         }
@@ -374,7 +374,7 @@ export default function ConfiguracoesPage() {
                      <Alert variant="destructive">
                       <AlertCircle className="h-4 w-4" />
                       <AlertDescription>
-                        A URL da sua página pública só pode ser alterada <strong>uma única vez</strong>. Escolha com cuidado.
+                        O link da sua página pública só pode ser alterada <strong>uma única vez</strong>. Escolha com cuidado.
                       </AlertDescription>
                     </Alert>
                     <FormField
@@ -382,7 +382,7 @@ export default function ConfiguracoesPage() {
                       name="slug"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>URL da Página Pública</FormLabel>
+                          <FormLabel>Link da Página Pública</FormLabel>
                            <div className="flex items-center gap-2">
                             <span className="p-2 rounded-l-md bg-muted text-muted-foreground text-sm">/agendar/</span>
                             <FormControl>
@@ -419,7 +419,7 @@ export default function ConfiguracoesPage() {
                     name="logoUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>URL da sua Logo</FormLabel>
+                        <FormLabel>Link da sua Logo</FormLabel>
                         <FormControl>
                           <Input placeholder="https://exemplo.com/logo.png" {...field} />
                         </FormControl>
@@ -432,7 +432,7 @@ export default function ConfiguracoesPage() {
                     name="coverImageUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>URL da Imagem de Capa</FormLabel>
+                        <FormLabel>Link da Imagem de Capa</FormLabel>
                         <FormControl>
                            <Input placeholder="https://exemplo.com/capa.png" {...field} />
                         </FormControl>
