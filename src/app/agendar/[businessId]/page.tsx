@@ -243,7 +243,6 @@ export default function PublicSchedulePage() {
     setSelectedTime(null);
   }
 
-  // "Find or Create" client logic
   const findOrCreateClient = async () => {
       if (!businessInfo?.id || !clientName || !clientPhone) return null;
 
@@ -288,53 +287,50 @@ export default function PublicSchedulePage() {
     appointmentDate.setHours(hours, minutes, 0, 0);
     const appointmentTimestamp = Timestamp.fromDate(appointmentDate);
     
-    /*
-    // This final check is causing permission errors for public users.
-    // The security rules do not allow a public user to READ the appointments collection.
-    // While removing this check introduces a small risk of double booking,
-    // it's necessary to allow the public scheduling to work.
-    // A more robust solution would involve a Cloud Function to handle this check with admin privileges.
-    const finalCheckQuery = query(collection(db, `businesses/${businessInfo.id}/appointments`),
-        where("date", "==", appointmentTimestamp),
-    );
-
-    const existingAppointmentSnapshot = await getDocs(finalCheckQuery);
-    if (!existingAppointmentSnapshot.empty) {
-        toast({
-            variant: "destructive",
-            title: "Horário Indisponível",
-            description: `O horário das ${selectedTime} foi agendado por outra pessoa. Por favor, escolha um novo horário.`,
-        });
-        setSelectedTime(null);
-        setBookedTimes(prev => [...prev, selectedTime]);
-        setIsSubmitting(false);
-        return;
-    }
-    */
-
     try {
-      const clientId = await findOrCreateClient();
-      await addDoc(collection(db, `businesses/${businessInfo.id}/appointments`), {
-        clientId: clientId, 
-        clientName,
-        clientPhone,
-        serviceId: selectedServiceInfo.id,
-        serviceName: selectedServiceInfo.name,
-        price: Number(selectedServiceInfo.price) || 0,
-        date: appointmentTimestamp,
-        time: selectedTime,
-        status: 'Confirmado',
-        createdAt: Timestamp.now(),
-      });
-      
-      setIsSuccess(true);
+        const finalCheckQuery = query(collection(db, `businesses/${businessInfo.id}/appointments`),
+            where("date", "==", appointmentTimestamp),
+        );
+
+        const existingAppointmentSnapshot = await getDocs(finalCheckQuery);
+        if (!existingAppointmentSnapshot.empty) {
+            toast({
+                variant: "destructive",
+                title: "Horário Indisponível",
+                description: `O horário das ${selectedTime} foi agendado por outra pessoa. Por favor, escolha um novo horário.`,
+            });
+            setSelectedTime(null);
+            setBookedTimes(prev => [...prev, selectedTime]);
+            setIsSubmitting(false);
+            return;
+        }
+
+        const clientId = await findOrCreateClient();
+        if (!clientId) {
+          throw new Error("Não foi possível encontrar ou criar o cliente.");
+        }
+
+        await addDoc(collection(db, `businesses/${businessInfo.id}/appointments`), {
+            clientId: clientId, 
+            clientName,
+            clientPhone,
+            serviceId: selectedServiceInfo.id,
+            serviceName: selectedServiceInfo.name,
+            price: Number(selectedServiceInfo.price) || 0,
+            date: appointmentTimestamp,
+            time: selectedTime,
+            status: 'Confirmado',
+            createdAt: Timestamp.now(),
+        });
+        
+        setIsSuccess(true);
 
     } catch (error) {
        console.error("Error confirming appointment:", error);
        toast({
         variant: "destructive",
         title: "Erro ao Agendar",
-        description: "Não foi possível confirmar o agendamento. Verifique sua conexão ou tente novamente.",
+        description: "Não foi possível confirmar o agendamento. Verifique suas permissões ou tente novamente.",
       });
     } finally {
       setIsSubmitting(false);
