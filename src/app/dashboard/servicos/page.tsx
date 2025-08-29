@@ -2,8 +2,8 @@
 "use client"
 
 import * as React from "react"
-import { MoreHorizontal, PlusCircle } from "lucide-react"
-import { collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc } from "firebase/firestore"
+import { MoreHorizontal, PlusCircle, RefreshCw } from "lucide-react"
+import { collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc, getDocs, orderBy } from "firebase/firestore"
 
 import { useBusiness } from "@/app/dashboard/layout"
 import { db } from "@/lib/firebase/client"
@@ -135,30 +135,30 @@ export default function ServicosPage() {
     setPrice("");
     setSelectedService(null);
   };
+  
+  const fetchServices = React.useCallback(async () => {
+      if (!business?.id) return;
+      setLoading(true);
+      try {
+        const servicesCollectionRef = collection(db, `businesses/${business.id}/services`);
+        const q = query(servicesCollectionRef, orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        const servicesData = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+        })) as Service[];
+        setServices(servicesData);
+      } catch (error) {
+        console.error("Error fetching services:", error);
+        toast({ variant: "destructive", title: "Erro ao carregar serviços", description: "Não foi possível buscar os dados." });
+      } finally {
+        setLoading(false);
+      }
+  }, [business, toast]);
 
   React.useEffect(() => {
-    if (!business?.id) return;
-    
-    setLoading(true);
-    const servicesCollectionRef = collection(db, `businesses/${business.id}/services`);
-    const q = query(servicesCollectionRef);
-
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const servicesData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Service[];
-      setServices(servicesData);
-      setLoading(false);
-    }, (error) => {
-      console.error("Error fetching services:", error);
-      toast({ variant: "destructive", title: "Erro ao carregar serviços", description: "Não foi possível buscar os dados." });
-      setLoading(false);
-    });
-
-    // Cleanup function to unsubscribe from the listener
-    return () => unsubscribe();
-  }, [business, toast]);
+    fetchServices();
+  }, [fetchServices]);
 
   const handleAddService = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,6 +179,7 @@ export default function ServicosPage() {
       toast({ title: "Serviço Adicionado!", description: "O novo serviço foi salvo com sucesso." });
       resetForm();
       setIsAddDialogOpen(false);
+      fetchServices(); // Re-fetch to show the new service
     } catch (error) {
       toast({ variant: "destructive", title: "Erro ao Salvar", description: "Não foi possível adicionar o serviço." });
     }
@@ -201,6 +202,7 @@ export default function ServicosPage() {
       toast({ title: "Serviço Atualizado!", description: "As alterações foram salvas." });
       resetForm();
       setIsEditDialogOpen(false);
+      fetchServices(); // Re-fetch to show updated data
     } catch (error) {
       toast({ variant: "destructive", title: "Erro ao Atualizar", description: "Não foi possível salvar as alterações." });
     }
@@ -211,6 +213,7 @@ export default function ServicosPage() {
     try {
       await deleteDoc(doc(db, `businesses/${business.id}/services`, serviceId));
       toast({ title: "Serviço Excluído", description: "O serviço foi removido da sua lista." });
+      fetchServices(); // Re-fetch to remove from UI
     } catch (error) {
       toast({ variant: "destructive", title: "Erro ao Excluir", description: "Não foi possível remover o serviço." });
     }
@@ -225,6 +228,7 @@ export default function ServicosPage() {
         title: `Serviço ${!service.active ? "Ativado" : "Desativado"}`,
         description: `${service.name} agora está ${!service.active ? "visível" : "oculto"} na página de agendamento.`,
       });
+      fetchServices(); // Re-fetch to update the UI state
     } catch (error) {
        toast({ variant: "destructive", title: "Erro ao alterar status", description: "Não foi possível atualizar o serviço." });
     }
@@ -243,36 +247,42 @@ export default function ServicosPage() {
     <>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold font-headline">Serviços</h1>
-        <Dialog open={isAddDialogOpen} onOpenChange={(isOpen) => {
-          setIsAddDialogOpen(isOpen);
-          if (!isOpen) resetForm();
-        }}>
-          <DialogTrigger asChild>
-            <Button size="sm" className="gap-1">
-              <PlusCircle className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Novo Serviço</span>
+        <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" className="h-9 gap-1" onClick={fetchServices}>
+                <RefreshCw className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only">Atualizar</span>
             </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Adicionar Novo Serviço</DialogTitle>
-              <DialogDescription>Preencha os detalhes do novo serviço que você oferece.</DialogDescription>
-            </DialogHeader>
-            <ServiceForm 
-                onSubmit={handleAddService} 
-                formId="add-service-form"
-                serviceName={serviceName}
-                setServiceName={setServiceName}
-                duration={duration}
-                setDuration={setDuration}
-                price={price}
-                setPrice={setPrice}
-            />
-            <DialogFooter>
-              <Button type="submit" form="add-service-form">Salvar Serviço</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            <Dialog open={isAddDialogOpen} onOpenChange={(isOpen) => {
+              setIsAddDialogOpen(isOpen);
+              if (!isOpen) resetForm();
+            }}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="gap-1">
+                  <PlusCircle className="h-3.5 w-3.5" />
+                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Novo Serviço</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Adicionar Novo Serviço</DialogTitle>
+                  <DialogDescription>Preencha os detalhes do novo serviço que você oferece.</DialogDescription>
+                </DialogHeader>
+                <ServiceForm 
+                    onSubmit={handleAddService} 
+                    formId="add-service-form"
+                    serviceName={serviceName}
+                    setServiceName={setServiceName}
+                    duration={duration}
+                    setDuration={setDuration}
+                    price={price}
+                    setPrice={setPrice}
+                />
+                <DialogFooter>
+                  <Button type="submit" form="add-service-form">Salvar Serviço</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+        </div>
       </div>
       <Card>
         <CardHeader>

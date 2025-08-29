@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { MoreHorizontal, PlusCircle, Search } from "lucide-react"
+import { MoreHorizontal, PlusCircle, Search, RefreshCw } from "lucide-react"
 import { collection, addDoc, query, onSnapshot, DocumentData, orderBy, limit, startAfter, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore"
 
 import { useBusiness } from "@/app/dashboard/layout"
@@ -125,7 +125,6 @@ export default function ClientesPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
   const [selectedClient, setSelectedClient] = React.useState<Client | null>(null);
   
-  // Form states
   const [clientName, setClientName] = React.useState("");
   const [clientEmail, setClientEmail] = React.useState("");
   const [clientPhone, setClientPhone] = React.useState("");
@@ -146,6 +145,32 @@ export default function ClientesPage() {
     setSelectedClient(null);
   };
   
+  const fetchClients = React.useCallback(async () => {
+    if (!business?.id) return;
+    setLoading(true);
+    try {
+      const first = query(
+        collection(db, `businesses/${business.id}/clients`),
+        orderBy("createdAt", "desc"),
+        limit(CLIENTS_PER_PAGE)
+      );
+      const documentSnapshots = await getDocs(first);
+      const clientsData = documentSnapshots.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Client[];
+      setClients(clientsData);
+      setLastVisible(documentSnapshots.docs[documentSnapshots.docs.length - 1]);
+      setHasMore(clientsData.length === CLIENTS_PER_PAGE);
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+      toast({ variant: "destructive", title: "Erro ao carregar clientes", description: "Não foi possível buscar os dados."});
+    } finally {
+      setLoading(false);
+    }
+  }, [business, toast]);
+  
+  React.useEffect(() => {
+    fetchClients();
+  }, [fetchClients]);
+
   const fetchMoreClients = async () => {
     if (!business?.id || !lastVisible || !hasMore) return;
     setLoadingMore(true);
@@ -173,34 +198,6 @@ export default function ClientesPage() {
     }
   };
 
-
-  React.useEffect(() => {
-    if (!business?.id) return;
-    
-    setLoading(true);
-    const clientsCollectionRef = collection(db, `businesses/${business.id}/clients`);
-    const q = query(clientsCollectionRef, orderBy("createdAt", "desc"), limit(CLIENTS_PER_PAGE));
-    
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const clientsData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Client[];
-
-      setClients(clientsData);
-      setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
-      setHasMore(clientsData.length === CLIENTS_PER_PAGE);
-      setLoading(false);
-    }, (error) => {
-      console.error("Error fetching clients:", error);
-      toast({ variant: "destructive", title: "Erro ao carregar clientes", description: "Não foi possível buscar os dados."});
-      setLoading(false);
-    });
-
-    // Cleanup function to unsubscribe from the listener
-    return () => unsubscribe();
-  }, [business, toast]);
-
   const handleAddClient = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!business?.id || !clientName || !clientEmail || !clientPhone) {
@@ -220,6 +217,7 @@ export default function ClientesPage() {
       toast({ title: "Cliente Adicionado!", description: "O novo cliente foi salvo com sucesso." });
       resetForm();
       setIsAddDialogOpen(false);
+      fetchClients(); // Re-fetch to show the new client
     } catch (error) {
       toast({ variant: "destructive", title: "Erro ao Salvar", description: "Não foi possível adicionar o cliente." });
     }
@@ -242,6 +240,7 @@ export default function ClientesPage() {
       toast({ title: "Cliente Atualizado!", description: "Os dados do cliente foram salvos." });
       resetForm();
       setIsEditDialogOpen(false);
+      fetchClients(); // Re-fetch to show updated data
     } catch (error) {
       toast({ variant: "destructive", title: "Erro ao Atualizar", description: "Não foi possível salvar as alterações." });
     }
@@ -252,6 +251,7 @@ export default function ClientesPage() {
     try {
       await deleteDoc(doc(db, `businesses/${business.id}/clients`, clientId));
       toast({ title: "Cliente Excluído", description: "O cliente foi removido da sua lista." });
+      fetchClients(); // Re-fetch to remove the client from UI
     } catch (error) {
       toast({ variant: "destructive", title: "Erro ao Excluir", description: "Não foi possível remover o cliente." });
     }
@@ -294,6 +294,10 @@ export default function ClientesPage() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
+             <Button size="sm" variant="outline" className="h-9 gap-1" onClick={fetchClients}>
+                <RefreshCw className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only">Atualizar</span>
+            </Button>
             <Dialog open={isAddDialogOpen} onOpenChange={(isOpen) => {
               setIsAddDialogOpen(isOpen);
               if (!isOpen) resetForm();

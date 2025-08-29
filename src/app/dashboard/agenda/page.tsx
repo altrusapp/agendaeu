@@ -89,6 +89,7 @@ export default function AgendaPage() {
   React.useEffect(() => {
     if (!business?.id) return;
 
+    // Use onSnapshot for clients and services, ensuring proper cleanup
     const clientsQuery = query(collection(db, `businesses/${business.id}/clients`));
     const clientsUnsub = onSnapshot(clientsQuery, (snapshot) => {
       setClients(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client)));
@@ -99,7 +100,7 @@ export default function AgendaPage() {
       setServices(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Service)));
     });
 
-    // Cleanup function to unsubscribe from listeners
+    // Cleanup function to unsubscribe from listeners when the component unmounts
     return () => {
       clientsUnsub();
       servicesUnsub();
@@ -131,6 +132,7 @@ export default function AgendaPage() {
       orderBy("date")
     );
     
+    // Correctly implement unsubscribe for the appointments listener
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const appointmentsData = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -148,7 +150,7 @@ export default function AgendaPage() {
       setLoading(false);
     });
 
-    // Cleanup function to unsubscribe from the listener
+    // Cleanup function to unsubscribe from the listener when date or business changes, or component unmounts
     return () => unsubscribe();
   }, [date, business, toast]);
   
