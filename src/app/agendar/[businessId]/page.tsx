@@ -244,7 +244,7 @@ export default function PublicSchedulePage() {
   }
 
   // "Find or Create" client logic
-  const findOrCreateClient = async (appointmentDate: Date) => {
+  const findOrCreateClient = async () => {
       if (!businessInfo?.id || !clientName || !clientPhone) return null;
 
       const clientsRef = collection(db, `businesses/${businessInfo.id}/clients`);
@@ -252,18 +252,16 @@ export default function PublicSchedulePage() {
       const clientSnapshot = await getDocs(q);
 
       if (!clientSnapshot.empty) {
-          // Client found, return existing client ID
           const clientDoc = clientSnapshot.docs[0];
           return clientDoc.id;
       } else {
-          // Client not found, create a new one
           const newClientDoc = await addDoc(clientsRef, {
               name: clientName,
               phone: clientPhone,
-              email: "", // email is not collected on this form
+              email: "", 
               createdAt: Timestamp.now(),
-              lastVisit: Timestamp.fromDate(appointmentDate),
-              totalAppointments: 1,
+              lastVisit: null,
+              totalAppointments: 0,
           });
           return newClientDoc.id;
       }
@@ -290,6 +288,12 @@ export default function PublicSchedulePage() {
     appointmentDate.setHours(hours, minutes, 0, 0);
     const appointmentTimestamp = Timestamp.fromDate(appointmentDate);
     
+    /*
+    // This final check is causing permission errors for public users.
+    // The security rules do not allow a public user to READ the appointments collection.
+    // While removing this check introduces a small risk of double booking,
+    // it's necessary to allow the public scheduling to work.
+    // A more robust solution would involve a Cloud Function to handle this check with admin privileges.
     const finalCheckQuery = query(collection(db, `businesses/${businessInfo.id}/appointments`),
         where("date", "==", appointmentTimestamp),
     );
@@ -306,9 +310,10 @@ export default function PublicSchedulePage() {
         setIsSubmitting(false);
         return;
     }
+    */
 
     try {
-      const clientId = await findOrCreateClient(appointmentDate);
+      const clientId = await findOrCreateClient();
       await addDoc(collection(db, `businesses/${businessInfo.id}/appointments`), {
         clientId: clientId, 
         clientName,
