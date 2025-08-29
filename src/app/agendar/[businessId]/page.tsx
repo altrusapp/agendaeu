@@ -252,11 +252,7 @@ export default function PublicSchedulePage() {
       const clientSnapshot = await getDocs(q);
 
       if (!clientSnapshot.empty) {
-          const clientDoc = clientSnapshot.docs[0];
-          const clientRef = doc(db, `businesses/${businessInfo.id}/clients`, clientDoc.id);
-          // Removed updateDoc to avoid permission issues for public users
-          // This logic can be moved to a Cloud Function in the future
-          return clientDoc.id;
+          return clientSnapshot.docs[0].id;
       } else {
           const newClientDoc = await addDoc(clientsRef, {
               name: clientName,
@@ -505,16 +501,14 @@ export default function PublicSchedulePage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div>
                                         <h4 className="font-medium text-center mb-2">Selecione o dia</h4>
-                                        <div className="flex justify-center">
-                                            <Calendar
-                                                mode="single"
-                                                selected={date}
-                                                onSelect={setDate}
-                                                className="rounded-md border"
-                                                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
-                                                locale={ptBR}
-                                            />
-                                        </div>
+                                        <Calendar
+                                            mode="single"
+                                            selected={date}
+                                            onSelect={setDate}
+                                            className="rounded-md border w-full"
+                                            disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
+                                            locale={ptBR}
+                                        />
                                     </div>
                                     <div>
                                         <h4 className="font-medium text-center mb-2">Horários disponíveis</h4>
