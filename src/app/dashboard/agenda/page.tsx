@@ -4,6 +4,7 @@
 import * as React from "react"
 import { collection, query, onSnapshot, where, Timestamp, addDoc, DocumentData, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore"
 import { MoreHorizontal, PlusCircle } from "lucide-react"
+import { ptBR } from "date-fns/locale"
 
 import { useBusiness } from "@/app/dashboard/layout"
 import { db } from "@/lib/firebase/client"
@@ -325,12 +326,15 @@ export default function AgendaPage() {
               mode="single"
               selected={date}
               onSelect={setDate}
-              className="w-full"
+              className="w-full p-3"
               classNames={{
+                row: "flex w-full mt-2 justify-between",
+                cell: "text-center text-sm p-0 relative [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected]:not(.day-outside))]:bg-transparent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
                 day_selected: "bg-primary text-primary-foreground hover:bg-primary/90 focus:bg-primary",
                 day_today: "bg-accent/50 text-accent-foreground",
               }}
               disabled={(d) => d < new Date(new Date().setDate(new Date().getDate() - 1))}
+              locale={ptBR}
             />
           </CardContent>
         </Card>
@@ -432,5 +436,3 @@ export default function AgendaPage() {
     </>
   )
 }
-
-    
