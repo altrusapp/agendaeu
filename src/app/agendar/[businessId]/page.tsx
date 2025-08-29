@@ -506,6 +506,9 @@ export default function PublicSchedulePage() {
                                             selected={date}
                                             onSelect={setDate}
                                             className="rounded-md border w-full"
+                                            classNames={{
+                                                row: "flex w-full mt-2 justify-between",
+                                            }}
                                             disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
                                             locale={ptBR}
                                         />
