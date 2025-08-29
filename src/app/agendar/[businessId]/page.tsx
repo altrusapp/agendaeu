@@ -245,25 +245,35 @@ export default function PublicSchedulePage() {
   }
 
   const findOrCreateClient = async () => {
-      if (!businessInfo?.id || !clientName || !clientPhone) return null;
-
-      const clientsRef = collection(db, `businesses/${businessInfo.id}/clients`);
-      const q = query(clientsRef, where("phone", "==", clientPhone), limit(1));
-      const clientSnapshot = await getDocs(q);
-
-      if (!clientSnapshot.empty) {
-          return clientSnapshot.docs[0].id;
-      } else {
-          const newClientDoc = await addDoc(clientsRef, {
-              name: clientName,
-              phone: clientPhone,
-              email: "", 
-              createdAt: Timestamp.now(),
-              lastVisit: null,
-              totalAppointments: 0,
-          });
-          return newClientDoc.id;
-      }
+    if (!businessInfo?.id || !clientName || !clientPhone) return null;
+  
+    const clientsRef = collection(db, `businesses/${businessInfo.id}/clients`);
+    const q = query(clientsRef, where("phone", "==", clientPhone), limit(1));
+    const clientSnapshot = await getDocs(q);
+  
+    if (!clientSnapshot.empty) {
+        const clientId = clientSnapshot.docs[0].id;
+        const clientRef = doc(db, `businesses/${businessInfo.id}/clients`, clientId);
+        // This update logic is disabled on the public page to avoid permission issues.
+        // It can be moved to a Cloud Function triggered on new appointment creation.
+        /*
+        await updateDoc(clientRef, {
+            totalAppointments: increment(1),
+            lastVisit: Timestamp.now(),
+        });
+        */
+        return clientId;
+    } else {
+        const newClientDoc = await addDoc(clientsRef, {
+            name: clientName,
+            phone: clientPhone,
+            email: "", 
+            createdAt: Timestamp.now(),
+            lastVisit: Timestamp.now(),
+            totalAppointments: 1,
+        });
+        return newClientDoc.id;
+    }
   };
 
   const handleConfirmAppointment = async (e: React.FormEvent) => {
@@ -508,6 +518,7 @@ export default function PublicSchedulePage() {
                                             className="rounded-md border w-full"
                                             classNames={{
                                                 row: "flex w-full mt-2 justify-between",
+                                                cell: "text-center text-sm p-0 relative [&:has([aria-selected].day-outside)]:bg-accent/50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
                                             }}
                                             disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
                                             locale={ptBR}
@@ -586,3 +597,5 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
+
+    
