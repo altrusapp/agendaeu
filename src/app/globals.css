@@ -85,3 +85,29 @@
     }
 }
     
+@layer utilities {
+  .animated-gradient-cover {
+    @apply relative overflow-hidden;
+    background: linear-gradient(
+      -45deg,
+      hsl(var(--primary) / 0.8),
+      hsl(var(--accent) / 0.8),
+      hsl(var(--secondary) / 0.8),
+      hsl(var(--primary) / 0.8)
+    );
+    background-size: 400% 400%;
+    animation: move-gradient 15s ease infinite;
+  }
+
+  @keyframes move-gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+}

@@ -34,7 +34,6 @@ type BusinessInfo = {
   id: string;
   name: string;
   logoUrl: string;
-  coverImageUrl: string;
   businessHours?: any;
 };
 
@@ -140,7 +139,6 @@ export default function PublicSchedulePage() {
             id: businessId,
             name: data.businessName || "Negócio sem nome",
             logoUrl: data.logoUrl || "https://picsum.photos/100",
-            coverImageUrl: data.coverImageUrl || "https://picsum.photos/1200/400",
             businessHours: data.businessHours
           });
 
@@ -397,15 +395,8 @@ export default function PublicSchedulePage() {
       return (
          <div className="flex flex-col min-h-screen bg-muted/40">
            <header className="w-full">
-            <div className="relative h-48 md:h-64 w-full">
-              <Image
-                  src={businessInfo.coverImageUrl}
-                  alt={`Capa de ${businessInfo.name}`}
-                  fill
-                  className="object-cover"
-                  data-ai-hint="salon interior"
-                />
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+            <div className="relative animated-gradient-cover h-48 md:h-64 w-full">
+              <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                 <div className="text-center">
                   <Avatar className="h-24 w-24 mx-auto border-4 border-white shadow-lg">
                     <AvatarImage src={businessInfo.logoUrl} alt={`Logo de ${businessInfo.name}`} data-ai-hint="logo abstract"/>
@@ -454,15 +445,8 @@ export default function PublicSchedulePage() {
   return (
     <div className="flex flex-col min-h-screen bg-muted/40">
       <header className="w-full">
-        <div className="relative h-48 md:h-64 w-full">
-           <Image
-              src={businessInfo.coverImageUrl}
-              alt={`Capa de ${businessInfo.name}`}
-              fill
-              className="object-cover"
-              data-ai-hint="salon interior"
-            />
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+        <div className="relative animated-gradient-cover h-48 md:h-64 w-full">
+          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
             <div className="text-center">
               <Avatar className="h-24 w-24 mx-auto border-4 border-white shadow-lg">
                 <AvatarImage src={businessInfo.logoUrl} alt={`Logo de ${businessInfo.name}`} data-ai-hint="logo abstract"/>
@@ -509,16 +493,34 @@ export default function PublicSchedulePage() {
                             <div>
                                 <h3 className="text-xl font-semibold font-headline mb-4">2. Escolha a Data e Horário</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div>
-                                        <h4 className="font-medium text-center mb-2">Selecione o dia</h4>
+                                    <div className="flex justify-center">
                                         <Calendar
                                             mode="single"
                                             selected={date}
                                             onSelect={setDate}
-                                            className="rounded-md border w-full"
+                                            className="p-3 rounded-md border w-full"
                                             classNames={{
+                                                months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                                                month: "space-y-4",
+                                                caption: "flex justify-center pt-1 relative items-center",
+                                                caption_label: "text-sm font-medium",
+                                                nav: "space-x-1 flex items-center",
+                                                nav_button: cn(buttonVariants({ variant: "outline" }), "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"),
+                                                nav_button_previous: "absolute left-1",
+                                                nav_button_next: "absolute right-1",
+                                                table: "w-full border-collapse space-y-1",
+                                                head_row: "flex",
+                                                head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
                                                 row: "flex w-full mt-2 justify-between",
-                                                cell: "text-center text-sm p-0 relative [&:has([aria-selected].day-outside)]:bg-accent/50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                                                cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected]:not(.day-outside))]:bg-transparent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                                                day: cn(buttonVariants({ variant: "ghost" }), "h-9 w-9 p-0 font-normal aria-selected:opacity-100"),
+                                                day_range_end: "day-range-end",
+                                                day_selected: "bg-primary text-primary-foreground hover:bg-primary/90 focus:bg-primary",
+                                                day_today: "bg-accent/50 text-accent-foreground",
+                                                day_outside: "day-outside text-muted-foreground aria-selected:bg-accent/50 aria-selected:text-muted-foreground",
+                                                day_disabled: "text-muted-foreground opacity-50",
+                                                day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                                                day_hidden: "invisible",
                                             }}
                                             disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
                                             locale={ptBR}
@@ -597,5 +599,3 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
-
-    
