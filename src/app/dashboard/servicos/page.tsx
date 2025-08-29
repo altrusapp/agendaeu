@@ -137,26 +137,27 @@ export default function ServicosPage() {
   };
 
   React.useEffect(() => {
-    if (business?.id) {
-      setLoading(true);
-      const servicesCollectionRef = collection(db, `businesses/${business.id}/services`);
-      const q = query(servicesCollectionRef);
+    if (!business?.id) return;
+    
+    setLoading(true);
+    const servicesCollectionRef = collection(db, `businesses/${business.id}/services`);
+    const q = query(servicesCollectionRef);
 
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const servicesData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Service[];
-        setServices(servicesData);
-        setLoading(false);
-      }, (error) => {
-        console.error("Error fetching services:", error);
-        toast({ variant: "destructive", title: "Erro ao carregar serviços", description: "Não foi possível buscar os dados." });
-        setLoading(false);
-      });
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const servicesData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Service[];
+      setServices(servicesData);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching services:", error);
+      toast({ variant: "destructive", title: "Erro ao carregar serviços", description: "Não foi possível buscar os dados." });
+      setLoading(false);
+    });
 
-      return () => unsubscribe();
-    }
+    // Cleanup function to unsubscribe from the listener
+    return () => unsubscribe();
   }, [business, toast]);
 
   const handleAddService = async (e: React.FormEvent) => {
@@ -386,3 +387,5 @@ export default function ServicosPage() {
     </>
   )
 }
+
+    

@@ -87,21 +87,22 @@ export default function AgendaPage() {
 
   // Fetch clients and services for the dropdowns
   React.useEffect(() => {
-    if (business?.id) {
-      const clientsQuery = query(collection(db, `businesses/${business.id}/clients`));
-      const clientsUnsub = onSnapshot(clientsQuery, (snapshot) => {
-        setClients(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client)));
-      });
-      
-      const servicesQuery = query(collection(db, `businesses/${business.id}/services`));
-      const servicesUnsub = onSnapshot(servicesQuery, (snapshot) => {
-        setServices(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Service)));
-      });
+    if (!business?.id) return;
 
-      return () => {
-        clientsUnsub();
-        servicesUnsub();
-      }
+    const clientsQuery = query(collection(db, `businesses/${business.id}/clients`));
+    const clientsUnsub = onSnapshot(clientsQuery, (snapshot) => {
+      setClients(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client)));
+    });
+    
+    const servicesQuery = query(collection(db, `businesses/${business.id}/services`));
+    const servicesUnsub = onSnapshot(servicesQuery, (snapshot) => {
+      setServices(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Service)));
+    });
+
+    // Cleanup function to unsubscribe from listeners
+    return () => {
+      clientsUnsub();
+      servicesUnsub();
     }
   }, [business]);
 
@@ -130,7 +131,7 @@ export default function AgendaPage() {
       orderBy("date")
     );
     
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
+    const unsubscribe = onSnapshot(q, (snapshot) => {
       const appointmentsData = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -147,6 +148,7 @@ export default function AgendaPage() {
       setLoading(false);
     });
 
+    // Cleanup function to unsubscribe from the listener
     return () => unsubscribe();
   }, [date, business, toast]);
   
@@ -428,3 +430,5 @@ export default function AgendaPage() {
     </>
   )
 }
+
+    

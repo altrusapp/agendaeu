@@ -175,29 +175,30 @@ export default function ClientesPage() {
 
 
   React.useEffect(() => {
-    if (business?.id) {
-      setLoading(true);
-      const clientsCollectionRef = collection(db, `businesses/${business.id}/clients`);
-      const q = query(clientsCollectionRef, orderBy("createdAt", "desc"), limit(CLIENTS_PER_PAGE));
-      
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const clientsData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Client[];
+    if (!business?.id) return;
+    
+    setLoading(true);
+    const clientsCollectionRef = collection(db, `businesses/${business.id}/clients`);
+    const q = query(clientsCollectionRef, orderBy("createdAt", "desc"), limit(CLIENTS_PER_PAGE));
+    
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const clientsData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Client[];
 
-        setClients(clientsData);
-        setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
-        setHasMore(clientsData.length === CLIENTS_PER_PAGE);
-        setLoading(false);
-      }, (error) => {
-        console.error("Error fetching clients:", error);
-        toast({ variant: "destructive", title: "Erro ao carregar clientes", description: "Não foi possível buscar os dados."});
-        setLoading(false);
-      });
+      setClients(clientsData);
+      setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+      setHasMore(clientsData.length === CLIENTS_PER_PAGE);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching clients:", error);
+      toast({ variant: "destructive", title: "Erro ao carregar clientes", description: "Não foi possível buscar os dados."});
+      setLoading(false);
+    });
 
-      return () => unsubscribe();
-    }
+    // Cleanup function to unsubscribe from the listener
+    return () => unsubscribe();
   }, [business, toast]);
 
   const handleAddClient = async (e: React.FormEvent) => {
@@ -454,3 +455,5 @@ export default function ClientesPage() {
     </>
   )
 }
+
+    
