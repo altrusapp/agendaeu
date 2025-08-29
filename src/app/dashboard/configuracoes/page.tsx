@@ -373,7 +373,6 @@ export default function ConfiguracoesPage() {
                    <div className="space-y-2">
                      <Alert variant="destructive">
                       <AlertCircle className="h-4 w-4" />
-                      <AlertTitle>Atenção</AlertTitle>
                       <AlertDescription>
                         A URL da sua página pública só pode ser alterada <strong>uma única vez</strong>. Escolha com cuidado.
                       </AlertDescription>
@@ -475,3 +474,5 @@ export default function ConfiguracoesPage() {
     </>
   )
 }
+
+    
