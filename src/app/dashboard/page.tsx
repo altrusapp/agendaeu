@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
+import { cn } from "@/lib/utils"
 
 type Appointment = {
   id: string;
@@ -245,8 +246,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="space-y-1">
                         {groupedAppointments[dateStr].map((app, appIndex) => (
-                        <React.Fragment key={app.id}>
-                          <div className="flex items-center gap-4 py-3">
+                          <div key={app.id} className={cn("flex items-center gap-4 py-3 px-3 rounded-md", appIndex % 2 !== 0 && "bg-muted/50")}>
                               <Avatar aria-hidden="true" className="hidden h-9 w-9 sm:flex">
                               <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
                               <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
@@ -259,8 +259,6 @@ export default function DashboardPage() {
                               </div>
                               <div className="ml-auto font-medium tabular-nums">{app.time}</div>
                           </div>
-                          {appIndex < groupedAppointments[dateStr].length - 1 && <Separator />}
-                        </React.Fragment>
                         ))}
                     </div>
                     {dateIndex < appointmentDates.length - 1 && <Separator className="my-4"/>}
