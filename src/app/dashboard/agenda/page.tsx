@@ -51,6 +51,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
+import { cn } from "@/lib/utils"
 
 type Appointment = {
   id: string;
@@ -348,7 +349,7 @@ export default function AgendaPage() {
                {!date ? "Selecione um dia no calendário para ver os agendamentos." : loading ? "Carregando..." : `${appointments.length} agendamento(s) para este dia.`}
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4">
+          <CardContent className="grid gap-1">
             {loading ? (
                Array.from({ length: 3 }).map((_, i) => (
                   <div key={i} className="flex items-center gap-4 p-2">
@@ -362,8 +363,8 @@ export default function AgendaPage() {
                   </div>
                ))
             ) : appointments.length > 0 ? (
-              appointments.map((app) => (
-                <div key={app.id} className="flex items-center gap-4 p-2 rounded-lg hover:bg-muted">
+              appointments.map((app, index) => (
+                <div key={app.id} className={cn("flex items-center gap-4 p-2 rounded-lg", index % 2 !== 0 && "bg-muted/50")}>
                    <Avatar aria-hidden="true" className="hidden h-11 w-11 sm:flex">
                      <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
                     <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
@@ -436,5 +437,3 @@ export default function AgendaPage() {
     </>
   )
 }
-
-    

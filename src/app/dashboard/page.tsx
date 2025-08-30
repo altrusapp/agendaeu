@@ -245,22 +245,19 @@ export default function DashboardPage() {
                        </h4>
                     </div>
                     <div className="space-y-1">
-                        {groupedAppointments[dateStr].map((app) => (
-                          <div key={app.id}>
-                            <div className="flex items-center gap-4 py-3">
-                                <Avatar aria-hidden="true" className="hidden h-9 w-9 sm:flex">
-                                <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
-                                <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
-                                </Avatar>
-                                <div className="grid gap-1">
-                                <p className="text-sm font-medium leading-none">{app.clientName}</p>
-                                <p className="text-sm text-muted-foreground">
-                                    {app.serviceName}
-                                </p>
-                                </div>
-                                <div className="ml-auto font-medium tabular-nums">{app.time}</div>
+                        {groupedAppointments[dateStr].map((app, appIndex) => (
+                          <div key={app.id} className={cn("flex items-center gap-4 p-2 rounded-md", appIndex % 2 !== 0 && "bg-muted/50")}>
+                            <Avatar aria-hidden="true" className="hidden h-9 w-9 sm:flex">
+                              <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
+                              <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            <div className="grid gap-1">
+                              <p className="text-sm font-medium leading-none">{app.clientName}</p>
+                              <p className="text-sm text-muted-foreground">
+                                  {app.serviceName}
+                              </p>
                             </div>
-                            <Separator />
+                            <div className="ml-auto font-medium tabular-nums">{app.time}</div>
                           </div>
                         ))}
                     </div>

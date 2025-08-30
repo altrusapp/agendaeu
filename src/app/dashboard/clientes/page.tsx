@@ -57,6 +57,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
+import { cn } from "@/lib/utils"
 
 type Client = {
   id: string;
@@ -364,8 +365,8 @@ export default function ClientesPage() {
                   </TableRow>
                 ))
               ) : filteredClients.length > 0 ? (
-                filteredClients.map(client => (
-                <TableRow key={client.id}>
+                filteredClients.map((client, index) => (
+                <TableRow key={client.id} className={cn(index % 2 !== 0 && "bg-muted/50")}>
                   <TableCell className="hidden sm:table-cell p-2 align-middle">
                     <Avatar aria-hidden="true" className="h-11 w-11">
                       <AvatarImage src={client.avatar} alt="" data-ai-hint="person portrait"/>

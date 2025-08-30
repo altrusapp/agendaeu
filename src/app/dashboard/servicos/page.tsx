@@ -57,6 +57,7 @@ import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Switch } from "@/components/ui/switch"
+import { cn } from "@/lib/utils"
 
 type Service = {
   id: string;
@@ -314,8 +315,8 @@ export default function ServicosPage() {
                   </TableRow>
                 ))
               ) : services.length > 0 ? (
-                services.map(service => (
-                  <TableRow key={service.id}>
+                services.map((service, index) => (
+                  <TableRow key={service.id} className={cn(index % 2 !== 0 && "bg-muted/50")}>
                     <TableCell className="font-medium">{service.name}</TableCell>
                     <TableCell>
                       <Badge variant={service.active ? "default" : "outline"} className={service.active ? "bg-green-100 text-green-800 border-green-200 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800" : ""}>
