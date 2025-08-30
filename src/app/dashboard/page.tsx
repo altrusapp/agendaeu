@@ -4,8 +4,9 @@
 import * as React from "react"
 import Link from "next/link"
 import { collection, query, where, getDocs, limit, orderBy, Timestamp } from "firebase/firestore"
-import { startOfMonth, endOfMonth } from "date-fns"
-import { Activity, ArrowUpRight, Calendar, CreditCard, DollarSign, Users } from "lucide-react"
+import { startOfMonth, endOfMonth, format } from "date-fns"
+import { ptBR } from "date-fns/locale"
+import { Activity, ArrowUpRight, Calendar, Users, DollarSign } from "lucide-react"
 
 import { db } from "@/lib/firebase/client"
 import { useBusiness } from "@/app/dashboard/layout"
@@ -13,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Separator } from "@/components/ui/separator"
 
 type Appointment = {
   id: string;
@@ -30,6 +32,20 @@ type DashboardStats = {
   monthlyAppointments: number;
   attendanceRate: number;
 };
+
+// Helper to group appointments by date
+const groupAppointmentsByDate = (appointments: Appointment[]) => {
+  if (!appointments) return {};
+  return appointments.reduce((acc, appointment) => {
+    const date = format(appointment.date.toDate(), "yyyy-MM-dd");
+    if (!acc[date]) {
+      acc[date] = [];
+    }
+    acc[date].push(appointment);
+    return acc;
+  }, {} as Record<string, Appointment[]>);
+};
+
 
 export default function DashboardPage() {
   const { business } = useBusiness();
@@ -92,14 +108,15 @@ export default function DashboardPage() {
       try {
          const appointmentsRef = collection(db, `businesses/${business.id}/appointments`);
          const upcomingQuery = query(appointmentsRef, 
-            where("date", ">=", Timestamp.now()), 
+            where("date", ">=", Timestamp.fromDate(new Date())), 
             orderBy("date"), 
-            limit(5)
+            limit(10) // Fetch more to ensure we have appointments for a few days
         );
         const snapshot = await getDocs(upcomingQuery);
         const appointmentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Appointment));
         setRecentAppointments(appointmentsData);
-      } catch (error) {
+      } catch (error)
+ {
         console.error("Error fetching recent appointments:", error);
       } finally {
         setLoadingAppointments(false);
@@ -109,6 +126,9 @@ export default function DashboardPage() {
     fetchDashboardData();
     fetchRecentAppointments();
   }, [business]);
+
+  const groupedAppointments = groupAppointmentsByDate(recentAppointments);
+  const appointmentDates = Object.keys(groupedAppointments).sort();
 
   return (
     <>
@@ -193,7 +213,7 @@ export default function DashboardPage() {
             <div>
               <CardTitle>Próximos Agendamentos</CardTitle>
               <CardDescription>
-                Seus próximos agendamentos confirmados.
+                Seus próximos compromissos confirmados.
               </CardDescription>
             </div>
             <Button asChild size="sm" className="w-full sm:w-auto">
@@ -203,7 +223,7 @@ export default function DashboardPage() {
               </Link>
             </Button>
           </CardHeader>
-          <CardContent className="grid gap-4">
+          <CardContent className="space-y-4">
             {loadingAppointments ? (
               Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="flex items-center gap-4">
@@ -215,20 +235,32 @@ export default function DashboardPage() {
                   <Skeleton className="h-4 w-10" />
                 </div>
               ))
-            ) : recentAppointments.length > 0 ? (
-                recentAppointments.map(app => (
-                  <div key={app.id} className="flex items-center gap-4">
-                    <Avatar aria-hidden="true" className="hidden h-9 w-9 sm:flex">
-                      <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
-                      <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    <div className="grid gap-1">
-                      <p className="text-sm font-medium leading-none">{app.clientName}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {app.serviceName}
-                      </p>
+            ) : appointmentDates.length > 0 ? (
+                appointmentDates.map((dateStr, index) => (
+                  <div key={dateStr}>
+                    <div className="mb-2">
+                       <h4 className="text-sm font-semibold capitalize">
+                        {format(new Date(dateStr), "eeee, dd 'de' MMMM", { locale: ptBR })}
+                       </h4>
                     </div>
-                    <div className="ml-auto font-medium">{app.time}</div>
+                    <div className="space-y-4">
+                        {groupedAppointments[dateStr].map(app => (
+                        <div key={app.id} className="flex items-center gap-4">
+                            <Avatar aria-hidden="true" className="hidden h-9 w-9 sm:flex">
+                            <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
+                            <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            <div className="grid gap-1">
+                            <p className="text-sm font-medium leading-none">{app.clientName}</p>
+                            <p className="text-sm text-muted-foreground">
+                                {app.serviceName}
+                            </p>
+                            </div>
+                            <div className="ml-auto font-medium tabular-nums">{app.time}</div>
+                        </div>
+                        ))}
+                    </div>
+                    {index < appointmentDates.length - 1 && <Separator className="my-4"/>}
                   </div>
                 ))
             ) : (
@@ -244,4 +276,5 @@ export default function DashboardPage() {
       </div>
     </>
   )
-}
+
+    
