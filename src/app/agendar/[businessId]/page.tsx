@@ -35,6 +35,7 @@ type BusinessInfo = {
   name: string;
   logoUrl: string;
   businessHours?: any;
+  description?: string;
 };
 
 const dayMapping = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -139,7 +140,8 @@ export default function PublicSchedulePage() {
             id: businessId,
             name: data.businessName || "Negócio sem nome",
             logoUrl: data.logoUrl || "https://picsum.photos/100",
-            businessHours: data.businessHours
+            businessHours: data.businessHours,
+            description: data.description || "Siga os passos para agendar seu horário."
           });
 
           const servicesQuery = query(collection(db, `businesses/${businessId}/services`));
@@ -453,7 +455,7 @@ export default function PublicSchedulePage() {
                 <AvatarFallback>{businessInfo.name.substring(0,2)}</AvatarFallback>
               </Avatar>
               <h1 className="text-3xl md:text-4xl font-bold text-white mt-4 font-headline">{businessInfo.name}</h1>
-              <p className="text-white/90">Siga os passos para agendar seu horário.</p>
+              <p className="text-white/90">{businessInfo.description}</p>
             </div>
           </div>
         </div>
@@ -600,4 +602,5 @@ export default function PublicSchedulePage() {
   )
 }
 
+    
     
