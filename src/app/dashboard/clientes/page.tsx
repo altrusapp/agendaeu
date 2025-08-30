@@ -73,8 +73,6 @@ const ClientForm = ({
   formId,
   clientName,
   setClientName,
-  clientEmail,
-  setClientEmail,
   clientPhone,
   setClientPhone
 }: { 
@@ -82,8 +80,6 @@ const ClientForm = ({
   formId: string;
   clientName: string;
   setClientName: (value: string) => void;
-  clientEmail: string;
-  setClientEmail: (value: string) => void;
   clientPhone: string;
   setClientPhone: (value: string) => void;
 }) => (
@@ -94,11 +90,7 @@ const ClientForm = ({
           <Input id="name" value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Ex: Ana Silva" className="col-span-3" />
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="email" className="text-right">Email</Label>
-          <Input id="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} type="email" placeholder="ana@email.com" className="col-span-3" />
-        </div>
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="phone" className="text-right">Telefone</Label>
+          <Label htmlFor="phone" className="text-right">WhatsApp</Label>
           <Input id="phone" value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} placeholder="(11) 99999-9999" className="col-span-3" />
         </div>
       </div>
@@ -120,7 +112,6 @@ export default function ClientesPage() {
   const [selectedClient, setSelectedClient] = React.useState<Client | null>(null);
   
   const [clientName, setClientName] = React.useState("");
-  const [clientEmail, setClientEmail] = React.useState("");
   const [clientPhone, setClientPhone] = React.useState("");
 
   const searchInputRef = React.useRef<HTMLInputElement>(null);
@@ -134,7 +125,6 @@ export default function ClientesPage() {
   
   const resetForm = () => {
     setClientName("");
-    setClientEmail("");
     setClientPhone("");
     setSelectedClient(null);
   };
@@ -194,7 +184,7 @@ export default function ClientesPage() {
 
   const handleAddClient = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!business?.id || !clientName || !clientEmail || !clientPhone) {
+    if (!business?.id || !clientName || !clientPhone) {
       toast({ variant: "destructive", title: "Erro de Validação", description: "Por favor, preencha todos os campos." });
       return;
     }
@@ -202,7 +192,7 @@ export default function ClientesPage() {
     try {
       await addDoc(collection(db, `businesses/${business.id}/clients`), {
         name: clientName,
-        email: clientEmail,
+        email: "", // Mantendo o campo no DB por enquanto
         phone: clientPhone,
         totalAppointments: 0,
         lastVisit: null,
@@ -219,7 +209,7 @@ export default function ClientesPage() {
   
   const handleEditClient = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!business?.id || !selectedClient || !clientName || !clientEmail || !clientPhone) {
+    if (!business?.id || !selectedClient || !clientName || !clientPhone) {
       toast({ variant: "destructive", title: "Erro de Validação", description: "Por favor, preencha todos os campos." });
       return;
     }
@@ -228,7 +218,6 @@ export default function ClientesPage() {
       const clientRef = doc(db, `businesses/${business.id}/clients`, selectedClient.id);
       await updateDoc(clientRef, {
         name: clientName,
-        email: clientEmail,
         phone: clientPhone,
       });
       toast({ title: "Cliente Atualizado!", description: "Os dados do cliente foram salvos." });
@@ -254,7 +243,6 @@ export default function ClientesPage() {
   const openEditDialog = (client: Client) => {
     setSelectedClient(client);
     setClientName(client.name);
-    setClientEmail(client.email);
     setClientPhone(client.phone);
     setIsEditDialogOpen(true);
   };
@@ -268,7 +256,7 @@ export default function ClientesPage() {
   
   const filteredClients = clients.filter(client =>
     client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (client.email && client.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
     client.phone.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -312,8 +300,6 @@ export default function ClientesPage() {
                     formId="add-client-form"
                     clientName={clientName}
                     setClientName={setClientName}
-                    clientEmail={clientEmail}
-                    setClientEmail={setClientEmail}
                     clientPhone={clientPhone}
                     setClientPhone={setClientPhone}
                 />
@@ -491,8 +477,6 @@ export default function ClientesPage() {
             formId="edit-client-form" 
             clientName={clientName}
             setClientName={setClientName}
-            clientEmail={clientEmail}
-            setClientEmail={setClientEmail}
             clientPhone={clientPhone}
             setClientPhone={setClientPhone}
             />
@@ -504,3 +488,5 @@ export default function ClientesPage() {
     </>
   )
 }
+
+    
