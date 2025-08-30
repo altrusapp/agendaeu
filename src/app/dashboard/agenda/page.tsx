@@ -364,8 +364,8 @@ export default function AgendaPage() {
             ) : appointments.length > 0 ? (
               appointments.map((app) => (
                 <div key={app.id} className="flex items-center gap-4 p-2 rounded-lg hover:bg-muted">
-                   <Avatar className="hidden h-11 w-11 sm:flex">
-                     <AvatarImage src={app.clientAvatar} alt={`Avatar de ${app.clientName}`} data-ai-hint="person portrait" />
+                   <Avatar aria-hidden="true" className="hidden h-11 w-11 sm:flex">
+                     <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
                     <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <div className="grid gap-1 flex-1">
@@ -436,3 +436,5 @@ export default function AgendaPage() {
     </>
   )
 }
+
+    

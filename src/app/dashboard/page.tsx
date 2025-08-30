@@ -218,8 +218,8 @@ export default function DashboardPage() {
             ) : recentAppointments.length > 0 ? (
                 recentAppointments.map(app => (
                   <div key={app.id} className="flex items-center gap-4">
-                    <Avatar className="hidden h-9 w-9 sm:flex">
-                      <AvatarImage data-ai-hint="person portrait" src={app.clientAvatar} alt={`Avatar de ${app.clientName}`} />
+                    <Avatar aria-hidden="true" className="hidden h-9 w-9 sm:flex">
+                      <AvatarImage data-ai-hint="person portrait" src={app.clientAvatar} alt="" />
                       <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div className="grid gap-1">
@@ -245,3 +245,5 @@ export default function DashboardPage() {
     </>
   )
 }
+
+    

@@ -164,8 +164,8 @@ export default function DashboardLayout({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="secondary" size="icon" className="rounded-full" aria-label="Abrir menu do usuário">
-                   <Avatar>
-                      <AvatarImage src={business?.ownerAvatarUrl || user?.photoURL || "https://picsum.photos/100"} alt={`Avatar de ${user?.displayName || user?.email}`} data-ai-hint="person portrait"/>
+                   <Avatar aria-hidden="true">
+                      <AvatarImage src={business?.ownerAvatarUrl || user?.photoURL || "https://picsum.photos/100"} alt="" data-ai-hint="person portrait"/>
                       <AvatarFallback>{user?.email?.substring(0,2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                   <span className="sr-only">Toggle user menu</span>
@@ -197,3 +197,5 @@ export default function DashboardLayout({
     </BusinessContext.Provider>
   )
 }
+
+    

@@ -367,8 +367,8 @@ export default function ClientesPage() {
                 filteredClients.map(client => (
                 <TableRow key={client.id}>
                   <TableCell className="hidden sm:table-cell p-2 align-middle">
-                    <Avatar className="h-11 w-11">
-                      <AvatarImage src={client.avatar} alt={`Avatar de ${client.name}`} data-ai-hint="person portrait"/>
+                    <Avatar aria-hidden="true" className="h-11 w-11">
+                      <AvatarImage src={client.avatar} alt="" data-ai-hint="person portrait"/>
                       <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                   </TableCell>
