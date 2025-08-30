@@ -29,11 +29,11 @@
     --destructive: 3 72% 41%; /* #B3261E - Error */
     --destructive-foreground: 0 0% 100%; /* #FFFFFF - On Error */
 
-    --border: 261 44% 88%; /* Lighter version of #c7bced */
+    --border: 262 16% 51%; /* Muted foreground for borders */
     --input: 261 44% 92%; /* Even lighter version for inputs */
     --ring: 265 82% 66%; /* #a460f1 - Primary for focus rings */
 
-    --radius: 0.75rem;
+    --radius: 1rem;
   }
  
   .dark {
