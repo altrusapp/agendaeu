@@ -226,7 +226,7 @@ export default function DashboardPage() {
           <CardContent className="space-y-4">
             {loadingAppointments ? (
               Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-4">
+                <div key={i} className="flex items-center gap-4 py-2">
                   <Skeleton className="h-9 w-9 rounded-full" />
                   <div className="grid gap-1 flex-1">
                     <Skeleton className="h-4 w-1/2" />
@@ -236,31 +236,34 @@ export default function DashboardPage() {
                 </div>
               ))
             ) : appointmentDates.length > 0 ? (
-                appointmentDates.map((dateStr, index) => (
+                appointmentDates.map((dateStr, dateIndex) => (
                   <div key={dateStr}>
-                    <div className="mb-2">
+                    <div className="mb-3">
                        <h4 className="text-sm font-semibold capitalize">
-                        {format(new Date(dateStr), "eeee, dd 'de' MMMM", { locale: ptBR })}
+                        {format(new Date(dateStr.replace(/-/g, '/')), "eeee, dd 'de' MMMM", { locale: ptBR })}
                        </h4>
                     </div>
-                    <div className="space-y-4">
-                        {groupedAppointments[dateStr].map(app => (
-                        <div key={app.id} className="flex items-center gap-4">
-                            <Avatar aria-hidden="true" className="hidden h-9 w-9 sm:flex">
-                            <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
-                            <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
-                            </Avatar>
-                            <div className="grid gap-1">
-                            <p className="text-sm font-medium leading-none">{app.clientName}</p>
-                            <p className="text-sm text-muted-foreground">
-                                {app.serviceName}
-                            </p>
-                            </div>
-                            <div className="ml-auto font-medium tabular-nums">{app.time}</div>
-                        </div>
+                    <div className="space-y-1">
+                        {groupedAppointments[dateStr].map((app, appIndex) => (
+                        <React.Fragment key={app.id}>
+                          <div className="flex items-center gap-4 py-3">
+                              <Avatar aria-hidden="true" className="hidden h-9 w-9 sm:flex">
+                              <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
+                              <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
+                              </Avatar>
+                              <div className="grid gap-1">
+                              <p className="text-sm font-medium leading-none">{app.clientName}</p>
+                              <p className="text-sm text-muted-foreground">
+                                  {app.serviceName}
+                              </p>
+                              </div>
+                              <div className="ml-auto font-medium tabular-nums">{app.time}</div>
+                          </div>
+                          {appIndex < groupedAppointments[dateStr].length - 1 && <Separator />}
+                        </React.Fragment>
                         ))}
                     </div>
-                    {index < appointmentDates.length - 1 && <Separator className="my-4"/>}
+                    {dateIndex < appointmentDates.length - 1 && <Separator className="my-4"/>}
                   </div>
                 ))
             ) : (
@@ -276,5 +279,4 @@ export default function DashboardPage() {
       </div>
     </>
   )
-
-    
+}
