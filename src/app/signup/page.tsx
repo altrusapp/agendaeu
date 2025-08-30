@@ -1,3 +1,4 @@
+
 "use client"
 
 import Link from "next/link"
@@ -30,7 +31,7 @@ const signupSchema = z.object({
 })
 
 const PasswordRequirement = ({ text, met }: { text: string, met: boolean }) => (
-  <p className={cn("text-xs flex items-center gap-2", met ? "text-green-600" : "text-muted-foreground")}>
+  <p className={cn("text-xs flex items-center gap-2", met ? "text-accent-foreground" : "text-muted-foreground")}>
     <Check className="h-3.5 w-3.5" /> {text}
   </p>
 )
