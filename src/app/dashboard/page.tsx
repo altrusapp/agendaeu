@@ -121,7 +121,7 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">
               Receita (Mês)
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-accent-foreground" />
+            <DollarSign className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
             {loadingStats ? (
@@ -219,7 +219,7 @@ export default function DashboardPage() {
                 recentAppointments.map(app => (
                   <div key={app.id} className="flex items-center gap-4">
                     <Avatar aria-hidden="true" className="hidden h-9 w-9 sm:flex">
-                      <AvatarImage data-ai-hint="person portrait" src={app.clientAvatar} alt="" />
+                      <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
                       <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div className="grid gap-1">
@@ -245,5 +245,3 @@ export default function DashboardPage() {
     </>
   )
 }
-
-    
