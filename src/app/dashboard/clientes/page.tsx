@@ -335,7 +335,7 @@ export default function ClientesPage() {
                 <div className="col-span-4">Cliente</div>
                 <div className="col-span-3">Agendamentos</div>
                 <div className="col-span-3">Última Visita</div>
-                <div className="col-span-2 text-right">Ações</div>
+                <div className="col-span-2 text-right pr-8">Ações</div>
             </div>
             {loading ? (
                  Array.from({ length: 5 }).map((_, i) => (
@@ -355,57 +355,49 @@ export default function ClientesPage() {
                     index % 2 !== 0 && "bg-muted/50"
                 )}>
                   {/* --- Mobile View --- */}
-                  <div className="md:hidden">
-                    <div className="flex justify-between items-start">
-                        <div className="flex items-center gap-3">
-                            <Avatar aria-hidden="true" className="h-10 w-10">
-                            <AvatarImage src={client.avatar} alt="" data-ai-hint="person portrait"/>
-                            <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                                <p className="font-medium">{client.name}</p>
-                                <p className="text-sm text-muted-foreground">{client.phone}</p>
-                            </div>
-                        </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
-                              <MoreHorizontal className="h-4 w-4" />
-                              <span className="sr-only">Toggle menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => openEditDialog(client)}>Editar</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
-                                  <AlertDialogDescription>Esta ação não pode ser desfeita. Isso irá excluir permanentemente o cliente da sua lista.</AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => handleDeleteClient(client.id)}>Sim, excluir</AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
-                    <div className="flex justify-between text-sm mt-4">
+                  <div className="md:hidden flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <Avatar aria-hidden="true" className="h-10 w-10">
+                        <AvatarImage src={client.avatar} alt="" data-ai-hint="person portrait"/>
+                        <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>
+                        </Avatar>
                         <div className="flex flex-col">
-                            <span className="text-muted-foreground">Agendamentos</span>
-                            <span className="font-medium">{client.totalAppointments}</span>
-                        </div>
-                        <div className="flex flex-col text-right">
-                           <span className="text-muted-foreground">Última Visita</span>
-                            <span className="font-medium">{formatDate(client.lastVisit)}</span>
+                          <p className="font-medium">{client.name}</p>
+                          <p className="text-sm text-muted-foreground">{client.phone}</p>
+                          <div className="flex gap-4 text-xs mt-1">
+                              <span><strong className="font-medium">{client.totalAppointments}</strong> Agend.</span>
+                              <span>Última Visita: <strong className="font-medium">{formatDate(client.lastVisit)}</strong></span>
+                          </div>
                         </div>
                     </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Toggle menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => openEditDialog(client)}>Editar</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                              <AlertDialogDescription>Esta ação não pode ser desfeita. Isso irá excluir permanentemente o cliente da sua lista.</AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDeleteClient(client.id)}>Sim, excluir</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
 
                   {/* --- Desktop View --- */}
@@ -503,5 +495,3 @@ export default function ClientesPage() {
     </>
   )
 }
-
-    

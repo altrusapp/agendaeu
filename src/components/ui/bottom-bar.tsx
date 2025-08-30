@@ -18,7 +18,7 @@ interface BottomBarProps {
 export function BottomBar({ navItems, pathname }: BottomBarProps) {
   return (
     <div className="fixed bottom-0 w-full md:hidden shrink-0 bg-background border-t z-50">
-      <nav className="flex h-[72px] items-center justify-around pb-[env(safe-area-inset-bottom)]">
+      <nav className="flex h-16 items-center justify-around pb-[env(safe-area-inset-bottom)]">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -27,17 +27,17 @@ export function BottomBar({ navItems, pathname }: BottomBarProps) {
                 href={item.href}
                 className={cn(
                   "flex flex-col items-center justify-center w-full h-full text-muted-foreground transition-colors group",
-                  isActive && "text-primary font-semibold"
+                  isActive && "text-primary"
                 )}
               >
                 <div className={cn(
-                  "flex items-center justify-center p-2 px-6 rounded-full transition-all duration-300 ease-in-out",
-                  isActive ? "bg-muted" : "bg-transparent",
+                  "flex items-center justify-center gap-2 rounded-full transition-all duration-300 ease-in-out px-4 py-2",
+                   isActive ? "bg-muted font-semibold" : "bg-transparent",
                   "group-hover:bg-muted"
                   )}>
-                   <item.icon className="h-6 w-6 shrink-0" strokeWidth={isActive ? 2.25 : 2} />
+                   <item.icon className="h-5 w-5 shrink-0" strokeWidth={isActive ? 2.5 : 2} />
+                   <span className={cn("text-sm", isActive ? "inline" : "hidden")}>{item.label}</span>
                 </div>
-                <span className="text-xs mt-1">{item.label}</span>
               </Link>
           )
         })}

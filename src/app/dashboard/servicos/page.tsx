@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { MoreHorizontal, PlusCircle, RefreshCw, GripVertical } from "lucide-react"
+import { MoreHorizontal, PlusCircle, RefreshCw } from "lucide-react"
 import { collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc, getDocs, orderBy } from "firebase/firestore"
 
 import { useBusiness } from "@/app/dashboard/layout"
@@ -290,7 +290,7 @@ export default function ServicosPage() {
                 <div className="col-span-2">Status</div>
                 <div className="col-span-2">Duração</div>
                 <div className="col-span-2">Preço</div>
-                <div className="col-span-1 text-right">Ações</div>
+                <div className="col-span-1 text-right pr-8">Ações</div>
             </div>
 
             {loading ? (
@@ -311,51 +311,49 @@ export default function ServicosPage() {
                       index % 2 !== 0 && "bg-muted/50"
                   )}>
                     {/* --- Mobile View --- */}
-                    <div className="md:hidden">
-                       <div className="flex justify-between items-start">
-                         <div className="flex flex-col gap-1">
-                            <p className="font-medium">{service.name}</p>
-                            <div className="text-sm text-muted-foreground space-x-2">
-                              <span>{service.duration}</span>
-                              <span>•</span>
-                              <span>R$ {typeof service.price === 'number' ? service.price.toFixed(2) : '0.00'}</span>
-                            </div>
-                         </div>
-                         <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                                <DropdownMenuItem onClick={() => openEditDialog(service)}>Editar</DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleToggleActive(service)}>
-                                {service.active ? "Desativar" : "Ativar"}
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                    <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
-                                    <AlertDialogDescription>Esta ação não pode ser desfeita. Isso irá excluir permanentemente o serviço.</AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDeleteService(service.id)}>Sim, excluir</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                                </AlertDialog>
-                            </DropdownMenuContent>
-                            </DropdownMenu>
-                       </div>
-                        <Badge variant={service.active ? "default" : "outline"} className={cn("mt-2 w-fit", service.active ? "bg-green-100 text-green-800 border-green-200 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800" : "")}>
-                            {service.active ? "Ativo" : "Inativo"}
-                        </Badge>
+                    <div className="md:hidden flex items-center justify-between">
+                      <div className="flex flex-col gap-1">
+                          <p className="font-medium">{service.name}</p>
+                          <div className="text-sm text-muted-foreground space-x-2">
+                            <span>{service.duration}</span>
+                            <span>•</span>
+                            <span>R$ {typeof service.price === 'number' ? service.price.toFixed(2) : '0.00'}</span>
+                          </div>
+                          <Badge variant={service.active ? "default" : "outline"} className={cn("mt-2 w-fit", service.active ? "bg-green-100 text-green-800 border-green-200 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800" : "")}>
+                              {service.active ? "Ativo" : "Inativo"}
+                          </Badge>
+                      </div>
+                      <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Toggle menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                              <DropdownMenuItem onClick={() => openEditDialog(service)}>Editar</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleToggleActive(service)}>
+                              {service.active ? "Desativar" : "Ativar"}
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                  <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                  <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                                  <AlertDialogDescription>Esta ação não pode ser desfeita. Isso irá excluir permanentemente o serviço.</AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDeleteService(service.id)}>Sim, excluir</AlertDialogAction>
+                                  </AlertDialogFooter>
+                              </AlertDialogContent>
+                              </AlertDialog>
+                          </DropdownMenuContent>
+                          </DropdownMenu>
                     </div>
 
                     {/* --- Desktop View --- */}
@@ -442,5 +440,3 @@ export default function ServicosPage() {
     </>
   )
 }
-
-    
