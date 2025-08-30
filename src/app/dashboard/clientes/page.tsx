@@ -50,6 +50,7 @@ import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import { Separator } from "@/components/ui/separator"
 
 type Client = {
   id: string;
@@ -329,7 +330,7 @@ export default function ClientesPage() {
           <CardDescription>Gerencie seus clientes e veja o histórico de agendamentos.</CardDescription>
         </CardHeader>
         <CardContent>
-           <div className="grid gap-y-2">
+           <div className="grid gap-4">
              {/* Header */}
              <div className="hidden md:grid grid-cols-12 items-center gap-4 px-4 text-sm font-medium text-muted-foreground">
                 <div className="col-span-4">Cliente</div>
@@ -350,58 +351,66 @@ export default function ClientesPage() {
               ) : filteredClients.length > 0 ? (
                 filteredClients.map((client, index) => (
                 <div key={client.id} className={cn(
-                    "rounded-lg p-4",
-                    "md:grid md:grid-cols-12 md:items-center md:gap-4",
-                    index % 2 !== 0 && "bg-muted/50"
+                    "rounded-lg border md:border-0 md:bg-transparent md:grid md:grid-cols-12 md:items-center md:gap-4",
+                     index % 2 !== 0 && "md:bg-muted/50"
                 )}>
                   {/* --- Mobile View --- */}
-                  <div className="md:hidden flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <Avatar aria-hidden="true" className="h-10 w-10">
-                        <AvatarImage src={client.avatar} alt="" data-ai-hint="person portrait"/>
-                        <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col">
-                          <p className="font-medium">{client.name}</p>
-                          <p className="text-sm text-muted-foreground">{client.phone}</p>
-                          <div className="flex gap-4 text-xs mt-1">
-                              <span><strong className="font-medium">{client.totalAppointments}</strong> Agend.</span>
-                              <span>Última Visita: <strong className="font-medium">{formatDate(client.lastVisit)}</strong></span>
+                  <div className="md:hidden">
+                    <div className="p-4 flex items-center justify-between">
+                       <div className="flex items-center gap-4">
+                          <Avatar aria-hidden="true" className="h-10 w-10">
+                            <AvatarImage src={client.avatar} alt="" data-ai-hint="person portrait"/>
+                            <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">{client.name}</p>
+                            <p className="text-sm text-muted-foreground">{client.phone}</p>
                           </div>
-                        </div>
+                       </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Toggle menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => openEditDialog(client)}>Editar</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                                  <AlertDialogDescription>Esta ação não pode ser desfeita. Isso irá excluir permanentemente o cliente da sua lista.</AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDeleteClient(client.id)}>Sim, excluir</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => openEditDialog(client)}>Editar</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
-                              <AlertDialogDescription>Esta ação não pode ser desfeita. Isso irá excluir permanentemente o cliente da sua lista.</AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDeleteClient(client.id)}>Sim, excluir</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                     <Separator className="md:hidden" />
+                     <div className="p-4 grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p className="text-muted-foreground">Agendamentos</p>
+                            <p className="font-medium">{client.totalAppointments}</p>
+                        </div>
+                         <div>
+                            <p className="text-muted-foreground">Última Visita</p>
+                            <p className="font-medium">{formatDate(client.lastVisit)}</p>
+                        </div>
+                     </div>
                   </div>
 
                   {/* --- Desktop View --- */}
-                  <div className="hidden md:col-span-4 md:flex items-center gap-3">
+                  <div className="hidden p-4 md:col-span-4 md:flex items-center gap-3">
                     <Avatar aria-hidden="true" className="h-10 w-10">
                       <AvatarImage src={client.avatar} alt="" data-ai-hint="person portrait"/>
                       <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>
@@ -411,13 +420,13 @@ export default function ClientesPage() {
                         <p className="text-sm text-muted-foreground">{client.phone}</p>
                      </div>
                   </div>
-                   <div className="hidden md:col-span-3 md:block">
+                   <div className="hidden p-4 md:col-span-3 md:block">
                      <div className="font-medium">{client.totalAppointments}</div>
                    </div>
-                   <div className="hidden md:col-span-3 md:block">
+                   <div className="hidden p-4 md:col-span-3 md:block">
                      <div className="font-medium">{formatDate(client.lastVisit)}</div>
                    </div>
-                  <div className="hidden md:col-span-2 md:flex justify-end">
+                  <div className="hidden p-4 md:col-span-2 md:flex justify-end">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
