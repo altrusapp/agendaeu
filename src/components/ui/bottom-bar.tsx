@@ -32,7 +32,7 @@ export function BottomBar({ navItems, pathname }: BottomBarProps) {
               >
                 <div className={cn(
                   "flex items-center justify-center p-2 px-6 rounded-full transition-all duration-300 ease-in-out",
-                  isActive ? "bg-secondary" : "bg-transparent",
+                  isActive ? "bg-muted" : "bg-transparent",
                   "group-hover:bg-muted"
                   )}>
                    <item.icon className="h-6 w-6 shrink-0" />
