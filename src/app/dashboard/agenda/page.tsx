@@ -329,6 +329,7 @@ export default function AgendaPage() {
               onSelect={setDate}
               className="w-full p-3"
               classNames={{
+                head_row: "flex justify-between",
                 row: "flex w-full mt-2 justify-between",
                 cell: "text-center text-sm p-0 relative [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected]:not(.day-outside))]:bg-transparent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
                 day_selected: "bg-primary text-primary-foreground hover:bg-primary/90 focus:bg-primary",
@@ -436,3 +437,5 @@ export default function AgendaPage() {
     </>
   )
 }
+
+    
