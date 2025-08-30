@@ -14,14 +14,14 @@
     --popover: 300 38% 96%; /* #f3edf9 - Surface */
     --popover-foreground: 240 6% 12%; /* #1d1b20 - On Surface */
     
-    --primary: 265 82% 66%; /* #a460f1 - Primary */
+    --primary: 265 82% 60%; /* #8a4cf3 - Primary (Adjusted for contrast) */
     --primary-foreground: 0 0% 100%; /* #ffffff - On Primary */
     
     --secondary: 261 44% 83%; /* #c7bced - Secondary/Primary Container */
-    --secondary-foreground: 240 6% 12%; /* #1d1b20 - On Secondary/On Primary Container */
+    --secondary-foreground: 261 44% 20%; /* #2b2141 - On Secondary (High Contrast) */
 
     --muted: 300 38% 92%; /* Lighter version of #f3edf9 - for muted backgrounds */
-    --muted-foreground: 262 16% 51%; /* #836f9a - for muted text */
+    --muted-foreground: 262 16% 40%; /* #715d87 - On Muted (WCAG AA) */
 
     --accent: 294 73% 82%; /* #eba2ef - Tertiary */
     --accent-foreground: 240 6% 12%; /* #1d1b20 - On Tertiary */
@@ -29,9 +29,9 @@
     --destructive: 3 72% 41%; /* #B3261E - Error */
     --destructive-foreground: 0 0% 100%; /* #FFFFFF - On Error */
 
-    --border: 262 16% 51%; /* Muted foreground for borders */
+    --border: 262 16% 70%; /* #b8a9c9 - Muted border (Lighter) */
     --input: 261 44% 92%; /* Even lighter version for inputs */
-    --ring: 265 82% 66%; /* #a460f1 - Primary for focus rings */
+    --ring: 265 82% 60%; /* Primary for focus rings */
 
     --radius: 1rem;
   }
@@ -46,14 +46,14 @@
     --popover: 240 6% 12%; /* #1d1b20 */
     --popover-foreground: 300 38% 96%; /* #f3edf9 */
 
-    --primary: 265 82% 66%; /* #a460f1 */
+    --primary: 265 82% 72%; /* #b589f5 - Lighter Primary for Dark Mode */
     --primary-foreground: 240 6% 12%; /* #1d1b20 */
 
-    --secondary: 261 44% 83%; /* #c7bced */
-    --secondary-foreground: 240 6% 12%; /* #1d1b20 */
+    --secondary: 261 44% 25%; /* #372c50 - Dark Secondary */
+    --secondary-foreground: 300 38% 92%; /* #e9e4f0 - On Dark Secondary */
 
     --muted: 240 6% 17%; /* Slightly lighter than background */
-    --muted-foreground: 261 44% 83%; /* #c7bced */
+    --muted-foreground: 261 44% 75%; /* #b8a9d1 - Muted Foreground for Dark */
 
     --accent: 294 73% 82%; /* #eba2ef */
     --accent-foreground: 240 6% 12%; /* #1d1b20 */
@@ -63,7 +63,7 @@
 
     --border: 240 6% 22%; /* Darker border */
     --input: 240 6% 19%; /* Darker input */
-    --ring: 265 82% 66%; /* #a460f1 */
+    --ring: 265 82% 72%; /* Lighter Primary for focus rings */
   }
 }
 
