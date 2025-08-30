@@ -295,35 +295,81 @@ export default function ServicosPage() {
 
             {loading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-4 p-4 rounded-lg bg-muted/50">
-                   <Skeleton className="h-5 w-2/5" />
-                   <Skeleton className="h-5 w-1/5" />
-                   <Skeleton className="h-5 w-1/5" />
-                   <Skeleton className="h-8 w-8" />
+                 <div key={i} className="flex items-center space-x-4 p-4 rounded-lg">
+                    <Skeleton className="h-12 w-12 rounded-full" />
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-[250px]" />
+                        <Skeleton className="h-4 w-[200px]" />
+                    </div>
                 </div>
               ))
             ) : services.length > 0 ? (
                 services.map((service, index) => (
                   <div key={service.id} className={cn(
-                      "grid grid-cols-6 md:grid-cols-12 items-center gap-4 p-2 md:p-4 rounded-lg", 
+                      "rounded-lg p-4",
+                      "md:grid md:grid-cols-12 md:items-center md:gap-4",
                       index % 2 !== 0 && "bg-muted/50"
                   )}>
-                    <div className="col-span-6 md:col-span-5 flex flex-col">
-                        <p className="font-medium">{service.name}</p>
-                        <div className="md:hidden text-sm text-muted-foreground space-x-2">
-                          <span>{service.duration}</span>
-                          <span>-</span>
-                          <span>R$ {typeof service.price === 'number' ? service.price.toFixed(2) : '0.00'}</span>
-                        </div>
+                    {/* --- Mobile View --- */}
+                    <div className="md:hidden">
+                       <div className="flex justify-between items-start">
+                         <div className="flex flex-col gap-1">
+                            <p className="font-medium">{service.name}</p>
+                            <div className="text-sm text-muted-foreground space-x-2">
+                              <span>{service.duration}</span>
+                              <span>•</span>
+                              <span>R$ {typeof service.price === 'number' ? service.price.toFixed(2) : '0.00'}</span>
+                            </div>
+                         </div>
+                         <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
+                                <MoreHorizontal className="h-4 w-4" />
+                                <span className="sr-only">Toggle menu</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => openEditDialog(service)}>Editar</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleToggleActive(service)}>
+                                {service.active ? "Desativar" : "Ativar"}
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                    <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                                    <AlertDialogDescription>Esta ação não pode ser desfeita. Isso irá excluir permanentemente o serviço.</AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDeleteService(service.id)}>Sim, excluir</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                                </AlertDialog>
+                            </DropdownMenuContent>
+                            </DropdownMenu>
+                       </div>
+                        <Badge variant={service.active ? "default" : "outline"} className={cn("mt-2 w-fit", service.active ? "bg-green-100 text-green-800 border-green-200 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800" : "")}>
+                            {service.active ? "Ativo" : "Inativo"}
+                        </Badge>
                     </div>
-                    <div className="col-span-3 md:col-span-2">
+
+                    {/* --- Desktop View --- */}
+                    <div className="hidden md:col-span-5 md:flex md:flex-col">
+                        <p className="font-medium">{service.name}</p>
+                    </div>
+                    <div className="hidden md:col-span-2 md:block">
                       <Badge variant={service.active ? "default" : "outline"} className={service.active ? "bg-green-100 text-green-800 border-green-200 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800" : ""}>
                         {service.active ? "Ativo" : "Inativo"}
                       </Badge>
                     </div>
                     <div className="hidden md:col-span-2 md:block">{service.duration}</div>
                     <div className="hidden md:col-span-2 md:block">R$ {typeof service.price === 'number' ? service.price.toFixed(2) : '0.00'}</div>
-                    <div className="col-span-3 md:col-span-1 flex justify-end">
+                    <div className="hidden md:col-span-1 md:flex md:justify-end">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
@@ -396,3 +442,5 @@ export default function ServicosPage() {
     </>
   )
 }
+
+    

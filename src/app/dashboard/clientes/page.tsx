@@ -338,22 +338,78 @@ export default function ClientesPage() {
                 <div className="col-span-2 text-right">Ações</div>
             </div>
             {loading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 animate-pulse">
-                    <Skeleton className="h-10 w-10 rounded-full" />
-                    <div className="flex-1 space-y-2">
-                        <Skeleton className="h-4 w-3/5" />
-                        <Skeleton className="h-3 w-4/5" />
-                    </div>
-                  </div>
-                ))
+                 Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="flex items-center space-x-4 p-4 rounded-lg">
+                       <Skeleton className="h-12 w-12 rounded-full" />
+                       <div className="space-y-2">
+                           <Skeleton className="h-4 w-[250px]" />
+                           <Skeleton className="h-4 w-[200px]" />
+                       </div>
+                   </div>
+                 ))
               ) : filteredClients.length > 0 ? (
                 filteredClients.map((client, index) => (
                 <div key={client.id} className={cn(
-                    "grid grid-cols-6 md:grid-cols-12 items-center gap-4 p-2 md:p-4 rounded-lg",
+                    "rounded-lg p-4",
+                    "md:grid md:grid-cols-12 md:items-center md:gap-4",
                     index % 2 !== 0 && "bg-muted/50"
                 )}>
-                  <div className="col-span-6 md:col-span-4 flex items-center gap-3">
+                  {/* --- Mobile View --- */}
+                  <div className="md:hidden">
+                    <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-3">
+                            <Avatar aria-hidden="true" className="h-10 w-10">
+                            <AvatarImage src={client.avatar} alt="" data-ai-hint="person portrait"/>
+                            <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <p className="font-medium">{client.name}</p>
+                                <p className="text-sm text-muted-foreground">{client.phone}</p>
+                            </div>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Toggle menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => openEditDialog(client)}>Editar</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                                  <AlertDialogDescription>Esta ação não pode ser desfeita. Isso irá excluir permanentemente o cliente da sua lista.</AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDeleteClient(client.id)}>Sim, excluir</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                    <div className="flex justify-between text-sm mt-4">
+                        <div className="flex flex-col">
+                            <span className="text-muted-foreground">Agendamentos</span>
+                            <span className="font-medium">{client.totalAppointments}</span>
+                        </div>
+                        <div className="flex flex-col text-right">
+                           <span className="text-muted-foreground">Última Visita</span>
+                            <span className="font-medium">{formatDate(client.lastVisit)}</span>
+                        </div>
+                    </div>
+                  </div>
+
+                  {/* --- Desktop View --- */}
+                  <div className="hidden md:col-span-4 md:flex items-center gap-3">
                     <Avatar aria-hidden="true" className="h-10 w-10">
                       <AvatarImage src={client.avatar} alt="" data-ai-hint="person portrait"/>
                       <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>
@@ -363,13 +419,13 @@ export default function ClientesPage() {
                         <p className="text-sm text-muted-foreground">{client.phone}</p>
                      </div>
                   </div>
-                   <div className="col-span-3 md:col-span-3">
-                     <div className="font-medium text-center md:text-left">{client.totalAppointments}</div>
+                   <div className="hidden md:col-span-3 md:block">
+                     <div className="font-medium">{client.totalAppointments}</div>
                    </div>
-                   <div className="col-span-3 md:col-span-3">
-                     <div className="font-medium md:text-left">{formatDate(client.lastVisit)}</div>
+                   <div className="hidden md:col-span-3 md:block">
+                     <div className="font-medium">{formatDate(client.lastVisit)}</div>
                    </div>
-                  <div className="col-span-6 md:col-span-2 flex justify-end">
+                  <div className="hidden md:col-span-2 md:flex justify-end">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
@@ -447,3 +503,5 @@ export default function ClientesPage() {
     </>
   )
 }
+
+    
