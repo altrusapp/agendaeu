@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { MoreHorizontal, PlusCircle, RefreshCw } from "lucide-react"
+import { MoreHorizontal, PlusCircle, RefreshCw, GripVertical } from "lucide-react"
 import { collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc, getDocs, orderBy } from "firebase/firestore"
 
 import { useBusiness } from "@/app/dashboard/layout"
@@ -24,14 +24,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import {
   Dialog,
   DialogContent,
@@ -291,41 +283,47 @@ export default function ServicosPage() {
           <CardDescription>Gerencie os serviços oferecidos em seu estabelecimento.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nome do Serviço</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="hidden md:table-cell">Duração</TableHead>
-                <TableHead className="hidden md:table-cell">Preço</TableHead>
-                <TableHead>
-                  <span className="sr-only">Ações</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell><Skeleton className="h-5 w-3/4" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-16" /></TableCell>
-                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-20" /></TableCell>
-                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-24" /></TableCell>
-                    <TableCell><Skeleton className="h-8 w-8 rounded-full" /></TableCell>
-                  </TableRow>
-                ))
-              ) : services.length > 0 ? (
+          <div className="grid gap-y-2">
+            {/* Header */}
+            <div className="hidden md:grid grid-cols-12 items-center gap-4 px-4 text-sm font-medium text-muted-foreground">
+                <div className="col-span-5">Nome do Serviço</div>
+                <div className="col-span-2">Status</div>
+                <div className="col-span-2">Duração</div>
+                <div className="col-span-2">Preço</div>
+                <div className="col-span-1 text-right">Ações</div>
+            </div>
+
+            {loading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-4 p-4 rounded-lg bg-muted/50">
+                   <Skeleton className="h-5 w-2/5" />
+                   <Skeleton className="h-5 w-1/5" />
+                   <Skeleton className="h-5 w-1/5" />
+                   <Skeleton className="h-8 w-8" />
+                </div>
+              ))
+            ) : services.length > 0 ? (
                 services.map((service, index) => (
-                  <TableRow key={service.id} className={cn(index % 2 !== 0 && "bg-muted/50")}>
-                    <TableCell className="font-medium">{service.name}</TableCell>
-                    <TableCell>
+                  <div key={service.id} className={cn(
+                      "grid grid-cols-6 md:grid-cols-12 items-center gap-4 p-2 md:p-4 rounded-lg", 
+                      index % 2 !== 0 && "bg-muted/50"
+                  )}>
+                    <div className="col-span-6 md:col-span-5 flex flex-col">
+                        <p className="font-medium">{service.name}</p>
+                        <div className="md:hidden text-sm text-muted-foreground space-x-2">
+                          <span>{service.duration}</span>
+                          <span>-</span>
+                          <span>R$ {typeof service.price === 'number' ? service.price.toFixed(2) : '0.00'}</span>
+                        </div>
+                    </div>
+                    <div className="col-span-3 md:col-span-2">
                       <Badge variant={service.active ? "default" : "outline"} className={service.active ? "bg-green-100 text-green-800 border-green-200 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800" : ""}>
                         {service.active ? "Ativo" : "Inativo"}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">{service.duration}</TableCell>
-                    <TableCell className="hidden md:table-cell">R$ {typeof service.price === 'number' ? service.price.toFixed(2) : '0.00'}</TableCell>
-                    <TableCell>
+                    </div>
+                    <div className="hidden md:col-span-2 md:block">{service.duration}</div>
+                    <div className="hidden md:col-span-2 md:block">R$ {typeof service.price === 'number' ? service.price.toFixed(2) : '0.00'}</div>
+                    <div className="col-span-3 md:col-span-1 flex justify-end">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
@@ -357,16 +355,16 @@ export default function ServicosPage() {
                           </AlertDialog>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
+                    </div>
+                  </div>
                 ))
-              ) : (
-                <TableRow>
-                   <TableCell colSpan={5} className="h-24 text-center">Nenhum serviço encontrado. Adicione seu primeiro serviço para começar.</TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+            ) : (
+                <div className="text-center text-muted-foreground py-10 col-span-full">
+                   <p>Nenhum serviço encontrado.</p>
+                   <Button variant="link" onClick={() => setIsAddDialogOpen(true)}>Adicione seu primeiro serviço</Button>
+                </div>
+            )}
+          </div>
         </CardContent>
       </Card>
       

@@ -24,14 +24,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Dialog,
@@ -337,52 +329,47 @@ export default function ClientesPage() {
           <CardDescription>Gerencie seus clientes e veja o histórico de agendamentos.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="hidden w-[100px] sm:table-cell">
-                  <span className="sr-only">Avatar</span>
-                </TableHead>
-                <TableHead>Nome</TableHead>
-                <TableHead>Contato</TableHead>
-                <TableHead className="hidden md:table-cell">Total de Agendamentos</TableHead>
-                <TableHead className="hidden md:table-cell">Última Visita</TableHead>
-                <TableHead>
-                  <span className="sr-only">Ações</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                 Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-11 w-11 rounded-full" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-                    <TableCell><div className="flex flex-col gap-1"><Skeleton className="h-4 w-32" /><Skeleton className="h-3 w-24" /></div></TableCell>
-                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-8" /></TableCell>
-                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-20" /></TableCell>
-                    <TableCell><Skeleton className="h-8 w-8" /></TableCell>
-                  </TableRow>
+           <div className="grid gap-y-2">
+             {/* Header */}
+             <div className="hidden md:grid grid-cols-12 items-center gap-4 px-4 text-sm font-medium text-muted-foreground">
+                <div className="col-span-4">Cliente</div>
+                <div className="col-span-3">Agendamentos</div>
+                <div className="col-span-3">Última Visita</div>
+                <div className="col-span-2 text-right">Ações</div>
+            </div>
+            {loading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 animate-pulse">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div className="flex-1 space-y-2">
+                        <Skeleton className="h-4 w-3/5" />
+                        <Skeleton className="h-3 w-4/5" />
+                    </div>
+                  </div>
                 ))
               ) : filteredClients.length > 0 ? (
                 filteredClients.map((client, index) => (
-                <TableRow key={client.id} className={cn(index % 2 !== 0 && "bg-muted/50")}>
-                  <TableCell className="hidden sm:table-cell p-2 align-middle">
-                    <Avatar aria-hidden="true" className="h-11 w-11">
+                <div key={client.id} className={cn(
+                    "grid grid-cols-6 md:grid-cols-12 items-center gap-4 p-2 md:p-4 rounded-lg",
+                    index % 2 !== 0 && "bg-muted/50"
+                )}>
+                  <div className="col-span-6 md:col-span-4 flex items-center gap-3">
+                    <Avatar aria-hidden="true" className="h-10 w-10">
                       <AvatarImage src={client.avatar} alt="" data-ai-hint="person portrait"/>
                       <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>
                     </Avatar>
-                  </TableCell>
-                  <TableCell className="font-medium">{client.name}</TableCell>
-                  <TableCell>
-                    <div className="font-medium">{client.email}</div>
-                    <div className="text-sm text-muted-foreground">{client.phone}</div>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">{client.totalAppointments}</TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    {formatDate(client.lastVisit)}
-                  </TableCell>
-                  <TableCell>
+                     <div>
+                        <p className="font-medium">{client.name}</p>
+                        <p className="text-sm text-muted-foreground">{client.phone}</p>
+                     </div>
+                  </div>
+                   <div className="col-span-3 md:col-span-3">
+                     <div className="font-medium text-center md:text-left">{client.totalAppointments}</div>
+                   </div>
+                   <div className="col-span-3 md:col-span-3">
+                     <div className="font-medium md:text-left">{formatDate(client.lastVisit)}</div>
+                   </div>
+                  <div className="col-span-6 md:col-span-2 flex justify-end">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
@@ -411,16 +398,16 @@ export default function ClientesPage() {
                         </AlertDialog>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  </TableCell>
-                </TableRow>
+                  </div>
+                </div>
               ))
               ) : (
-                 <TableRow>
-                   <TableCell colSpan={6} className="h-24 text-center">Nenhum cliente encontrado. Adicione seu primeiro cliente para começar ou ajuste sua busca.</TableCell>
-                </TableRow>
+                 <div className="text-center text-muted-foreground py-10 col-span-full">
+                   <p>Nenhum cliente encontrado.</p>
+                   <Button variant="link" onClick={() => setIsAddDialogOpen(true)}>Adicione seu primeiro cliente</Button>
+                </div>
               )}
-            </TableBody>
-          </Table>
+           </div>
         </CardContent>
         <CardFooter className="flex-col items-start gap-4">
           {hasMore && !searchTerm && (

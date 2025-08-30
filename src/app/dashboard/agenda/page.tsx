@@ -349,23 +349,22 @@ export default function AgendaPage() {
                {!date ? "Selecione um dia no calendário para ver os agendamentos." : loading ? "Carregando..." : `${appointments.length} agendamento(s) para este dia.`}
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-1">
+          <CardContent className="grid gap-2">
             {loading ? (
                Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="flex items-center gap-4 p-2">
-                    <Skeleton className="h-11 w-11 rounded-full" />
+                  <div key={i} className="flex items-center gap-4 p-4 rounded-lg bg-muted/50">
+                    <Skeleton className="h-10 w-10 rounded-full" />
                     <div className="grid gap-1 flex-1">
                       <Skeleton className="h-4 w-3/5" />
                       <Skeleton className="h-3 w-2/5" />
                     </div>
                     <Skeleton className="h-4 w-12" />
-                    <Skeleton className="h-8 w-8" />
                   </div>
                ))
             ) : appointments.length > 0 ? (
               appointments.map((app, index) => (
-                <div key={app.id} className={cn("flex items-center gap-4 p-2 rounded-lg", index % 2 !== 0 && "bg-muted/50")}>
-                   <Avatar aria-hidden="true" className="hidden h-11 w-11 sm:flex">
+                <div key={app.id} className={cn("flex items-center gap-4 p-4 rounded-lg", index % 2 !== 0 && "bg-muted/50")}>
+                   <Avatar aria-hidden="true" className="h-10 w-10">
                      <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
                     <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
                   </Avatar>
@@ -373,7 +372,7 @@ export default function AgendaPage() {
                     <p className="text-sm font-medium leading-none">{app.clientName}</p>
                     <p className="text-sm text-muted-foreground">{app.serviceName}</p>
                   </div>
-                  <div className="text-sm text-muted-foreground">{app.time}</div>
+                  <div className="text-sm font-medium tabular-nums">{app.time}</div>
                    <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
@@ -386,7 +385,7 @@ export default function AgendaPage() {
                         <DropdownMenuItem onClick={() => openEditDialog(app)}>Editar</DropdownMenuItem>
                          <AlertDialog>
                           <AlertDialogTrigger asChild>
-                             <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
+                             <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
