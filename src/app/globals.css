@@ -14,7 +14,7 @@
     --popover: 300 38% 96%; /* #f3edf9 - Surface */
     --popover-foreground: 240 6% 12%; /* #1d1b20 - On Surface */
     
-    --primary: 268 47% 72%; /* #ae96d8 - Primary */
+    --primary: 265 82% 66%; /* #a460f1 - Primary */
     --primary-foreground: 0 0% 100%; /* #ffffff - On Primary */
     
     --secondary: 261 44% 83%; /* #c7bced - Secondary/Primary Container */
@@ -31,7 +31,7 @@
 
     --border: 261 44% 88%; /* Lighter version of #c7bced */
     --input: 261 44% 92%; /* Even lighter version for inputs */
-    --ring: 268 47% 72%; /* #ae96d8 - Primary for focus rings */
+    --ring: 265 82% 66%; /* #a460f1 - Primary for focus rings */
 
     --radius: 0.75rem;
   }
@@ -46,7 +46,7 @@
     --popover: 240 6% 12%; /* #1d1b20 */
     --popover-foreground: 300 38% 96%; /* #f3edf9 */
 
-    --primary: 268 47% 72%; /* #ae96d8 */
+    --primary: 265 82% 66%; /* #a460f1 */
     --primary-foreground: 240 6% 12%; /* #1d1b20 */
 
     --secondary: 261 44% 83%; /* #c7bced */
@@ -63,7 +63,7 @@
 
     --border: 240 6% 22%; /* Darker border */
     --input: 240 6% 19%; /* Darker input */
-    --ring: 268 47% 72%; /* #ae96d8 */
+    --ring: 265 82% 66%; /* #a460f1 */
   }
 }
 
