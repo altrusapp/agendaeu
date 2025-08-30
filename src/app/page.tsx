@@ -46,7 +46,7 @@ export default function Home() {
               <p className="mt-4 text-lg text-muted-foreground">Ferramentas poderosas e fáceis de usar.</p>
             </div>
             <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              <Card className="text-center shadow-lg hover:shadow-xl transition-shadow">
+              <Card className="text-center shadow-md hover:shadow-xl transition-shadow">
                 <CardHeader>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                     <Calendar className="h-6 w-6 text-primary" />
@@ -57,7 +57,7 @@ export default function Home() {
                   Seus clientes agendam online 24/7. Você tem controle total dos seus horários e serviços.
                 </CardContent>
               </Card>
-              <Card className="text-center shadow-lg hover:shadow-xl transition-shadow">
+              <Card className="text-center shadow-md hover:shadow-xl transition-shadow">
                 <CardHeader>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                     <Users className="h-6 w-6 text-primary" />
@@ -68,7 +68,7 @@ export default function Home() {
                   Mantenha um histórico completo de seus clientes, serviços realizados e preferências.
                 </CardContent>
               </Card>
-              <Card className="text-center shadow-lg hover:shadow-xl transition-shadow">
+              <Card className="text-center shadow-md hover:shadow-xl transition-shadow">
                 <CardHeader>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                     <BarChart className="h-6 w-6 text-primary" />
@@ -79,7 +79,7 @@ export default function Home() {
                   Acompanhe seu desempenho com relatórios de agendamentos, faturamento e muito mais.
                 </CardContent>
               </Card>
-               <Card className="text-center shadow-lg hover:shadow-xl transition-shadow">
+               <Card className="text-center shadow-md hover:shadow-xl transition-shadow">
                 <CardHeader>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/20">
                     <Bell className="h-6 w-6 text-accent-foreground" />
@@ -90,7 +90,7 @@ export default function Home() {
                   Reduza as faltas com lembretes automáticos por WhatsApp para seus clientes.
                 </CardContent>
               </Card>
-              <Card className="text-center shadow-lg hover:shadow-xl transition-shadow">
+              <Card className="text-center shadow-md hover:shadow-xl transition-shadow">
                 <CardHeader>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/20">
                     <CreditCard className="h-6 w-6 text-accent-foreground" />
@@ -101,7 +101,7 @@ export default function Home() {
                   Receba um sinal no agendamento e garanta o compromisso do seu cliente.
                 </CardContent>
               </Card>
-               <Card className="text-center shadow-lg hover:shadow-xl transition-shadow">
+               <Card className="text-center shadow-md hover:shadow-xl transition-shadow">
                 <CardHeader>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/20">
                     <Palette className="h-6 w-6 text-accent-foreground" />
