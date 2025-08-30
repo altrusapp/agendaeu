@@ -139,7 +139,7 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">
               Novos Clientes (Mês)
             </CardTitle>
-            <Users className="h-4 w-4 text-primary" />
+            <Users className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
              {loadingStats ? (
@@ -173,7 +173,7 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">
               Taxa de Comparecimento
             </CardTitle>
-            <Activity className="h-4 w-4 text-accent-foreground" />
+            <Activity className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
              {loadingStats ? (
