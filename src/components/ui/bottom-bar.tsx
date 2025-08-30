@@ -35,7 +35,7 @@ export function BottomBar({ navItems, pathname }: BottomBarProps) {
                   isActive ? "bg-muted" : "bg-transparent",
                   "group-hover:bg-muted"
                   )}>
-                   <item.icon className="h-6 w-6 shrink-0" />
+                   <item.icon className="h-6 w-6 shrink-0" strokeWidth={isActive ? 2.25 : 2} />
                 </div>
                 <span className="text-xs mt-1">{item.label}</span>
               </Link>
