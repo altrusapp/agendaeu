@@ -117,10 +117,15 @@ export default {
             height: '0',
           },
         },
+         shimmer: {
+          '0%, 100%': { backgroundPosition: 'calc(-100% - var(--shimmer-width)) 0' },
+          '50%': { backgroundPosition: 'calc(100% + var(--shimmer-width)) 0' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        shimmer: 'shimmer 2s ease-in-out infinite',
       },
     },
   },
