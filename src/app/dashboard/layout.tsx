@@ -58,7 +58,7 @@ export const useBusiness = () => {
 };
 
 const navItems = [
-  { href: "/dashboard", icon: Home, label: "Dashboard" },
+  { href: "/dashboard", icon: Home, label: "Início" },
   { href: "/dashboard/agenda", icon: Calendar, label: "Agenda" },
   { href: "/dashboard/servicos", icon: Scissors, label: "Serviços" },
   { href: "/dashboard/clientes", icon: Users, label: "Clientes" },
@@ -197,5 +197,3 @@ export default function DashboardLayout({
     </BusinessContext.Provider>
   )
 }
-
-    

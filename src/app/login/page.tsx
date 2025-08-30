@@ -1,3 +1,4 @@
+
 "use client"
 
 import Link from "next/link"
@@ -38,7 +39,7 @@ export default function LoginPage() {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({
         title: "Login bem-sucedido!",
-        description: "Redirecionando para o seu painel...",
+        description: "Redirecionando para a página inicial...",
       })
       router.push("/dashboard")
     } catch (error) {
