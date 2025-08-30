@@ -480,8 +480,8 @@ export default function PublicSchedulePage() {
                                 {services.map(service => (
                                     <SelectItem key={service.id} value={service.id}>
                                         <div className="flex justify-between w-full">
-                                            <span>{service.name}</span>
-                                            <span className="text-muted-foreground pr-4">{service.duration} - R${service.price}</span>
+                                            <span className="pr-4">{service.name}</span>
+                                            <span className="text-muted-foreground">{service.duration} - R${service.price}</span>
                                         </div>
                                     </SelectItem>
                                 ))}
@@ -603,4 +603,6 @@ export default function PublicSchedulePage() {
 }
 
     
+    
+
     
