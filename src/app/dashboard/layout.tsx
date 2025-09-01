@@ -123,7 +123,7 @@ export default function DashboardLayout({
   return (
     <BusinessContext.Provider value={{ business, loading }}>
       <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-        <div className="hidden border-r bg-muted/40 md:block">
+        <div className="hidden border-r bg-muted md:block">
           <div className="flex h-full max-h-screen flex-col gap-2">
             <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
               <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
@@ -154,7 +154,7 @@ export default function DashboardLayout({
           </div>
         </div>
         <div className="flex flex-col h-screen bg-background">
-          <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 z-10">
+          <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-muted px-4 lg:h-[60px] lg:px-6 z-10">
              <div className="w-full flex-1">
                 <h1 className="text-lg font-semibold md:text-xl">
                     {navItems.find(item => item.href === pathname)?.label || desktopNavItems.find(item => item.href === pathname)?.label}
