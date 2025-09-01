@@ -237,33 +237,32 @@ export default function DashboardPage() {
                 </div>
               ))
             ) : appointmentDates.length > 0 ? (
-                appointmentDates.map((dateStr, dateIndex) => (
-                  <div key={dateStr}>
-                    <div className="mb-3">
-                       <h4 className="text-sm font-semibold capitalize">
-                        {format(new Date(dateStr.replace(/-/g, '/')), "eeee, dd 'de' MMMM", { locale: ptBR })}
-                       </h4>
-                    </div>
-                    <div className="space-y-1">
-                        {groupedAppointments[dateStr].map((app, appIndex) => (
-                          <div key={app.id} className={cn("flex items-center gap-4 p-2 rounded-md", appIndex % 2 !== 0 && "bg-muted/50")}>
-                            <Avatar aria-hidden="true" className="hidden h-9 w-9 sm:flex">
-                              <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
-                              <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
-                            </Avatar>
-                            <div className="grid gap-1">
-                              <p className="text-sm font-medium leading-none">{app.clientName}</p>
-                              <p className="text-sm text-muted-foreground">
-                                  {app.serviceName}
-                              </p>
-                            </div>
-                            <div className="ml-auto font-medium tabular-nums">{app.time}</div>
-                          </div>
-                        ))}
-                    </div>
-                    {dateIndex < appointmentDates.length - 1 && <Separator className="my-4"/>}
-                  </div>
-                ))
+                <div className="space-y-4">
+                    {appointmentDates.map((dateStr) => (
+                      <div key={dateStr}>
+                        <h4 className="text-sm font-semibold capitalize mb-3">
+                            {format(new Date(dateStr.replace(/-/g, '/')), "eeee, dd 'de' MMMM", { locale: ptBR })}
+                        </h4>
+                        <div className="space-y-2">
+                            {groupedAppointments[dateStr].map((app, appIndex) => (
+                              <div key={app.id} className={cn("flex items-center gap-4 p-2 rounded-md", appIndex % 2 !== 0 && "bg-muted/50")}>
+                                <Avatar aria-hidden="true" className="hidden h-9 w-9 sm:flex">
+                                  <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
+                                  <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
+                                </Avatar>
+                                <div className="grid gap-1">
+                                  <p className="text-sm font-medium leading-none">{app.clientName}</p>
+                                  <p className="text-sm text-muted-foreground">
+                                      {app.serviceName}
+                                  </p>
+                                </div>
+                                <div className="ml-auto font-medium tabular-nums">{app.time}</div>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    ))}
+                </div>
             ) : (
                 <div className="text-center text-muted-foreground py-10">
                   <p>Nenhum agendamento futuro encontrado.</p>
