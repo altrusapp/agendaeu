@@ -5,13 +5,13 @@
 
 @layer base {
   :root {
-    --background: 300 38% 96%; /* #f3edf9 - Surface/Background */
+    --background: 300 38% 96%; /* #f5eef7 - Adjusted for a softer look */
     --foreground: 240 6% 12%; /* #1d1b20 - On Background */
     
     --card: 0 0% 100%; /* #ffffff - Surface */
     --card-foreground: 240 6% 12%; /* #1d1b20 - On Surface */
     
-    --popover: 300 38% 96%; /* #f3edf9 - Surface */
+    --popover: 0 0% 100%; /* #ffffff - Surface */
     --popover-foreground: 240 6% 12%; /* #1d1b20 - On Surface */
     
     --primary: 265 82% 60%; /* #8a4cf3 - Primary (Adjusted for contrast) */
@@ -29,7 +29,7 @@
     --destructive: 3 72% 41%; /* #B3261E - Error */
     --destructive-foreground: 0 0% 100%; /* #FFFFFF - On Error */
 
-    --input: 261 44% 92%; /* Even lighter version for inputs */
+    --input: 300 38% 92%; /* #ede7f0 - Even lighter version for inputs */
     --ring: 265 82% 60%; /* Primary for focus rings */
 
     --radius: 1rem;
@@ -43,7 +43,7 @@
     --card-foreground: 300 38% 96%; /* #f3edf9 */
 
     --popover: 240 6% 12%; /* #1d1b20 */
-    --popover-foreground: 300 38% 96%; /* #f3edf9 */
+    --popover-foreground: 300_38%_96%; /* #f3edf9 */
 
     --primary: 265 82% 72%; /* #b589f5 - Lighter Primary for Dark Mode */
     --primary-foreground: 240 6% 12%; /* #1d1b20 */
@@ -105,4 +105,21 @@
       background-position: 0% 50%;
     }
   }
+
+  @keyframes fall-1 {
+      0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) translateX(20vw) rotate(360deg); opacity: 0; }
+  }
+  @keyframes fall-2 {
+      0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) translateX(-20vw) rotate(-360deg); opacity: 0; }
+  }
+  @keyframes fall-3 {
+      0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) translateX(10vw) rotate(720deg); opacity: 0; }
+  }
+
+  .animate-fall-1 { animation: fall-1 linear forwards; }
+  .animate-fall-2 { animation: fall-2 linear forwards; }
+  .animate-fall-3 { animation: fall-3 linear forwards; }
 }
