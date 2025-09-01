@@ -153,7 +153,7 @@ export default function DashboardLayout({
             </div>
           </div>
         </div>
-        <div className="flex flex-col h-screen bg-background">
+        <div className="flex flex-col h-screen bg-background overflow-hidden">
           <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 z-10">
              <div className="w-full flex-1">
                 <h1 className="text-lg font-semibold md:text-xl">
@@ -188,7 +188,7 @@ export default function DashboardLayout({
               </DropdownMenuContent>
             </DropdownMenu>
           </header>
-          <main className="flex-1 overflow-y-visible p-4 lg:p-6 pb-24">
+          <main className="flex-1 overflow-y-auto p-4 lg:p-6 pb-24">
             {children}
           </main>
           <BottomBar navItems={navItems} pathname={pathname} />
