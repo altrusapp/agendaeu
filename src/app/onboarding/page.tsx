@@ -9,7 +9,7 @@ import * as z from "zod"
 import { Upload, Image as ImageIcon, X } from "lucide-react"
 import * as React from "react"
 import { User, onAuthStateChanged } from "firebase/auth"
-import { doc, setDoc } from "firebase/firestore"
+import { doc, setDoc, writeBatch, collection } from "firebase/firestore"
 import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
@@ -28,6 +28,18 @@ const onboardingSchema = z.object({
 
 type OnboardingValues = z.infer<typeof onboardingSchema>;
 
+const defaultServices = [
+    { name: "Manicure Simples", description: "Corte, limpeza, lixamento e esmaltação básica. Rápido e perfeito para o dia a dia.", duration: "45min", price: 30, active: true },
+    { name: "Pedicure Simples", description: "Cuide dos pés com limpeza, lixamento e esmaltação. Conforto e beleza em 40 min.", duration: "40min", price: 35, active: true },
+    { name: "Gel nas Mãos", description: "Esmalte em gel de longa duração com cabine LED/UV. Brilho e durabilidade extra.", duration: "1h 20min", price: 80, active: true },
+    { name: "Gel nos Pés", description: "Esmaltação em gel para os pés com acabamento impecável e resistência prolongada.", duration: "1h", price: 85, active: true },
+    { name: "Banho de Gel", description: "Camada de gel que fortalece e protege suas unhas naturais. Mais saúde e brilho.", duration: "1h 30min", price: 90, active: true },
+    { name: "Alongamento em Gel", description: "Unhas longas, fortes e elegantes com técnica profissional de extensão em gel.", duration: "2h 30min", price: 200, active: true },
+    { name: "Spa dos Pés", description: "Esfoliação, hidratação e massagem relaxante. Pés renovados e macios.", duration: "50min", price: 60, active: true },
+    { name: "Francesinha Clássica", description: "Borda branca delicada nas unhas. Elegância simples e atemporal.", duration: "20min", price: 10, active: true },
+    { name: "Nail Art Personalizada", description: "Decoração artística com adesivos, pedrarias ou pintura detalhada. Por unha.", duration: "15min", price: 5, active: true },
+    { name: "Remoção de Gel/Acrílico", description: "Retirada cuidadosa de alongamentos preservando a saúde das unhas.", duration: "30min", price: 40, active: true },
+];
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -68,15 +80,19 @@ export default function OnboardingPage() {
       })
       return
     }
-
-    // TODO: Implementar a lógica de upload do arquivo 'values.logo' para o Firebase Storage
-    // e obter a URL da imagem para salvar no Firestore.
+    
+    // Note: Logo upload logic to Firebase Storage is not yet implemented.
+    // The logo from the form is currently for preview only.
 
     const businessId = user.uid;
     const slug = generateSlug(values.businessName);
 
     try {
-      await setDoc(doc(db, "businesses", businessId), {
+      const batch = writeBatch(db);
+
+      // 1. Create the business document
+      const businessRef = doc(db, "businesses", businessId);
+      batch.set(businessRef, {
         businessName: values.businessName,
         ownerId: user.uid,
         slug: slug,
@@ -85,9 +101,19 @@ export default function OnboardingPage() {
         publicUrl: `/agendar/${slug}`
       });
 
+      // 2. Create the default services in a subcollection
+      const servicesCollectionRef = collection(db, "businesses", businessId, "services");
+      defaultServices.forEach(service => {
+        const serviceRef = doc(servicesCollectionRef);
+        batch.set(serviceRef, { ...service, createdAt: new Date() });
+      });
+
+      // 3. Commit the batch
+      await batch.commit();
+
       toast({
         title: "Tudo pronto!",
-        description: "Seu espaço foi criado com sucesso.",
+        description: "Seu espaço e serviços padrão foram criados com sucesso.",
       })
       router.push(`/dashboard`)
     } catch (error) {
