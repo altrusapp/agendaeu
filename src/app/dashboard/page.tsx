@@ -6,7 +6,7 @@ import Link from "next/link"
 import { collection, query, where, getDocs, limit, orderBy, Timestamp } from "firebase/firestore"
 import { startOfMonth, endOfMonth, format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { Activity, ArrowUpRight, Calendar, Users, DollarSign } from "lucide-react"
+import { Activity, ArrowUpRight, Calendar, Users, DollarSign, MessageCircle } from "lucide-react"
 
 import { db } from "@/lib/firebase/client"
 import { useBusiness } from "@/app/dashboard/layout"
@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils"
 type Appointment = {
   id: string;
   clientName: string;
+  clientPhone?: string;
   serviceName: string;
   time: string;
   price: number;
@@ -131,6 +132,16 @@ export default function DashboardPage() {
   const groupedAppointments = groupAppointmentsByDate(recentAppointments);
   const appointmentDates = Object.keys(groupedAppointments).sort();
   let globalAppIndex = 0;
+  
+  const generateWhatsAppLink = (appointment: Appointment) => {
+    if (!appointment.clientPhone) return "";
+    const cleanPhone = appointment.clientPhone.replace(/\D/g, '');
+    // Assuming Brazilian numbers, add 55 if not present. This could be improved.
+    const phoneWithCountryCode = cleanPhone.length > 11 ? cleanPhone : `55${cleanPhone}`;
+    const dateStr = format(appointment.date.toDate(), "dd/MM/yyyy");
+    const message = `Olá, ${appointment.clientName}! Este é um lembrete do seu agendamento para ${appointment.serviceName} no dia ${dateStr} às ${appointment.time}. Estamos ansiosos para te ver!`;
+    return `https://wa.me/${phoneWithCountryCode}?text=${encodeURIComponent(message)}`;
+  }
 
   return (
     <>
@@ -260,6 +271,13 @@ export default function DashboardPage() {
                                     </p>
                                     </div>
                                     <div className="ml-auto font-medium tabular-nums">{app.time}</div>
+                                    {app.clientPhone && (
+                                        <Button asChild size="icon" variant="ghost" className="shrink-0 h-9 w-9 text-green-600 hover:text-green-700 hover:bg-green-100">
+                                            <a href={generateWhatsAppLink(app)} target="_blank" rel="noopener noreferrer" aria-label="Enviar lembrete no WhatsApp">
+                                                <MessageCircle className="h-5 w-5" />
+                                            </a>
+                                        </Button>
+                                    )}
                                 </div>
                                 );
                             })}

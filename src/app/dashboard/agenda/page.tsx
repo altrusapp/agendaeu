@@ -3,8 +3,10 @@
 
 import * as React from "react"
 import { collection, query, onSnapshot, where, Timestamp, addDoc, DocumentData, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore"
-import { MoreHorizontal, PlusCircle } from "lucide-react"
+import { MoreHorizontal, PlusCircle, MessageCircle } from "lucide-react"
 import { ptBR } from "date-fns/locale"
+import { format } from 'date-fns'
+
 
 import { useBusiness } from "@/app/dashboard/layout"
 import { db } from "@/lib/firebase/client"
@@ -19,6 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import {
   AlertDialog,
@@ -56,6 +59,7 @@ import { cn } from "@/lib/utils"
 type Appointment = {
   id: string;
   clientName: string;
+  clientPhone?: string;
   serviceName: string;
   time: string;
   status: "Confirmado" | "Pendente" | "Aguardando Sinal" | "Cancelado";
@@ -252,6 +256,15 @@ export default function AgendaPage() {
     setAppointmentTime(appointment.time);
     setIsEditDialogOpen(true);
   };
+  
+  const generateWhatsAppLink = (appointment: Appointment) => {
+    if (!appointment.clientPhone) return "";
+    const cleanPhone = appointment.clientPhone.replace(/\D/g, '');
+    const phoneWithCountryCode = cleanPhone.length > 11 ? cleanPhone : `55${cleanPhone}`;
+    const dateStr = format(appointment.date.toDate(), "dd/MM/yyyy");
+    const message = `Olá, ${appointment.clientName}! Este é um lembrete do seu agendamento para ${appointment.serviceName} no dia ${dateStr} às ${appointment.time}. Estamos ansiosos para te ver!`;
+    return `https://wa.me/${phoneWithCountryCode}?text=${encodeURIComponent(message)}`;
+  }
 
   const AppointmentForm = ({ onSubmit, formId }: { onSubmit: (e: React.FormEvent) => void, formId: string }) => (
      <form id={formId} onSubmit={onSubmit} className="space-y-4 py-4">
@@ -384,6 +397,15 @@ export default function AgendaPage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Ações</DropdownMenuLabel>
                         <DropdownMenuItem onClick={() => openEditDialog(app)}>Editar</DropdownMenuItem>
+                         {app.clientPhone && (
+                            <DropdownMenuItem asChild>
+                               <a href={generateWhatsAppLink(app)} target="_blank" rel="noopener noreferrer">
+                                 <MessageCircle className="mr-2 h-4 w-4 text-green-600"/>
+                                 Lembrete WhatsApp
+                               </a>
+                            </DropdownMenuItem>
+                        )}
+                        <DropdownMenuSeparator />
                          <AlertDialog>
                           <AlertDialogTrigger asChild>
                              <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
@@ -437,5 +459,3 @@ export default function AgendaPage() {
     </>
   )
 }
-
-    
