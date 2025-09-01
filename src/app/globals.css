@@ -123,4 +123,14 @@
   .animate-fall-1 { animation: fall-1 linear forwards; }
   .animate-fall-2 { animation: fall-2 linear forwards; }
   .animate-fall-3 { animation: fall-3 linear forwards; }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+ /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
 }
