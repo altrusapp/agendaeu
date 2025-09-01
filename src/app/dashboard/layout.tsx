@@ -154,7 +154,7 @@ export default function DashboardLayout({
           </div>
         </div>
         <div className="flex flex-col h-screen bg-background">
-          <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-background/95 backdrop-blur-sm px-4 lg:h-[60px] lg:px-6 z-10">
+          <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 z-10">
              <div className="w-full flex-1">
                 <h1 className="text-lg font-semibold md:text-xl">
                     {navItems.find(item => item.href === pathname)?.label || desktopNavItems.find(item => item.href === pathname)?.label}
