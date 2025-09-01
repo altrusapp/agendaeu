@@ -153,7 +153,7 @@ export default function DashboardLayout({
             </div>
           </div>
         </div>
-        <div className="flex flex-col min-h-[100dvh] bg-background overflow-hidden">
+        <div className="flex h-screen flex-col bg-background overflow-hidden">
           <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-muted px-4 lg:h-[60px] lg:px-6 z-10">
              <div className="w-full flex-1">
                 <h1 className="text-lg font-semibold md:text-xl">
