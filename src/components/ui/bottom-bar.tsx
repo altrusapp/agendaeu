@@ -26,18 +26,12 @@ export function BottomBar({ navItems, pathname }: BottomBarProps) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex flex-col items-center justify-center w-full h-full text-muted-foreground transition-colors group",
+                  "flex flex-col items-center justify-center w-full h-full text-muted-foreground transition-colors group gap-1 pt-1",
                   isActive && "text-primary"
                 )}
               >
-                <div className={cn(
-                  "flex items-center justify-center gap-2 rounded-full transition-all duration-300 ease-in-out px-4 py-2",
-                   isActive ? "bg-background font-semibold" : "bg-transparent",
-                  "group-hover:bg-background"
-                  )}>
-                   <item.icon className="h-5 w-5 shrink-0" strokeWidth={isActive ? 2.5 : 2} />
-                   <span className={cn("text-sm", isActive ? "inline" : "hidden")}>{item.label}</span>
-                </div>
+                <item.icon className="h-5 w-5 shrink-0" strokeWidth={isActive ? 2.5 : 2} />
+                <span className={cn("text-xs", isActive ? "font-semibold" : "font-normal")}>{item.label}</span>
               </Link>
           )
         })}
