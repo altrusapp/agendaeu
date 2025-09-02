@@ -218,7 +218,7 @@ export default function ClientesPage() {
         lastVisit: null,
         createdAt: new Date(),
       });
-      toast({ title: "Cliente Adicionado!", description: "O novo cliente foi salvo com sucesso." });
+      toast({ title: "Cliente Adicionado!", description: "O novo cliente foi salvo com sucesso.", variant: "success" });
       resetForm();
       setIsAddDialogOpen(false);
       fetchClients(); 
@@ -241,7 +241,7 @@ export default function ClientesPage() {
         phone: clientPhone,
         notes: clientNotes,
       });
-      toast({ title: "Cliente Atualizado!", description: "Os dados do cliente foram salvos." });
+      toast({ title: "Cliente Atualizado!", description: "Os dados do cliente foram salvos.", variant: "success" });
       resetForm();
       setIsEditDialogOpen(false);
       fetchClients(); 
@@ -528,7 +528,5 @@ export default function ClientesPage() {
     </>
   )
 }
-
-    
 
     
