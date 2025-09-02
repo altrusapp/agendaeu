@@ -312,6 +312,17 @@ export default function AgendaPage() {
   const groupedAppointments = groupAppointmentsByDate(appointments);
   const appointmentDates = Object.keys(groupedAppointments).sort();
 
+  const selectedDateKey = date ? format(date, 'yyyy-MM-dd') : '';
+  const selectedDayHasAppointments = !!groupedAppointments[selectedDateKey];
+  const weekHasAppointments = appointments.length > 0;
+
+  const cardDescription = () => {
+    if (loading) return "Carregando...";
+    if (!weekHasAppointments) return "Nenhum agendamento para a semana selecionada.";
+    if (!selectedDayHasAppointments) return "Nenhum agendamento para este dia. Veja os outros compromissos da semana.";
+    return `${appointments.length} agendamento(s) para esta semana.`;
+  };
+
   return (
     <>
       <div className="flex items-center justify-between mb-6">
@@ -366,7 +377,7 @@ export default function AgendaPage() {
               Agendamentos da Semana
             </CardTitle>
             <CardDescription>
-               {!date ? "Selecione um dia no calendário para ver os agendamentos da semana." : loading ? "Carregando..." : `${appointments.length} agendamento(s) para esta semana.`}
+               {cardDescription()}
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
