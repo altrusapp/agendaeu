@@ -32,6 +32,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import {
   Dialog,
@@ -146,7 +147,6 @@ export default function AgendaPage() {
       setAppointments(appointmentsData);
       setLoading(false);
     }, (error) => {
-      // console.error("Error fetching appointments:", error);
       toast({
         variant: "destructive",
         title: "Erro ao buscar agendamentos",
@@ -196,7 +196,6 @@ export default function AgendaPage() {
       resetForm();
       setIsAddDialogOpen(false);
     } catch (error) {
-       // console.error("Error adding appointment: ", error);
        toast({ variant: "destructive", title: "Erro ao Salvar", description: "Não foi possível criar o agendamento. Tente novamente." });
     }
   }
@@ -231,7 +230,6 @@ export default function AgendaPage() {
       resetForm();
       setIsEditDialogOpen(false);
     } catch (error) {
-      // console.error("Error updating appointment: ", error);
       toast({ variant: "destructive", title: "Erro ao Atualizar", description: "Não foi possível salvar as alterações." });
     }
   }
@@ -243,7 +241,6 @@ export default function AgendaPage() {
       await deleteDoc(appointmentRef);
       toast({ title: "Agendamento Cancelado", description: "O agendamento foi removido da sua agenda." });
     } catch (error) {
-      // console.error("Error deleting appointment: ", error);
       toast({ variant: "destructive", title: "Erro ao Cancelar", description: "Não foi possível remover o agendamento." });
     }
   };
@@ -458,3 +455,5 @@ export default function AgendaPage() {
     </>
   )
 }
+
+    

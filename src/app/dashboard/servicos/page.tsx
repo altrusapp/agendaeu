@@ -42,6 +42,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -141,7 +142,6 @@ export default function ServicosPage() {
         })) as Service[];
         setServices(servicesData);
       } catch (error) {
-        // console.error("Error fetching services:", error);
         toast({ variant: "destructive", title: "Erro ao carregar serviços", description: "Não foi possível buscar os dados." });
       } finally {
         setLoading(false);
@@ -439,3 +439,5 @@ export default function ServicosPage() {
     </>
   )
 }
+
+    
