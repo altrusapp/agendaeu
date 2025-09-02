@@ -30,7 +30,7 @@ export function BottomBar({ navItems, pathname }: BottomBarProps) {
                   isActive && "text-primary"
                 )}
               >
-                <item.icon className="h-5 w-5 shrink-0" strokeWidth={isActive ? 2.5 : 2} />
+                <item.icon className="h-5 w-5 shrink-0" strokeWidth={2} />
                 <span className={cn("text-xs", isActive ? "font-semibold" : "font-normal")}>{item.label}</span>
               </Link>
           )
