@@ -14,7 +14,8 @@ import {
   LogOut,
   Settings,
   Menu,
-  LifeBuoy
+  LifeBuoy,
+  WandSparkles
 } from "lucide-react"
 
 import { auth, db } from "@/lib/firebase/client"
@@ -40,7 +41,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { BottomBar } from "@/components/ui/bottom-bar"
 import { InstallPwaButton } from "@/components/install-pwa-button"
 import { cn } from "@/lib/utils"
-import { NailPolishIcon } from "@/components/icons/nail-polish-icon"
 
 type BusinessContextType = {
   business: DocumentData | null;
@@ -60,7 +60,7 @@ export const useBusiness = () => {
 const navItems = [
   { href: "/dashboard", icon: Home, label: "Início" },
   { href: "/dashboard/agenda", icon: Calendar, label: "Agenda" },
-  { href: "/dashboard/servicos", icon: NailPolishIcon, label: "Serviços" },
+  { href: "/dashboard/servicos", icon: WandSparkles, label: "Serviços" },
   { href: "/dashboard/clientes", icon: Users, label: "Clientes" },
 ];
 
