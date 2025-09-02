@@ -366,8 +366,8 @@ export default function ClientesPage() {
                        index % 2 !== 0 && "md:bg-muted/50"
                   )}>
                     {/* --- Mobile View --- */}
-                    <div className="md:hidden flex flex-col">
-                       <div className="p-4 flex items-start justify-between gap-4">
+                    <div className="md:hidden flex flex-col p-4 space-y-4">
+                       <div className="flex items-start justify-between gap-4">
                            <div className="flex items-start gap-4">
                                <Avatar aria-hidden="true" className="h-10 w-10 shrink-0">
                                    <AvatarImage src={client.avatar} alt="" data-ai-hint="person portrait"/>
@@ -379,8 +379,8 @@ export default function ClientesPage() {
                                        {client.notes && (
                                            <Dialog>
                                                <DialogTrigger asChild>
-                                                   <button>
-                                                       <NotebookPen className="h-4 w-4 text-muted-foreground" />
+                                                   <button className="text-muted-foreground">
+                                                       <NotebookPen className="h-4 w-4" />
                                                    </button>
                                                </DialogTrigger>
                                                <DialogContent>
@@ -399,7 +399,7 @@ export default function ClientesPage() {
                            </div>
                            <DropdownMenu>
                                <DropdownMenuTrigger asChild>
-                                   <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost" className="h-8 w-8 shrink-0">
+                                   <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost" className="h-8 w-8 shrink-0 -mr-2 -mt-1">
                                        <MoreHorizontal className="h-4 w-4" />
                                        <span className="sr-only">Toggle menu</span>
                                    </Button>
@@ -427,7 +427,7 @@ export default function ClientesPage() {
                            </DropdownMenu>
                        </div>
                        <Separator className="md:hidden" />
-                       <div className="p-4 grid grid-cols-2 gap-4 text-sm">
+                       <div className="grid grid-cols-2 gap-4 text-sm">
                            <div>
                                <p className="text-muted-foreground">Agendamentos</p>
                                <p className="font-medium">{client.totalAppointments}</p>
