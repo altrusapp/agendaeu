@@ -272,7 +272,7 @@ export default function DashboardPage() {
                                     </div>
                                     <div className="ml-auto font-medium tabular-nums">{app.time}</div>
                                     {app.clientPhone && (
-                                        <Button asChild size="icon" variant="ghost" className="shrink-0 h-9 w-9 text-green-600 hover:text-green-700 hover:bg-green-100">
+                                        <Button asChild size="icon" variant="ghost" className="shrink-0 h-9 w-9 text-green-600 bg-green-100 hover:bg-green-200 dark:bg-green-800/50 dark:hover:bg-green-800">
                                             <a href={generateWhatsAppLink(app)} target="_blank" rel="noopener noreferrer" aria-label="Enviar lembrete no WhatsApp">
                                                 <MessageCircle className="h-5 w-5" />
                                             </a>

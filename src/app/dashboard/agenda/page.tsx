@@ -398,7 +398,7 @@ export default function AgendaPage() {
                         <DropdownMenuLabel>Ações</DropdownMenuLabel>
                         <DropdownMenuItem onClick={() => openEditDialog(app)}>Editar</DropdownMenuItem>
                          {app.clientPhone && (
-                            <DropdownMenuItem asChild>
+                            <DropdownMenuItem asChild className="focus:bg-green-100 dark:focus:bg-green-800/50">
                                <a href={generateWhatsAppLink(app)} target="_blank" rel="noopener noreferrer">
                                  <MessageCircle className="mr-2 h-4 w-4 text-green-600"/>
                                  Lembrete WhatsApp
