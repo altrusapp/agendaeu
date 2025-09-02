@@ -3,9 +3,9 @@
 
 import * as React from "react"
 import { collection, query, onSnapshot, where, Timestamp, addDoc, DocumentData, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore"
-import { MoreHorizontal, PlusCircle, MessageCircle } from "lucide-react"
+import { MoreHorizontal, PlusCircle, MessageCircle, ArrowLeft } from "lucide-react"
 import { ptBR } from "date-fns/locale"
-import { format, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns'
+import { format, startOfWeek, endOfWeek, eachDayOfInterval, parse } from 'date-fns'
 
 
 import { useBusiness } from "@/app/dashboard/layout"
@@ -71,6 +71,7 @@ type Appointment = {
 
 type Client = { id: string; name: string; }
 type Service = { id: string; name: string; }
+type ViewMode = 'week' | 'day';
 
 // Helper to group appointments by date string 'yyyy-MM-dd'
 const groupAppointmentsByDate = (appointments: Appointment[]) => {
@@ -98,6 +99,11 @@ export default function AgendaPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
   const [selectedAppointment, setSelectedAppointment] = React.useState<Appointment | null>(null);
+
+  // New state for view mode
+  const [viewMode, setViewMode] = React.useState<ViewMode>('week');
+  const [selectedDay, setSelectedDay] = React.useState<string | null>(null);
+
 
   // Form State for Add/Edit
   const [selectedClientId, setSelectedClientId] = React.useState('');
@@ -135,6 +141,7 @@ export default function AgendaPage() {
     };
     setLoading(true);
 
+    // Always fetch for the whole week
     const start = startOfWeek(date, { locale: ptBR });
     const end = endOfWeek(date, { locale: ptBR });
     
@@ -163,6 +170,10 @@ export default function AgendaPage() {
       });
       setLoading(false);
     });
+
+    // When the date changes from the calendar, reset to week view
+    setViewMode('week');
+    setSelectedDay(null);
 
     return () => unsubscribe();
   }, [date, business, toast]);
@@ -216,8 +227,10 @@ export default function AgendaPage() {
     }
 
     const [hours, minutes] = appointmentTime.split(':').map(Number);
-    const appointmentDate = new Date(date);
+    // Use the date from the selected appointment, not the calendar's date
+    const appointmentDate = selectedAppointment.date.toDate();
     appointmentDate.setHours(hours, minutes, 0, 0);
+
 
     const selectedClient = clients.find(c => c.id === selectedClientId);
     const selectedService = services.find(s => s.id === selectedServiceId);
@@ -312,15 +325,31 @@ export default function AgendaPage() {
   const groupedAppointments = groupAppointmentsByDate(appointments);
   const appointmentDates = Object.keys(groupedAppointments).sort();
 
-  const selectedDateKey = date ? format(date, 'yyyy-MM-dd') : '';
-  const selectedDayHasAppointments = !!groupedAppointments[selectedDateKey];
-  const weekHasAppointments = appointments.length > 0;
+  const filteredAppointmentDates = viewMode === 'day' && selectedDay
+    ? appointmentDates.filter(dateStr => dateStr === selectedDay)
+    : appointmentDates;
+  
+  const cardTitle = () => {
+    if (viewMode === 'day' && selectedDay) {
+        const dateObj = parse(selectedDay, 'yyyy-MM-dd', new Date());
+        return `Agendamentos de ${format(dateObj, "eeee, dd 'de' MMMM", { locale: ptBR })}`;
+    }
+    return "Agendamentos da Semana";
+  }
 
   const cardDescription = () => {
     if (loading) return "Carregando...";
-    if (!weekHasAppointments) return "Nenhum agendamento para a semana selecionada.";
-    if (!selectedDayHasAppointments) return "Nenhum agendamento para este dia. Veja os outros compromissos da semana.";
-    return `${appointments.length} agendamento(s) para esta semana.`;
+    const totalAppointments = filteredAppointmentDates.reduce((sum, dateStr) => sum + groupedAppointments[dateStr].length, 0);
+
+    if (totalAppointments === 0) {
+        return viewMode === 'day' ? "Nenhum agendamento para este dia." : "Nenhum agendamento para a semana selecionada.";
+    }
+
+    if (viewMode === 'week') {
+      return `${appointments.length} agendamento(s) para esta semana.`
+    }
+
+    return `${totalAppointments} agendamento(s) para este dia.`;
   };
 
   return (
@@ -372,13 +401,23 @@ export default function AgendaPage() {
           </CardContent>
         </Card>
         <Card className="md:col-span-1 lg:col-span-4">
-          <CardHeader>
-            <CardTitle className="text-xl">
-              Agendamentos da Semana
-            </CardTitle>
-            <CardDescription>
-               {cardDescription()}
-            </CardDescription>
+           <CardHeader>
+            <div className="flex items-center gap-4">
+              {viewMode === 'day' && (
+                <Button variant="ghost" size="icon" onClick={() => setViewMode('week')}>
+                  <ArrowLeft className="h-5 w-5" />
+                  <span className="sr-only">Voltar para a semana</span>
+                </Button>
+              )}
+              <div className="flex-1">
+                <CardTitle className="text-xl capitalize">
+                  {cardTitle()}
+                </CardTitle>
+                <CardDescription>
+                  {cardDescription()}
+                </CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="grid gap-4">
             {loading ? (
@@ -392,14 +431,23 @@ export default function AgendaPage() {
                     <Skeleton className="h-4 w-12" />
                   </div>
                ))
-            ) : appointmentDates.length > 0 ? (
-              appointmentDates.map((dateStr) => (
+            ) : filteredAppointmentDates.length > 0 ? (
+              filteredAppointmentDates.map((dateStr) => (
                  <div key={dateStr}>
-                    <h4 className="text-sm font-semibold capitalize mb-3 text-muted-foreground border-b pb-2">
-                        {format(new Date(dateStr.replace(/-/g, '/')), "eeee, dd 'de' MMMM", { locale: ptBR })}
-                    </h4>
+                    <button 
+                      className="w-full text-left"
+                      onClick={() => {
+                        setViewMode('day');
+                        setSelectedDay(dateStr);
+                      }}
+                      disabled={viewMode === 'day'}
+                    >
+                      <h4 className="text-sm font-semibold capitalize mb-3 text-muted-foreground border-b pb-2 hover:text-primary transition-colors">
+                          {format(new Date(dateStr.replace(/-/g, '/')), "eeee, dd 'de' MMMM", { locale: ptBR })}
+                      </h4>
+                    </button>
                     <div className="space-y-2">
-                        {groupedAppointments[dateStr].map((app, index) => (
+                        {groupedAppointments[dateStr].map((app) => (
                           <div key={app.id} className={cn("flex items-center gap-4 p-2 rounded-lg")}>
                              <Avatar aria-hidden="true" className="h-10 w-10">
                                <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
@@ -485,5 +533,3 @@ export default function AgendaPage() {
     </>
   )
 }
-
-    
