@@ -149,79 +149,8 @@ export default function DashboardPage() {
       <div className="flex items-center mb-6">
         <h1 className="text-2xl font-semibold font-headline">Início</h1>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Receita (Mês)
-            </CardTitle>
-            <DollarSign className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            {loadingStats ? (
-              <Skeleton className="h-8 w-3/4" />
-            ) : (
-              <div className="text-2xl font-bold">R$ {stats?.totalRevenue.toFixed(2) ?? '0.00'}</div>
-            )}
-            <p className="text-xs text-muted-foreground">
-              Receita total este mês
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Novos Clientes (Mês)
-            </CardTitle>
-            <Users className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-             {loadingStats ? (
-              <Skeleton className="h-8 w-1/4" />
-            ) : (
-              <div className="text-2xl font-bold">+{stats?.newClients ?? 0}</div>
-            )}
-            <p className="text-xs text-muted-foreground">
-              Clientes cadastrados este mês
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Agendamentos (Mês)</CardTitle>
-            <Calendar className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-             {loadingStats ? (
-              <Skeleton className="h-8 w-1/4" />
-            ) : (
-              <div className="text-2xl font-bold">+{stats?.monthlyAppointments ?? 0}</div>
-            )}
-            <p className="text-xs text-muted-foreground">
-              Agendamentos realizados este mês
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Taxa de Comparecimento
-            </CardTitle>
-            <Activity className="h-4 w-4 text-amber-500" />
-          </CardHeader>
-          <CardContent>
-             {loadingStats ? (
-              <Skeleton className="h-8 w-1/4" />
-            ) : (
-              <div className="text-2xl font-bold">{stats?.attendanceRate ?? 0}%</div>
-            )}
-            <p className="text-xs text-muted-foreground">
-              (Funcionalidade em breve)
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <Card className="lg:col-span-1">
            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -297,6 +226,80 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Receita (Mês)
+            </CardTitle>
+            <DollarSign className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            {loadingStats ? (
+              <Skeleton className="h-8 w-3/4" />
+            ) : (
+              <div className="text-2xl font-bold">R$ {stats?.totalRevenue.toFixed(2) ?? '0.00'}</div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Receita total este mês
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Novos Clientes (Mês)
+            </CardTitle>
+            <Users className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+             {loadingStats ? (
+              <Skeleton className="h-8 w-1/4" />
+            ) : (
+              <div className="text-2xl font-bold">+{stats?.newClients ?? 0}</div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Clientes cadastrados este mês
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Agendamentos (Mês)</CardTitle>
+            <Calendar className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+             {loadingStats ? (
+              <Skeleton className="h-8 w-1/4" />
+            ) : (
+              <div className="text-2xl font-bold">+{stats?.monthlyAppointments ?? 0}</div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Agendamentos realizados este mês
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Taxa de Comparecimento
+            </CardTitle>
+            <Activity className="h-4 w-4 text-amber-500" />
+          </CardHeader>
+          <CardContent>
+             {loadingStats ? (
+              <Skeleton className="h-8 w-1/4" />
+            ) : (
+              <div className="text-2xl font-bold">{stats?.attendanceRate ?? 0}%</div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              (Funcionalidade em breve)
+            </p>
+          </CardContent>
+        </Card>
+      </div>
     </>
   )
-}
+
+    
