@@ -5,7 +5,7 @@ import * as React from "react"
 import { collection, query, onSnapshot, where, Timestamp, addDoc, DocumentData, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore"
 import { MoreHorizontal, PlusCircle, MessageCircle, ArrowLeft } from "lucide-react"
 import { ptBR } from "date-fns/locale"
-import { format, startOfWeek, endOfWeek, eachDayOfInterval, parse } from 'date-fns'
+import { format, startOfWeek, endOfWeek, parse } from 'date-fns'
 
 
 import { useBusiness } from "@/app/dashboard/layout"
@@ -435,14 +435,14 @@ export default function AgendaPage() {
               filteredAppointmentDates.map((dateStr) => (
                  <div key={dateStr}>
                     <button 
-                      className="w-full text-left"
+                      className="w-full text-left cursor-pointer group disabled:cursor-default"
                       onClick={() => {
                         setViewMode('day');
                         setSelectedDay(dateStr);
                       }}
                       disabled={viewMode === 'day'}
                     >
-                      <h4 className="text-sm font-semibold capitalize mb-3 text-muted-foreground border-b pb-2 hover:text-primary transition-colors">
+                      <h4 className="text-sm font-semibold capitalize mb-3 text-muted-foreground border-b pb-2 group-hover:text-primary transition-colors">
                           {format(new Date(dateStr.replace(/-/g, '/')), "eeee, dd 'de' MMMM", { locale: ptBR })}
                       </h4>
                     </button>
@@ -533,3 +533,5 @@ export default function AgendaPage() {
     </>
   )
 }
+
+    
