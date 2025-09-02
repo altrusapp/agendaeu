@@ -17,7 +17,7 @@ interface BottomBarProps {
 
 export function BottomBar({ navItems, pathname }: BottomBarProps) {
   return (
-    <div className="fixed bottom-0 w-full md:hidden shrink-0 bg-muted/95 backdrop-blur-sm z-50">
+    <div className="fixed bottom-0 w-full md:hidden shrink-0 bg-transparent z-50">
       <nav className="flex h-16 items-center justify-around pb-[env(safe-area-inset-bottom)]">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
@@ -30,7 +30,9 @@ export function BottomBar({ navItems, pathname }: BottomBarProps) {
                   isActive && "text-primary"
                 )}
               >
-                <item.icon className="h-5 w-5 shrink-0 transition-transform duration-200" strokeWidth={2} />
+                 <div className={cn("p-2 px-5 rounded-full transition-colors", isActive && "bg-primary/10")}>
+                    <item.icon className="h-5 w-5 shrink-0" />
+                 </div>
                 <span className={cn("text-xs transition-all", isActive ? "font-semibold" : "font-normal")}>{item.label}</span>
               </Link>
           )
