@@ -29,6 +29,9 @@
     --destructive: 3 72% 41%; /* #B3261E - Error */
     --destructive-foreground: 0 0% 100%; /* #FFFFFF - On Error */
 
+    --success: 142 76% 36%; /* #198754 - Success */
+    --success-foreground: 0 0% 100%; /* #FFFFFF - On Success */
+
     --input: 300 38% 92%; /* #ede7f0 - Even lighter version for inputs */
     --ring: 265 82% 60%; /* Primary for focus rings */
 
@@ -59,6 +62,9 @@
 
     --destructive: 3 72% 51%; /* #B3261E slightly brighter for dark mode */
     --destructive-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --success: 142 66% 46%; /* #28a745 - Lighter Success for Dark */
+    --success-foreground: 0 0% 100%;
 
     --input: 240 6% 19%; /* Darker input */
     --ring: 265 82% 72%; /* Lighter Primary for focus rings */
