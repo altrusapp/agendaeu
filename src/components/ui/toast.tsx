@@ -34,7 +34,7 @@ const toastVariants = cva(
         destructive:
           "destructive group border-destructive bg-destructive text-destructive-foreground",
         success:
-          "success group border-success-foreground/20 bg-success text-success-foreground",
+          "success group border-success/50 bg-success text-success-foreground",
       },
     },
     defaultVariants: {
@@ -130,3 +130,5 @@ export {
   ToastClose,
   ToastAction,
 }
+
+    
