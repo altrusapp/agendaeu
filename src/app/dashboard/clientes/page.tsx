@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { MoreHorizontal, PlusCircle, Search, RefreshCw } from "lucide-react"
+import { MoreHorizontal, PlusCircle, Search, RefreshCw, NotebookPen } from "lucide-react"
 import { collection, addDoc, query, onSnapshot, DocumentData, orderBy, limit, startAfter, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore"
 
 import { useBusiness } from "@/app/dashboard/layout"
@@ -51,12 +51,15 @@ import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
+import { Textarea } from "@/components/ui/textarea"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 type Client = {
   id: string;
   name: string;
   email: string;
   phone: string;
+  notes?: string;
   totalAppointments: number;
   lastVisit: {
     seconds: number;
@@ -74,7 +77,9 @@ const ClientForm = ({
   clientName,
   setClientName,
   clientPhone,
-  setClientPhone
+  setClientPhone,
+  clientNotes,
+  setClientNotes,
 }: { 
   onSubmit: (e: React.FormEvent) => void; 
   formId: string;
@@ -82,6 +87,8 @@ const ClientForm = ({
   setClientName: (value: string) => void;
   clientPhone: string;
   setClientPhone: (value: string) => void;
+  clientNotes: string;
+  setClientNotes: (value: string) => void;
 }) => (
     <form id={formId} onSubmit={onSubmit}>
       <div className="grid gap-4 py-4">
@@ -92,6 +99,17 @@ const ClientForm = ({
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="phone" className="text-right">WhatsApp</Label>
           <Input id="phone" value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} placeholder="(11) 99999-9999" className="col-span-3" />
+        </div>
+        <div className="grid grid-cols-4 items-start gap-4">
+          <Label htmlFor="notes" className="text-right pt-2">Anotações</Label>
+          <Textarea 
+            id="notes" 
+            value={clientNotes} 
+            onChange={(e) => setClientNotes(e.target.value)} 
+            placeholder="Alergias, preferências, etc." 
+            className="col-span-3"
+            rows={4}
+          />
         </div>
       </div>
     </form>
@@ -113,6 +131,7 @@ export default function ClientesPage() {
   
   const [clientName, setClientName] = React.useState("");
   const [clientPhone, setClientPhone] = React.useState("");
+  const [clientNotes, setClientNotes] = React.useState("");
 
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -126,6 +145,7 @@ export default function ClientesPage() {
   const resetForm = () => {
     setClientName("");
     setClientPhone("");
+    setClientNotes("");
     setSelectedClient(null);
   };
   
@@ -184,15 +204,16 @@ export default function ClientesPage() {
   const handleAddClient = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!business?.id || !clientName || !clientPhone) {
-      toast({ variant: "destructive", title: "Erro de Validação", description: "Por favor, preencha todos os campos." });
+      toast({ variant: "destructive", title: "Erro de Validação", description: "Nome e WhatsApp são obrigatórios." });
       return;
     }
 
     try {
       await addDoc(collection(db, `businesses/${business.id}/clients`), {
         name: clientName,
-        email: "", // Mantendo o campo no DB por enquanto
+        email: "",
         phone: clientPhone,
+        notes: clientNotes,
         totalAppointments: 0,
         lastVisit: null,
         createdAt: new Date(),
@@ -200,7 +221,7 @@ export default function ClientesPage() {
       toast({ title: "Cliente Adicionado!", description: "O novo cliente foi salvo com sucesso." });
       resetForm();
       setIsAddDialogOpen(false);
-      fetchClients(); // Re-fetch to show the new client
+      fetchClients(); 
     } catch (error) {
       toast({ variant: "destructive", title: "Erro ao Salvar", description: "Não foi possível adicionar o cliente." });
     }
@@ -209,7 +230,7 @@ export default function ClientesPage() {
   const handleEditClient = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!business?.id || !selectedClient || !clientName || !clientPhone) {
-      toast({ variant: "destructive", title: "Erro de Validação", description: "Por favor, preencha todos os campos." });
+      toast({ variant: "destructive", title: "Erro de Validação", description: "Nome e WhatsApp são obrigatórios." });
       return;
     }
 
@@ -218,11 +239,12 @@ export default function ClientesPage() {
       await updateDoc(clientRef, {
         name: clientName,
         phone: clientPhone,
+        notes: clientNotes,
       });
       toast({ title: "Cliente Atualizado!", description: "Os dados do cliente foram salvos." });
       resetForm();
       setIsEditDialogOpen(false);
-      fetchClients(); // Re-fetch to show updated data
+      fetchClients(); 
     } catch (error) {
       toast({ variant: "destructive", title: "Erro ao Atualizar", description: "Não foi possível salvar as alterações." });
     }
@@ -233,7 +255,7 @@ export default function ClientesPage() {
     try {
       await deleteDoc(doc(db, `businesses/${business.id}/clients`, clientId));
       toast({ title: "Cliente Excluído", description: "O cliente foi removido da sua lista." });
-      fetchClients(); // Re-fetch to remove the client from UI
+      fetchClients(); 
     } catch (error) {
       toast({ variant: "destructive", title: "Erro ao Excluir", description: "Não foi possível remover o cliente." });
     }
@@ -243,6 +265,7 @@ export default function ClientesPage() {
     setSelectedClient(client);
     setClientName(client.name);
     setClientPhone(client.phone);
+    setClientNotes(client.notes || "");
     setIsEditDialogOpen(true);
   };
   
@@ -301,6 +324,8 @@ export default function ClientesPage() {
                     setClientName={setClientName}
                     clientPhone={clientPhone}
                     setClientPhone={setClientPhone}
+                    clientNotes={clientNotes}
+                    setClientNotes={setClientNotes}
                 />
                 <DialogFooter>
                 <Button type="submit" form="add-client-form">Salvar Cliente</Button>
@@ -334,7 +359,8 @@ export default function ClientesPage() {
                    </div>
                  ))
               ) : filteredClients.length > 0 ? (
-                filteredClients.map((client, index) => (
+                <TooltipProvider>
+                {filteredClients.map((client, index) => (
                 <div key={client.id} className={cn(
                     "rounded-lg border md:border-0 md:bg-transparent md:grid md:grid-cols-12 md:items-center md:gap-4",
                      index % 2 !== 0 && "md:bg-muted/50"
@@ -400,9 +426,21 @@ export default function ClientesPage() {
                       <AvatarImage src={client.avatar} alt="" data-ai-hint="person portrait"/>
                       <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>
                     </Avatar>
-                     <div>
-                        <p className="font-medium">{client.name}</p>
-                        <p className="text-sm text-muted-foreground">{client.phone}</p>
+                     <div className="flex items-center gap-2">
+                        <div>
+                           <p className="font-medium">{client.name}</p>
+                           <p className="text-sm text-muted-foreground">{client.phone}</p>
+                        </div>
+                        {client.notes && (
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <NotebookPen className="h-4 w-4 text-muted-foreground" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p className="max-w-xs whitespace-pre-wrap">{client.notes}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        )}
                      </div>
                   </div>
                    <div className="hidden p-4 md:col-span-3 md:block">
@@ -442,7 +480,8 @@ export default function ClientesPage() {
                     </DropdownMenu>
                   </div>
                 </div>
-              ))
+              ))}
+              </TooltipProvider>
               ) : (
                  <div className="text-center text-muted-foreground py-10 col-span-full">
                    <p>Nenhum cliente encontrado.</p>
@@ -478,6 +517,8 @@ export default function ClientesPage() {
             setClientName={setClientName}
             clientPhone={clientPhone}
             setClientPhone={setClientPhone}
+            clientNotes={clientNotes}
+            setClientNotes={setClientNotes}
             />
           <DialogFooter>
             <Button type="submit" form="edit-client-form">Salvar Alterações</Button>
@@ -487,5 +528,7 @@ export default function ClientesPage() {
     </>
   )
 }
+
+    
 
     
