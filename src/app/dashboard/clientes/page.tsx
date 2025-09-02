@@ -360,128 +360,140 @@ export default function ClientesPage() {
                  ))
               ) : filteredClients.length > 0 ? (
                 <TooltipProvider>
-                {filteredClients.map((client, index) => (
-                <div key={client.id} className={cn(
-                    "rounded-lg border md:border-0 md:bg-transparent md:grid md:grid-cols-12 md:items-center md:gap-4",
-                     index % 2 !== 0 && "md:bg-muted/50"
-                )}>
-                  {/* --- Mobile View --- */}
-                  <div className="md:hidden">
-                    <div className="p-4 flex items-center justify-between">
-                       <div className="flex items-center gap-4">
-                          <Avatar aria-hidden="true" className="h-10 w-10">
-                            <AvatarImage src={client.avatar} alt="" data-ai-hint="person portrait"/>
-                            <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>
-                          </Avatar>
+                  {filteredClients.map((client, index) => (
+                  <div key={client.id} className={cn(
+                      "rounded-lg border md:border-0 md:bg-transparent md:grid md:grid-cols-12 md:items-center md:gap-4",
+                       index % 2 !== 0 && "md:bg-muted/50"
+                  )}>
+                    {/* --- Mobile View --- */}
+                    <div className="md:hidden">
+                      <div className="p-4 flex items-center justify-between">
+                         <div className="flex items-center gap-4">
+                            <Avatar aria-hidden="true" className="h-10 w-10">
+                              <AvatarImage src={client.avatar} alt="" data-ai-hint="person portrait"/>
+                              <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                  <p className="font-medium">{client.name}</p>
+                                  {client.notes && (
+                                      <Tooltip>
+                                          <TooltipTrigger>
+                                              <NotebookPen className="h-4 w-4 text-muted-foreground" />
+                                          </TooltipTrigger>
+                                          <TooltipContent>
+                                              <p className="max-w-xs whitespace-pre-wrap">{client.notes}</p>
+                                          </TooltipContent>
+                                      </Tooltip>
+                                  )}
+                              </div>
+                              <p className="text-sm text-muted-foreground">{client.phone}</p>
+                            </div>
+                         </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
+                                <MoreHorizontal className="h-4 w-4" />
+                                <span className="sr-only">Toggle menu</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                              <DropdownMenuItem onClick={() => openEditDialog(client)}>Editar</DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                                    <AlertDialogDescription>Esta ação não pode ser desfeita. Isso irá excluir permanentemente o cliente da sua lista.</AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDeleteClient(client.id)}>Sim, excluir</AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                      </div>
+                       <Separator className="md:hidden" />
+                       <div className="p-4 grid grid-cols-2 gap-4 text-sm">
                           <div>
-                            <p className="font-medium">{client.name}</p>
-                            <p className="text-sm text-muted-foreground">{client.phone}</p>
+                              <p className="text-muted-foreground">Agendamentos</p>
+                              <p className="font-medium">{client.totalAppointments}</p>
+                          </div>
+                           <div>
+                              <p className="text-muted-foreground">Última Visita</p>
+                              <p className="font-medium">{formatDate(client.lastVisit)}</p>
                           </div>
                        </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
-                              <MoreHorizontal className="h-4 w-4" />
-                              <span className="sr-only">Toggle menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => openEditDialog(client)}>Editar</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
-                                  <AlertDialogDescription>Esta ação não pode ser desfeita. Isso irá excluir permanentemente o cliente da sua lista.</AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => handleDeleteClient(client.id)}>Sim, excluir</AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
                     </div>
-                     <Separator className="md:hidden" />
-                     <div className="p-4 grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                            <p className="text-muted-foreground">Agendamentos</p>
-                            <p className="font-medium">{client.totalAppointments}</p>
-                        </div>
-                         <div>
-                            <p className="text-muted-foreground">Última Visita</p>
-                            <p className="font-medium">{formatDate(client.lastVisit)}</p>
-                        </div>
-                     </div>
-                  </div>
 
-                  {/* --- Desktop View --- */}
-                  <div className="hidden p-4 md:col-span-4 md:flex items-center gap-3">
-                    <Avatar aria-hidden="true" className="h-10 w-10">
-                      <AvatarImage src={client.avatar} alt="" data-ai-hint="person portrait"/>
-                      <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                     <div className="flex items-center gap-2">
-                        <div>
-                           <p className="font-medium">{client.name}</p>
-                           <p className="text-sm text-muted-foreground">{client.phone}</p>
-                        </div>
-                        {client.notes && (
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <NotebookPen className="h-4 w-4 text-muted-foreground" />
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p className="max-w-xs whitespace-pre-wrap">{client.notes}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        )}
+                    {/* --- Desktop View --- */}
+                    <div className="hidden p-4 md:col-span-4 md:flex items-center gap-3">
+                      <Avatar aria-hidden="true" className="h-10 w-10">
+                        <AvatarImage src={client.avatar} alt="" data-ai-hint="person portrait"/>
+                        <AvatarFallback>{client.name.substring(0,2).toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                       <div className="flex items-center gap-2">
+                          <div>
+                             <p className="font-medium">{client.name}</p>
+                             <p className="text-sm text-muted-foreground">{client.phone}</p>
+                          </div>
+                          {client.notes && (
+                              <Tooltip>
+                                  <TooltipTrigger>
+                                      <NotebookPen className="h-4 w-4 text-muted-foreground" />
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                      <p className="max-w-xs whitespace-pre-wrap">{client.notes}</p>
+                                  </TooltipContent>
+                              </Tooltip>
+                          )}
+                       </div>
+                    </div>
+                     <div className="hidden p-4 md:col-span-3 md:block">
+                       <div className="font-medium">{client.totalAppointments}</div>
                      </div>
+                     <div className="hidden p-4 md:col-span-3 md:block">
+                       <div className="font-medium">{formatDate(client.lastVisit)}</div>
+                     </div>
+                    <div className="hidden p-4 md:col-span-2 md:flex justify-end">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Toggle menu</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                          <DropdownMenuItem onClick={() => openEditDialog(client)}>Editar</DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                                <AlertDialogDescription>Esta ação não pode ser desfeita. Isso irá excluir permanentemente o cliente da sua lista.</AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteClient(client.id)}>Sim, excluir</AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
-                   <div className="hidden p-4 md:col-span-3 md:block">
-                     <div className="font-medium">{client.totalAppointments}</div>
-                   </div>
-                   <div className="hidden p-4 md:col-span-3 md:block">
-                     <div className="font-medium">{formatDate(client.lastVisit)}</div>
-                   </div>
-                  <div className="hidden p-4 md:col-span-2 md:flex justify-end">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => openEditDialog(client)}>Editar</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
-                              <AlertDialogDescription>Esta ação não pode ser desfeita. Isso irá excluir permanentemente o cliente da sua lista.</AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDeleteClient(client.id)}>Sim, excluir</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-              ))}
-              </TooltipProvider>
+                ))}
+                </TooltipProvider>
               ) : (
                  <div className="text-center text-muted-foreground py-10 col-span-full">
                    <p>Nenhum cliente encontrado.</p>
@@ -528,5 +540,3 @@ export default function ClientesPage() {
     </>
   )
 }
-
-    
