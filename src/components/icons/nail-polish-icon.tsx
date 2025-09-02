@@ -1,4 +1,3 @@
-
 import { SVGProps } from "react";
 
 export function NailPolishIcon(props: SVGProps<SVGSVGElement>) {
@@ -15,11 +14,9 @@ export function NailPolishIcon(props: SVGProps<SVGSVGElement>) {
       strokeLinejoin="round"
       {...props}
     >
-      <path d="M8.5 2.5l3 3" />
-      <path d="M11.5 5.5l-3-3" />
-      <path d="M8.5 12v-.5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2V12" />
-      <path d="M10 12h5" />
-      <path d="M5 12h14a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2Z" />
+      <path d="M12 2a1 1 0 0 0-1 1v5.586a1 1 0 0 0 .293.707l4.414 4.414a1 1 0 0 0 .707.293h.172a1 1 0 0 0 .707-.293l2.828-2.828a1 1 0 0 0 0-1.414l-4.414-4.414a1 1 0 0 0-.707-.293H13a1 1 0 0 0-1-1z" />
+      <path d="M4 14.5a3.5 3.5 0 0 1 7 0" />
+      <path d="M4 21h16" />
     </svg>
   );
 }
