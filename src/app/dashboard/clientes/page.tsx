@@ -366,7 +366,7 @@ export default function ClientesPage() {
                        index % 2 !== 0 && "md:bg-muted/50"
                   )}>
                     {/* --- Mobile View --- */}
-                    <div className="md:hidden">
+                    <div className="md:hidden flex flex-col">
                        <div className="p-4 flex items-start justify-between gap-4">
                           <div className="flex items-start gap-4">
                               <Avatar aria-hidden="true" className="h-10 w-10 shrink-0">
@@ -550,5 +550,3 @@ export default function ClientesPage() {
     </>
   )
 }
-
-    

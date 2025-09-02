@@ -258,7 +258,7 @@ export default function AgendaPage() {
     const cleanPhone = appointment.clientPhone.replace(/\D/g, '');
     const phoneWithCountryCode = cleanPhone.length > 11 ? cleanPhone : `55${cleanPhone}`;
     const dateStr = format(appointment.date.toDate(), "dd/MM/yyyy");
-    const message = `Olá, ${appointment.clientName}! Este é um lembrete do seu agendamento para ${appointment.serviceName} no dia ${dateStr} às ${appointment.time}. Estamos ansiosos para te ver!`;
+    const message = `Olá, ${appointment.clientName}! Este é um lembrete do seu agendamento para ${appointment.serviceName} no dia ${dateStr} às ${appointment.time}. Estou te esperando, tudo bem? `;
     return `https://wa.me/${phoneWithCountryCode}?text=${encodeURIComponent(message)}`;
   }
 
