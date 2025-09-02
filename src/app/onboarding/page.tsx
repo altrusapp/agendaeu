@@ -112,6 +112,7 @@ export default function OnboardingPage() {
       await batch.commit();
 
       toast({
+        variant: "success",
         title: "Tudo pronto!",
         description: "Seu espaço e serviços padrão foram criados com sucesso.",
       })
@@ -249,3 +250,5 @@ export default function OnboardingPage() {
     </div>
   )
 }
+
+    

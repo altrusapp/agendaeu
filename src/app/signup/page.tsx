@@ -68,6 +68,7 @@ export default function SignupPage() {
     try {
       await createUserWithEmailAndPassword(auth, values.email, values.password);
       toast({
+        variant: "success",
         title: "Conta criada com sucesso!",
         description: "Vamos configurar seu espaço.",
       })
@@ -170,3 +171,5 @@ export default function SignupPage() {
     </div>
   )
 }
+
+    

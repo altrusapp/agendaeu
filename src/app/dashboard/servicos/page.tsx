@@ -168,7 +168,7 @@ export default function ServicosPage() {
         active: true,
         createdAt: new Date(),
       });
-      toast({ title: "Serviço Adicionado!", description: "O novo serviço foi salvo com sucesso." });
+      toast({ variant: "success", title: "Serviço Adicionado!", description: "O novo serviço foi salvo com sucesso." });
       resetForm();
       setIsAddDialogOpen(false);
       fetchServices(); // Re-fetch to show the new service
@@ -191,7 +191,7 @@ export default function ServicosPage() {
         duration,
         price: Number(price),
       });
-      toast({ title: "Serviço Atualizado!", description: "As alterações foram salvas." });
+      toast({ variant: "success", title: "Serviço Atualizado!", description: "As alterações foram salvas." });
       resetForm();
       setIsEditDialogOpen(false);
       fetchServices(); // Re-fetch to show updated data
@@ -204,7 +204,7 @@ export default function ServicosPage() {
     if (!business?.id) return;
     try {
       await deleteDoc(doc(db, `businesses/${business.id}/services`, serviceId));
-      toast({ title: "Serviço Excluído", description: "O serviço foi removido da sua lista." });
+      toast({ variant: "success", title: "Serviço Excluído", description: "O serviço foi removido da sua lista." });
       fetchServices(); // Re-fetch to remove from UI
     } catch (error) {
       toast({ variant: "destructive", title: "Erro ao Excluir", description: "Não foi possível remover o serviço." });
@@ -217,6 +217,7 @@ export default function ServicosPage() {
       const serviceRef = doc(db, `businesses/${business.id}/services`, service.id);
       await updateDoc(serviceRef, { active: !service.active });
       toast({
+        variant: "success",
         title: `Serviço ${!service.active ? "Ativado" : "Desativado"}`,
         description: `${service.name} agora está ${!service.active ? "visível" : "oculto"} na página de agendamento.`,
       });

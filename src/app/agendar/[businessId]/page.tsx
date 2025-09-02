@@ -603,8 +603,3 @@ export default function PublicSchedulePage() {
 }
 
     
-    
-
-    
-
-    

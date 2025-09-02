@@ -186,6 +186,7 @@ function BusinessHoursForm() {
         businessHours: data.businessHours
       });
       toast({
+        variant: "success",
         title: "Sucesso!",
         description: "Seus horários de funcionamento foram atualizados.",
       });
@@ -339,6 +340,7 @@ export default function ConfiguracoesPage() {
       
       await updateDoc(businessRef, updateData);
        toast({
+        variant: "success",
         title: "Sucesso!",
         description: "Seu perfil foi atualizado.",
       });
@@ -367,6 +369,7 @@ export default function ConfiguracoesPage() {
         ownerAvatarUrl: data.ownerAvatarUrl,
       });
       toast({
+        variant: "success",
         title: "Sucesso!",
         description: "As configurações da sua conta foram atualizadas.",
       });
@@ -546,3 +549,5 @@ export default function ConfiguracoesPage() {
     </>
   )
 }
+
+    

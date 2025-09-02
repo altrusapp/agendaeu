@@ -192,7 +192,7 @@ export default function AgendaPage() {
         createdAt: new Date(),
       });
       
-      toast({ title: "Agendamento Criado!", description: "O novo agendamento foi salvo com sucesso." });
+      toast({ variant: "success", title: "Agendamento Criado!", description: "O novo agendamento foi salvo com sucesso." });
       resetForm();
       setIsAddDialogOpen(false);
     } catch (error) {
@@ -226,7 +226,7 @@ export default function AgendaPage() {
         time: appointmentTime,
       });
 
-      toast({ title: "Agendamento Atualizado!", description: "As alterações foram salvas com sucesso." });
+      toast({ variant: "success", title: "Agendamento Atualizado!", description: "As alterações foram salvas com sucesso." });
       resetForm();
       setIsEditDialogOpen(false);
     } catch (error) {
@@ -239,7 +239,7 @@ export default function AgendaPage() {
     const appointmentRef = doc(db, `businesses/${business.id}/appointments`, appointmentId);
     try {
       await deleteDoc(appointmentRef);
-      toast({ title: "Agendamento Cancelado", description: "O agendamento foi removido da sua agenda." });
+      toast({ variant: "success", title: "Agendamento Cancelado", description: "O agendamento foi removido da sua agenda." });
     } catch (error) {
       toast({ variant: "destructive", title: "Erro ao Cancelar", description: "Não foi possível remover o agendamento." });
     }

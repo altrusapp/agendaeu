@@ -38,6 +38,7 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({
+        variant: "success",
         title: "Login bem-sucedido!",
         description: "Redirecionando para a página inicial...",
       })
@@ -121,3 +122,5 @@ export default function LoginPage() {
     </div>
   )
 }
+
+    
