@@ -4,7 +4,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { collection, query, where, getDocs, limit, orderBy, Timestamp } from "firebase/firestore"
-import { startOfMonth, endOfMonth, format, startOfToday } from "date-fns"
+import { startOfMonth, endOfMonth, format, startOfToday, endOfToday } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { Activity, ArrowUpRight, Calendar, Users, DollarSign, MessageCircle } from "lucide-react"
 
@@ -110,10 +110,11 @@ export default function DashboardPage() {
       try {
          const appointmentsRef = collection(db, `businesses/${business.id}/appointments`);
          const today = startOfToday();
+         const tomorrow = endOfToday();
          const upcomingQuery = query(appointmentsRef, 
-            where("date", ">=", Timestamp.fromDate(today)), 
-            orderBy("date"), 
-            limit(10) // Fetch more to ensure we have appointments for a few days
+            where("date", ">=", Timestamp.fromDate(today)),
+            where("date", "<=", Timestamp.fromDate(tomorrow)),
+            orderBy("date"),
         );
         const snapshot = await getDocs(upcomingQuery);
         const appointmentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Appointment));
@@ -154,9 +155,9 @@ export default function DashboardPage() {
         <Card className="lg:col-span-1">
            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <CardTitle>Próximos Agendamentos</CardTitle>
+              <CardTitle>Agendamentos de Hoje</CardTitle>
               <CardDescription>
-                Seus próximos compromissos confirmados.
+                Seus compromissos confirmados para hoje.
               </CardDescription>
             </div>
             <Button asChild size="sm" className="w-full sm:w-auto">
@@ -217,7 +218,7 @@ export default function DashboardPage() {
                 </div>
             ) : (
                 <div className="text-center text-muted-foreground py-10">
-                  <p>Nenhum agendamento futuro encontrado.</p>
+                  <p>Nenhum agendamento para hoje.</p>
                    <Button asChild variant="link">
                      <Link href="/dashboard/agenda">Criar novo agendamento</Link>
                    </Button>
@@ -301,5 +302,4 @@ export default function DashboardPage() {
       </div>
     </>
   )
-
     
