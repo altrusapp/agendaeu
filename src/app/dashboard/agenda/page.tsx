@@ -5,7 +5,7 @@ import * as React from "react"
 import { collection, query, onSnapshot, where, Timestamp, addDoc, DocumentData, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore"
 import { MoreHorizontal, PlusCircle, MessageCircle } from "lucide-react"
 import { ptBR } from "date-fns/locale"
-import { format } from 'date-fns'
+import { format, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns'
 
 
 import { useBusiness } from "@/app/dashboard/layout"
@@ -72,6 +72,19 @@ type Appointment = {
 type Client = { id: string; name: string; }
 type Service = { id: string; name: string; }
 
+// Helper to group appointments by date string 'yyyy-MM-dd'
+const groupAppointmentsByDate = (appointments: Appointment[]) => {
+  if (!appointments) return {};
+  return appointments.reduce((acc, appointment) => {
+    const dateKey = format(appointment.date.toDate(), "yyyy-MM-dd");
+    if (!acc[dateKey]) {
+      acc[dateKey] = [];
+    }
+    acc[dateKey].push(appointment);
+    return acc;
+  }, {} as Record<string, Appointment[]>);
+};
+
 export default function AgendaPage() {
   const { business } = useBusiness();
   const { toast } = useToast();
@@ -113,7 +126,7 @@ export default function AgendaPage() {
     }
   }, [business]);
 
-  // Fetch appointments for the selected date
+  // Fetch appointments for the selected week
   React.useEffect(() => {
     if (!date || !business?.id) {
         setAppointments([]);
@@ -122,14 +135,11 @@ export default function AgendaPage() {
     };
     setLoading(true);
 
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
+    const start = startOfWeek(date, { locale: ptBR });
+    const end = endOfWeek(date, { locale: ptBR });
     
-    const startTimestamp = Timestamp.fromDate(startOfDay);
-    const endTimestamp = Timestamp.fromDate(endOfDay);
+    const startTimestamp = Timestamp.fromDate(start);
+    const endTimestamp = Timestamp.fromDate(end);
     
     const appointmentsRef = collection(db, `businesses/${business.id}/appointments`);
     const q = query(appointmentsRef, 
@@ -138,7 +148,6 @@ export default function AgendaPage() {
       orderBy("date")
     );
     
-    // Correctly implement unsubscribe for the appointments listener
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const appointmentsData = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -155,7 +164,6 @@ export default function AgendaPage() {
       setLoading(false);
     });
 
-    // Cleanup function to unsubscribe from the listener when date or business changes, or component unmounts
     return () => unsubscribe();
   }, [date, business, toast]);
   
@@ -301,6 +309,9 @@ export default function AgendaPage() {
     </form>
   )
 
+  const groupedAppointments = groupAppointmentsByDate(appointments);
+  const appointmentDates = Object.keys(groupedAppointments).sort();
+
   return (
     <>
       <div className="flex items-center justify-between mb-6">
@@ -352,14 +363,13 @@ export default function AgendaPage() {
         <Card className="md:col-span-1 lg:col-span-4">
           <CardHeader>
             <CardTitle className="text-xl">
-              Agendamentos para{" "}
-              {date ? date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }) : "..."}
+              Agendamentos da Semana
             </CardTitle>
             <CardDescription>
-               {!date ? "Selecione um dia no calendário para ver os agendamentos." : loading ? "Carregando..." : `${appointments.length} agendamento(s) para este dia.`}
+               {!date ? "Selecione um dia no calendário para ver os agendamentos da semana." : loading ? "Carregando..." : `${appointments.length} agendamento(s) para esta semana.`}
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-2">
+          <CardContent className="grid gap-4">
             {loading ? (
                Array.from({ length: 3 }).map((_, i) => (
                   <div key={i} className="flex items-center gap-4 p-4 rounded-lg bg-muted/50">
@@ -371,63 +381,72 @@ export default function AgendaPage() {
                     <Skeleton className="h-4 w-12" />
                   </div>
                ))
-            ) : appointments.length > 0 ? (
-              appointments.map((app, index) => (
-                <div key={app.id} className={cn("flex items-center gap-4 p-4 rounded-lg", index % 2 !== 0 && "bg-muted/50")}>
-                   <Avatar aria-hidden="true" className="h-10 w-10">
-                     <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
-                    <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  <div className="grid gap-1 flex-1">
-                    <p className="text-sm font-medium leading-none">{app.clientName}</p>
-                    <p className="text-sm text-muted-foreground">{app.serviceName}</p>
-                  </div>
-                  <div className="text-sm font-medium tabular-nums">{app.time}</div>
-                   <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => openEditDialog(app)}>Editar</DropdownMenuItem>
-                         {app.clientPhone && (
-                            <DropdownMenuItem asChild className="focus:bg-green-100 dark:focus:bg-green-800/50">
-                               <a href={generateWhatsAppLink(app)} target="_blank" rel="noopener noreferrer">
-                                 <MessageCircle className="mr-2 h-4 w-4 text-green-600"/>
-                                 Lembrete WhatsApp
-                               </a>
-                            </DropdownMenuItem>
-                        )}
-                        <DropdownMenuSeparator />
-                         <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                             <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Esta ação não pode ser desfeita. Isso irá cancelar permanentemente o agendamento.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDeleteAppointment(app.id)}>
-                                Sim, excluir
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
+            ) : appointmentDates.length > 0 ? (
+              appointmentDates.map((dateStr) => (
+                 <div key={dateStr}>
+                    <h4 className="text-sm font-semibold capitalize mb-3 text-muted-foreground border-b pb-2">
+                        {format(new Date(dateStr.replace(/-/g, '/')), "eeee, dd 'de' MMMM", { locale: ptBR })}
+                    </h4>
+                    <div className="space-y-2">
+                        {groupedAppointments[dateStr].map((app, index) => (
+                          <div key={app.id} className={cn("flex items-center gap-4 p-2 rounded-lg")}>
+                             <Avatar aria-hidden="true" className="h-10 w-10">
+                               <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
+                              <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            <div className="grid gap-1 flex-1">
+                              <p className="text-sm font-medium leading-none">{app.clientName}</p>
+                              <p className="text-sm text-muted-foreground">{app.serviceName}</p>
+                            </div>
+                            <div className="text-sm font-medium tabular-nums">{app.time}</div>
+                             <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                    <span className="sr-only">Toggle menu</span>
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                                  <DropdownMenuItem onClick={() => openEditDialog(app)}>Editar</DropdownMenuItem>
+                                   {app.clientPhone && (
+                                      <DropdownMenuItem asChild className="focus:bg-green-100 dark:focus:bg-green-800/50">
+                                         <a href={generateWhatsAppLink(app)} target="_blank" rel="noopener noreferrer">
+                                           <MessageCircle className="mr-2 h-4 w-4 text-green-600"/>
+                                           Lembrete WhatsApp
+                                         </a>
+                                      </DropdownMenuItem>
+                                  )}
+                                  <DropdownMenuSeparator />
+                                   <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                       <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                          Esta ação não pode ser desfeita. Isso irá cancelar permanentemente o agendamento.
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleDeleteAppointment(app.id)}>
+                                          Sim, excluir
+                                        </AlertDialogAction>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                          </div>
+                        ))}
+                    </div>
+                 </div>
               ))
             ) : (
               <div className="text-center text-muted-foreground py-10">
-                <p>{date ? "Nenhum agendamento para a data selecionada." : "Selecione uma data para começar."}</p>
+                <p>{date ? "Nenhum agendamento para a semana selecionada." : "Selecione uma data para começar."}</p>
               </div>
             )}
           </CardContent>
