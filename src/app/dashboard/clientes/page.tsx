@@ -43,7 +43,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -144,7 +143,7 @@ export default function ClientesPage() {
       setLastVisible(documentSnapshots.docs[documentSnapshots.docs.length - 1]);
       setHasMore(clientsData.length === CLIENTS_PER_PAGE);
     } catch (error) {
-      console.error("Error fetching clients:", error);
+      // console.error("Error fetching clients:", error);
       toast({ variant: "destructive", title: "Erro ao carregar clientes", description: "Não foi possível buscar os dados."});
     } finally {
       setLoading(false);
@@ -488,5 +487,3 @@ export default function ClientesPage() {
     </>
   )
 }
-
-    

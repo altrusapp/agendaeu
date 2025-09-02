@@ -99,7 +99,7 @@ export default function DashboardPage() {
         });
 
       } catch (error) {
-        console.error("Error fetching dashboard stats:", error);
+        // console.error("Error fetching dashboard stats:", error);
       } finally {
         setLoadingStats(false);
       }
@@ -119,7 +119,7 @@ export default function DashboardPage() {
         setRecentAppointments(appointmentsData);
       } catch (error)
  {
-        console.error("Error fetching recent appointments:", error);
+        // console.error("Error fetching recent appointments:", error);
       } finally {
         setLoadingAppointments(false);
       }
@@ -232,7 +232,7 @@ export default function DashboardPage() {
             <Button asChild size="sm" className="w-full sm:w-auto">
               <Link href="/dashboard/agenda">
                 Ver Agenda Completa
-                <ArrowUpRight className="h-4 w-4" />
+                <ArrowUpRight className="h-4 w-4 ml-2" />
               </Link>
             </Button>
           </CardHeader>

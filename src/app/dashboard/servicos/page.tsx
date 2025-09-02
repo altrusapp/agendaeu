@@ -42,7 +42,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -142,7 +141,7 @@ export default function ServicosPage() {
         })) as Service[];
         setServices(servicesData);
       } catch (error) {
-        console.error("Error fetching services:", error);
+        // console.error("Error fetching services:", error);
         toast({ variant: "destructive", title: "Erro ao carregar serviços", description: "Não foi possível buscar os dados." });
       } finally {
         setLoading(false);
@@ -296,11 +295,11 @@ export default function ServicosPage() {
             {loading ? (
               Array.from({ length: 5 }).map((_, i) => (
                  <div key={i} className="flex items-center space-x-4 p-4 rounded-lg">
-                    <Skeleton className="h-12 w-12 rounded-full" />
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-[250px]" />
-                        <Skeleton className="h-4 w-[200px]" />
+                    <div className="space-y-2 flex-grow">
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
                     </div>
+                     <Skeleton className="h-8 w-20" />
                 </div>
               ))
             ) : services.length > 0 ? (
@@ -308,7 +307,7 @@ export default function ServicosPage() {
                   <div key={service.id} className={cn(
                       "rounded-lg p-4",
                       "md:grid md:grid-cols-12 md:items-center md:gap-4",
-                      index % 2 !== 0 && "bg-muted/50"
+                      index % 2 !== 0 && "md:bg-muted/50"
                   )}>
                     {/* --- Mobile View --- */}
                     <div className="md:hidden flex items-center justify-between">
