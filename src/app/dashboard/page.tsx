@@ -4,7 +4,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { collection, query, where, getDocs, limit, orderBy, Timestamp } from "firebase/firestore"
-import { startOfMonth, endOfMonth, format } from "date-fns"
+import { startOfMonth, endOfMonth, format, startOfToday } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { Activity, ArrowUpRight, Calendar, Users, DollarSign, MessageCircle } from "lucide-react"
 
@@ -109,8 +109,9 @@ export default function DashboardPage() {
       setLoadingAppointments(true);
       try {
          const appointmentsRef = collection(db, `businesses/${business.id}/appointments`);
+         const today = startOfToday();
          const upcomingQuery = query(appointmentsRef, 
-            where("date", ">=", Timestamp.fromDate(new Date())), 
+            where("date", ">=", Timestamp.fromDate(today)), 
             orderBy("date"), 
             limit(10) // Fetch more to ensure we have appointments for a few days
         );
