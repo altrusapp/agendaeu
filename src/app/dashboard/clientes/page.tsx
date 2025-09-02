@@ -218,7 +218,7 @@ export default function ClientesPage() {
         lastVisit: null,
         createdAt: new Date(),
       });
-      toast({ title: "Cliente Adicionado!", description: "O novo cliente foi salvo com sucesso.", variant: "success" });
+      toast({ title: "Cliente Adicionado!", description: "O novo cliente foi salvo com sucesso." });
       resetForm();
       setIsAddDialogOpen(false);
       fetchClients(); 
@@ -241,7 +241,7 @@ export default function ClientesPage() {
         phone: clientPhone,
         notes: clientNotes,
       });
-      toast({ title: "Cliente Atualizado!", description: "Os dados do cliente foram salvos.", variant: "success" });
+      toast({ title: "Cliente Atualizado!", description: "Os dados do cliente foram salvos." });
       resetForm();
       setIsEditDialogOpen(false);
       fetchClients(); 
@@ -377,14 +377,21 @@ export default function ClientesPage() {
                               <div className="flex items-center gap-2">
                                   <p className="font-medium">{client.name}</p>
                                   {client.notes && (
-                                      <Tooltip>
-                                          <TooltipTrigger>
-                                              <NotebookPen className="h-4 w-4 text-muted-foreground" />
-                                          </TooltipTrigger>
-                                          <TooltipContent>
-                                              <p className="max-w-xs whitespace-pre-wrap">{client.notes}</p>
-                                          </TooltipContent>
-                                      </Tooltip>
+                                     <Dialog>
+                                        <DialogTrigger asChild>
+                                            <button>
+                                                <NotebookPen className="h-4 w-4 text-muted-foreground" />
+                                            </button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>Anotações de {client.name}</DialogTitle>
+                                            </DialogHeader>
+                                            <div className="py-4 whitespace-pre-wrap">
+                                                {client.notes}
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
                                   )}
                               </div>
                               <p className="text-sm text-muted-foreground">{client.phone}</p>
