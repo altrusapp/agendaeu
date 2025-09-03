@@ -5,7 +5,7 @@ import * as React from "react"
 import { collection, query, onSnapshot, where, Timestamp, addDoc, DocumentData, orderBy, doc, updateDoc, deleteDoc, getDocs } from "firebase/firestore"
 import { MoreHorizontal, PlusCircle, MessageCircle, ArrowLeft } from "lucide-react"
 import { ptBR } from "date-fns/locale"
-import { format, startOfDay, endOfDay, parse } from 'date-fns'
+import { format, startOfDay, endOfDay, parse, startOfMonth, endOfMonth, isSameDay } from 'date-fns'
 
 
 import { useBusiness } from "@/app/dashboard/layout"
@@ -72,6 +72,8 @@ type Appointment = {
 type Client = { id: string; name: string; }
 type Service = { id: string; name: string; }
 
+const Dot = () => <div className="h-1 w-1 bg-primary rounded-full" />;
+
 export default function AgendaPage() {
   const { business } = useBusiness();
   const { toast } = useToast();
@@ -80,6 +82,8 @@ export default function AgendaPage() {
   const [appointments, setAppointments] = React.useState<Appointment[]>([]);
   const [clients, setClients] = React.useState<Client[]>([]);
   const [services, setServices] = React.useState<Service[]>([]);
+  const [bookedDays, setBookedDays] = React.useState<Date[]>([]);
+  const [currentMonth, setCurrentMonth] = React.useState(new Date());
   
   const [loading, setLoading] = React.useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
@@ -95,7 +99,6 @@ export default function AgendaPage() {
   React.useEffect(() => {
     if (!business?.id) return;
 
-    // Use onSnapshot for clients and services, ensuring proper cleanup
     const clientsQuery = query(collection(db, `businesses/${business.id}/clients`));
     const clientsUnsub = onSnapshot(clientsQuery, (snapshot) => {
       setClients(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client)));
@@ -106,7 +109,6 @@ export default function AgendaPage() {
       setServices(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Service)));
     });
 
-    // Cleanup function to unsubscribe from listeners when the component unmounts
     return () => {
       clientsUnsub();
       servicesUnsub();
@@ -153,6 +155,29 @@ export default function AgendaPage() {
 
     return () => unsubscribe();
   }, [date, business, toast]);
+
+  // Fetch all booked days for the current month
+  React.useEffect(() => {
+    if (!business?.id) return;
+
+    const start = startOfMonth(currentMonth);
+    const end = endOfMonth(currentMonth);
+    const startTimestamp = Timestamp.fromDate(start);
+    const endTimestamp = Timestamp.fromDate(end);
+    
+    const appointmentsRef = collection(db, `businesses/${business.id}/appointments`);
+    const q = query(appointmentsRef, 
+      where("date", ">=", startTimestamp),
+      where("date", "<=", endTimestamp)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const bookedDates = snapshot.docs.map(doc => doc.data().date.toDate());
+      setBookedDays(bookedDates);
+    });
+    
+    return () => unsubscribe();
+  }, [currentMonth, business]);
   
   const resetForm = () => {
     setSelectedClientId('');
@@ -315,6 +340,22 @@ export default function AgendaPage() {
     return `${appointments.length} agendamento(s) para este dia.`;
   };
 
+  const DayWithDot = ({ date, selected, ...props }: { date: Date, selected?: boolean, [key: string]: any }) => {
+    const isBooked = bookedDays.some(bookedDate => isSameDay(bookedDate, date));
+    const isSelected = selected;
+  
+    return (
+      <div className="relative h-full w-full flex items-center justify-center">
+        {props.children}
+        {isBooked && !isSelected && (
+          <div className="absolute bottom-1 flex space-x-0.5">
+            <Dot /><Dot /><Dot />
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <>
       <div className="flex items-center justify-between mb-6">
@@ -350,6 +391,8 @@ export default function AgendaPage() {
               mode="single"
               selected={date}
               onSelect={setDate}
+              month={currentMonth}
+              onMonthChange={setCurrentMonth}
               className="w-full p-3"
               classNames={{
                 head_row: "flex justify-between",
@@ -360,6 +403,11 @@ export default function AgendaPage() {
               }}
               disabled={(d) => d < new Date(new Date().setDate(new Date().getDate() - 1))}
               locale={ptBR}
+              components={{
+                Day: ({ date, ...props }) => (
+                   <DayWithDot date={date} {...props} />
+                )
+              }}
             />
           </CardContent>
         </Card>
@@ -468,5 +516,3 @@ export default function AgendaPage() {
     </>
   )
 }
-
-    
