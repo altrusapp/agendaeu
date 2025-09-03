@@ -72,8 +72,6 @@ type Appointment = {
 type Client = { id: string; name: string; }
 type Service = { id: string; name: string; }
 
-const Dot = () => <div className="h-1 w-1 bg-primary rounded-full" />;
-
 export default function AgendaPage() {
   const { business } = useBusiness();
   const { toast } = useToast();
@@ -340,22 +338,6 @@ export default function AgendaPage() {
     return `${appointments.length} agendamento(s) para este dia.`;
   };
 
-  const DayWithDot = ({ date, selected, ...props }: { date: Date, selected?: boolean, [key: string]: any }) => {
-    const isBooked = bookedDays.some(bookedDate => isSameDay(bookedDate, date));
-    const isSelected = selected;
-  
-    return (
-      <div className="relative h-full w-full flex items-center justify-center">
-        {props.children}
-        {isBooked && !isSelected && (
-          <div className="absolute bottom-1 flex space-x-0.5">
-            <Dot /><Dot /><Dot />
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <>
       <div className="flex items-center justify-between mb-6">
@@ -403,10 +385,9 @@ export default function AgendaPage() {
               }}
               disabled={(d) => d < new Date(new Date().setDate(new Date().getDate() - 1))}
               locale={ptBR}
-              components={{
-                Day: ({ date, ...props }) => (
-                   <DayWithDot date={date} {...props} />
-                )
+              modifiers={{ booked: bookedDays }}
+              modifiersClassNames={{
+                booked: 'day-booked',
               }}
             />
           </CardContent>

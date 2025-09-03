@@ -139,4 +139,22 @@
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
   }
+
+  .day-booked:not(.day-selected) {
+    position: relative;
+  }
+
+  .day-booked:not(.day-selected)::after {
+    content: '...';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    line-height: 1;
+    color: hsl(var(--primary));
+    letter-spacing: -1px;
+    font-weight: 800;
+  }
 }
+
