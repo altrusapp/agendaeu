@@ -11,7 +11,7 @@ import { format, startOfDay, endOfDay, parse, startOfMonth, endOfMonth, isSameDa
 import { useBusiness } from "@/app/dashboard/layout"
 import { db } from "@/lib/firebase/client"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar } from "@/components/ui/calendar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -171,7 +171,10 @@ export default function AgendaPage() {
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const bookedDates = snapshot.docs.map(doc => doc.data().date.toDate());
-      setBookedDays(bookedDates);
+      const uniqueDates = bookedDates.filter((date, index, self) => 
+        self.findIndex(d => isSameDay(d, date)) === index
+      );
+      setBookedDays(uniqueDates);
     });
     
     return () => unsubscribe();
@@ -226,7 +229,6 @@ export default function AgendaPage() {
     }
 
     const [hours, minutes] = appointmentTime.split(':').map(Number);
-    // Use the date from the selected appointment, not the calendar's date
     const appointmentDate = selectedAppointment.date.toDate();
     appointmentDate.setHours(hours, minutes, 0, 0);
 
