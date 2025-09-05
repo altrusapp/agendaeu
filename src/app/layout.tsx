@@ -20,9 +20,9 @@ export const metadata: Metadata = {
     initialScale: 1,
     maximumScale: 1,
   },
-   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "hsl(var(--background))" },
-    { media: "(prefers-color-scheme: dark)", color: "hsl(var(--background))" },
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fdfdfd" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
   ],
 };
 
@@ -34,8 +34,8 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={ptSans.variable} suppressHydrationWarning>
       <head>
-        <meta name="theme-color" media="(prefers-color-scheme: light)" content="hsl(var(--background))" />
-        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="hsl(var(--background))" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fdfdfd" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a" />
       </head>
       <body>
         {children}
