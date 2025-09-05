@@ -508,8 +508,6 @@ export default function AgendaPage() {
           </CardContent>
         </Card>
       </div>
-
-       {/* Edit Dialog */}
        <Dialog open={isEditDialogOpen} onOpenChange={(isOpen) => {
          setIsEditDialogOpen(isOpen);
          if (!isOpen) resetForm();
