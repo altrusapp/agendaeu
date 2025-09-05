@@ -2,7 +2,8 @@
 "use client"
 
 import * as React from "react"
-import { MoreHorizontal, PlusCircle, Search, RefreshCw, NotebookPen } from "lucide-react"
+import Link from "next/link"
+import { MoreHorizontal, PlusCircle, Search, RefreshCw, NotebookPen, CalendarPlus } from "lucide-react"
 import { collection, addDoc, query, onSnapshot, DocumentData, orderBy, limit, startAfter, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore"
 
 import { useBusiness } from "@/app/dashboard/layout"
@@ -406,6 +407,12 @@ export default function ClientesPage() {
                                </DropdownMenuTrigger>
                                <DropdownMenuContent align="end">
                                    <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                                   <DropdownMenuItem asChild>
+                                      <Link href={`/dashboard/agenda?clientId=${client.id}`}>
+                                        <CalendarPlus className="mr-2 h-4 w-4"/>
+                                        Agendar
+                                      </Link>
+                                   </DropdownMenuItem>
                                    <DropdownMenuItem onClick={() => openEditDialog(client)}>Editar</DropdownMenuItem>
                                    <DropdownMenuSeparator />
                                    <AlertDialog>
@@ -481,6 +488,12 @@ export default function ClientesPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                          <DropdownMenuItem asChild>
+                            <Link href={`/dashboard/agenda?clientId=${client.id}`}>
+                              <CalendarPlus className="mr-2 h-4 w-4"/>
+                              Agendar
+                            </Link>
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => openEditDialog(client)}>Editar</DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <AlertDialog>

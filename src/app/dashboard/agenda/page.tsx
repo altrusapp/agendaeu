@@ -2,8 +2,9 @@
 "use client"
 
 import * as React from "react"
+import { useSearchParams, useRouter } from "next/navigation"
 import { collection, query, onSnapshot, where, Timestamp, addDoc, DocumentData, orderBy, doc, updateDoc, deleteDoc, getDocs } from "firebase/firestore"
-import { MoreHorizontal, PlusCircle, MessageCircle, ArrowLeft } from "lucide-react"
+import { MoreHorizontal, PlusCircle, MessageCircle, ArrowLeft, CalendarPlus } from "lucide-react"
 import { ptBR } from "date-fns/locale"
 import { format, startOfDay, endOfDay, parse, startOfMonth, endOfMonth, isSameDay } from 'date-fns'
 
@@ -69,12 +70,14 @@ type Appointment = {
   date: Timestamp;
 };
 
-type Client = { id: string; name: string; }
-type Service = { id: string; name: string; }
+type Client = { id: string; name: string; phone?: string; }
+type Service = { id: string; name: string; price?: number; }
 
 export default function AgendaPage() {
   const { business } = useBusiness();
   const { toast } = useToast();
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [appointments, setAppointments] = React.useState<Appointment[]>([]);
@@ -92,6 +95,17 @@ export default function AgendaPage() {
   const [selectedClientId, setSelectedClientId] = React.useState('');
   const [selectedServiceId, setSelectedServiceId] = React.useState('');
   const [appointmentTime, setAppointmentTime] = React.useState('');
+
+  // Handle pre-selection from query params
+  React.useEffect(() => {
+    const clientIdFromQuery = searchParams.get('clientId');
+    if (clientIdFromQuery) {
+      setSelectedClientId(clientIdFromQuery);
+      setIsAddDialogOpen(true);
+      // Optional: remove query params after using them
+      router.replace('/dashboard/agenda', { scroll: false });
+    }
+  }, [searchParams, router]);
 
   // Fetch clients and services for the dropdowns
   React.useEffect(() => {
@@ -205,8 +219,10 @@ export default function AgendaPage() {
       await addDoc(collection(db, `businesses/${business.id}/appointments`), {
         clientId: selectedClientId,
         clientName: selectedClient?.name || 'Cliente não encontrado',
+        clientPhone: selectedClient?.phone || '',
         serviceId: selectedServiceId,
         serviceName: selectedService?.name || 'Serviço não encontrado',
+        price: selectedService?.price || 0,
         date: Timestamp.fromDate(appointmentDate),
         time: appointmentTime,
         status: 'Confirmado',
@@ -242,8 +258,10 @@ export default function AgendaPage() {
       await updateDoc(appointmentRef, {
         clientId: selectedClientId,
         clientName: selectedClient?.name || 'Cliente não encontrado',
+        clientPhone: selectedClient?.phone || '',
         serviceId: selectedServiceId,
         serviceName: selectedService?.name || 'Serviço não encontrado',
+        price: selectedService?.price || 0,
         date: Timestamp.fromDate(appointmentDate),
         time: appointmentTime,
       });
@@ -430,7 +448,16 @@ export default function AgendaPage() {
                         <p className="text-sm font-medium leading-none">{app.clientName}</p>
                         <p className="text-sm text-muted-foreground">{app.serviceName}</p>
                         </div>
-                        <div className="text-sm font-medium tabular-nums">{app.time}</div>
+                        <div className="ml-auto flex items-center gap-2">
+                            {app.clientPhone && (
+                                <Button asChild size="icon" variant="ghost" className="shrink-0 h-9 w-9 text-green-600 bg-green-100 hover:bg-green-200 dark:bg-green-800/50 dark:hover:bg-green-800">
+                                    <a href={generateWhatsAppLink(app)} target="_blank" rel="noopener noreferrer" aria-label="Enviar lembrete no WhatsApp">
+                                        <MessageCircle className="h-5 w-5" />
+                                    </a>
+                                </Button>
+                            )}
+                            <div className="text-sm font-medium tabular-nums">{app.time}</div>
+                        </div>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                             <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
@@ -493,7 +520,7 @@ export default function AgendaPage() {
             <DialogDescription>
               Altere os detalhes do agendamento de {selectedAppointment?.clientName}.
             </DialogDescription>
-          </DialogHeader>
+          </Header>
           <AppointmentForm onSubmit={handleEditAppointment} formId="edit-appointment-form" />
           <DialogFooter>
             <Button type="submit" form="edit-appointment-form">Salvar Alterações</Button>
