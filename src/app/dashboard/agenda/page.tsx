@@ -508,7 +508,7 @@ export default function AgendaPage() {
           </CardContent>
         </Card>
       </div>
-       <Dialog open={isEditDialogOpen} onOpenChange={(isOpen) => {
+      <Dialog open={isEditDialogOpen} onOpenChange={(isOpen) => {
          setIsEditDialogOpen(isOpen);
          if (!isOpen) resetForm();
        }}>
@@ -518,7 +518,7 @@ export default function AgendaPage() {
             <DialogDescription>
               Altere os detalhes do agendamento de {selectedAppointment?.clientName}.
             </DialogDescription>
-          </Header>
+          </DialogHeader>
           <AppointmentForm onSubmit={handleEditAppointment} formId="edit-appointment-form" />
           <DialogFooter>
             <Button type="submit" form="edit-appointment-form">Salvar Alterações</Button>
@@ -528,3 +528,5 @@ export default function AgendaPage() {
     </>
   )
 }
+
+    
