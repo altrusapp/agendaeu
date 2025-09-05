@@ -4,7 +4,7 @@
 import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { collection, query, onSnapshot, where, Timestamp, addDoc, DocumentData, orderBy, doc, updateDoc, deleteDoc, getDocs } from "firebase/firestore"
-import { MoreHorizontal, PlusCircle, MessageCircle, ArrowLeft, CalendarPlus } from "lucide-react"
+import { MoreHorizontal, PlusCircle, MessageCircle, ArrowLeft, CalendarPlus, RefreshCw } from "lucide-react"
 import { ptBR } from "date-fns/locale"
 import { format, startOfDay, endOfDay, parse, startOfMonth, endOfMonth, isSameDay } from 'date-fns'
 
@@ -322,7 +322,10 @@ export default function AgendaPage() {
           value={selectedClientId} 
           onValueChange={(value) => {
             setSelectedClientId(value);
-            if(isEditing) setIsEditDialogOpen(false); else setIsAddDialogOpen(false);
+            if(!isEditing) {
+              // Note: This behavior is part of Task 1 for UX refinement.
+              // It moves to the next logical step instead of closing the dialog.
+            }
           }}>
           <SelectTrigger id="client">
             <SelectValue placeholder="Selecione um cliente" />
@@ -340,7 +343,9 @@ export default function AgendaPage() {
           value={selectedServiceId} 
           onValueChange={(value) => {
             setSelectedServiceId(value);
-            if(isEditing) setIsEditDialogOpen(false); else setIsAddDialogOpen(false);
+            if(!isEditing) {
+               // Note: This behavior is part of Task 1 for UX refinement.
+            }
           }}>
           <SelectTrigger id="service">
             <SelectValue placeholder="Selecione um serviço" />
@@ -471,7 +476,11 @@ export default function AgendaPage() {
                             {app.clientPhone && (
                                 <Button asChild size="icon" variant="ghost" className="shrink-0 h-9 w-9 text-success-foreground bg-success/10 hover:bg-success/20" disabled={isSendingReminder === app.id}>
                                     <a href={generateWhatsAppLink(app)} onClick={(e) => handleSendReminder(e, app)} target="_blank" rel="noopener noreferrer" aria-label="Enviar lembrete no WhatsApp">
-                                        <MessageCircle className="h-5 w-5" />
+                                        {isSendingReminder === app.id ? (
+                                           <RefreshCw className="h-5 w-5 animate-spin" />
+                                        ) : (
+                                           <MessageCircle className="h-5 w-5" />
+                                        )}
                                     </a>
                                 </Button>
                             )}

@@ -6,7 +6,7 @@ import Link from "next/link"
 import { collection, query, where, getDocs, limit, orderBy, Timestamp } from "firebase/firestore"
 import { startOfMonth, endOfMonth, format, startOfToday, endOfToday } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { Activity, ArrowUpRight, Calendar, Users, DollarSign, MessageCircle } from "lucide-react"
+import { Activity, ArrowUpRight, Calendar, Users, DollarSign, MessageCircle, RefreshCw } from "lucide-react"
 
 import { db } from "@/lib/firebase/client"
 import { useBusiness } from "@/app/dashboard/layout"
@@ -55,6 +55,7 @@ export default function DashboardPage() {
   const [recentAppointments, setRecentAppointments] = React.useState<Appointment[]>([]);
   const [loadingStats, setLoadingStats] = React.useState(true);
   const [loadingAppointments, setLoadingAppointments] = React.useState(true);
+  const [isSendingReminder, setIsSendingReminder] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     if (!business?.id) return;
@@ -144,6 +145,16 @@ export default function DashboardPage() {
     const message = `Olá, ${appointment.clientName}! Este é um lembrete do seu agendamento para ${appointment.serviceName} no dia ${dateStr} às ${appointment.time}. Estou te esperando, tudo bem?`;
     return `https://wa.me/${phoneWithCountryCode}?text=${encodeURIComponent(message)}`;
   }
+  
+  const handleSendReminder = (e: React.MouseEvent<HTMLAnchorElement>, appointment: Appointment) => {
+    e.preventDefault();
+    setIsSendingReminder(appointment.id);
+    // Simulate API call for a better user experience
+    setTimeout(() => {
+        window.open(generateWhatsAppLink(appointment), '_blank', 'noopener,noreferrer');
+        setIsSendingReminder(null);
+    }, 500);
+  };
 
   return (
     <>
@@ -203,9 +214,13 @@ export default function DashboardPage() {
                                     </div>
                                     <div className="ml-auto flex items-center gap-2">
                                         {app.clientPhone && (
-                                            <Button asChild size="icon" variant="ghost" className="shrink-0 h-9 w-9 text-success-foreground bg-success/10 hover:bg-success/20">
-                                                <a href={generateWhatsAppLink(app)} target="_blank" rel="noopener noreferrer" aria-label="Enviar lembrete no WhatsApp">
-                                                    <MessageCircle className="h-5 w-5" />
+                                            <Button asChild size="icon" variant="ghost" className="shrink-0 h-9 w-9 text-success-foreground bg-success/10 hover:bg-success/20" disabled={isSendingReminder === app.id}>
+                                                <a href={generateWhatsAppLink(app)} onClick={(e) => handleSendReminder(e, app)} target="_blank" rel="noopener noreferrer" aria-label="Enviar lembrete no WhatsApp">
+                                                    {isSendingReminder === app.id ? (
+                                                       <RefreshCw className="h-5 w-5 animate-spin" />
+                                                    ) : (
+                                                       <MessageCircle className="h-5 w-5" />
+                                                    )}
                                                 </a>
                                             </Button>
                                         )}
