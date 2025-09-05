@@ -28,6 +28,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { generateSlug } from "@/lib/utils"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
+import { cn } from "@/lib/utils"
 
 const profileFormSchema = z.object({
   businessName: z.string().min(2, {
@@ -112,51 +113,53 @@ function DaySlots({ day, form }: { day: string, form: any }) {
     control: form.control,
     name: `businessHours.${day}.slots`
   });
+  
+  const isActive = form.watch(`businessHours.${day}.active`);
 
   return (
-    <div className="space-y-4">
-      {fields.map((item, index) => (
-        <div key={item.id} className="flex items-end gap-2">
-           <FormField
-              control={form.control}
-              name={`businessHours.${day}.slots.${index}.start` as const}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Início</FormLabel>
-                  <FormControl>
-                    <Input type="time" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={`businessHours.${day}.slots.${index}.end` as const}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Fim</FormLabel>
-                  <FormControl>
-                    <Input type="time" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      ))}
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={() => append({ start: '09:00', end: '18:00' })}
-      >
-        <PlusCircle className="mr-2 h-4 w-4" />
-        Adicionar turno
-      </Button>
+    <div className="md:col-span-3">
+        {isActive ? (
+          <div className="space-y-4">
+            {fields.map((item, index) => (
+              <div key={item.id} className="flex items-center gap-2">
+                <FormField
+                  control={form.control}
+                  name={`businessHours.${day}.slots.${index}.start` as const}
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormControl><Input type="time" {...field} /></FormControl>
+                    </FormItem>
+                  )}
+                />
+                <span className="text-muted-foreground">-</span>
+                <FormField
+                  control={form.control}
+                  name={`businessHours.${day}.slots.${index}.end` as const}
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormControl><Input type="time" {...field} /></FormControl>
+                    </FormItem>
+                  )}
+                />
+                <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)} className="shrink-0" aria-label={`Remover turno ${index + 1}`}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="link"
+              size="sm"
+              className="p-0 h-auto"
+              onClick={() => append({ start: '09:00', end: '18:00' })}
+            >
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Adicionar turno
+            </Button>
+          </div>
+        ) : (
+          <p className="text-muted-foreground italic h-full flex items-center">Fechado</p>
+        )}
     </div>
   )
 }
@@ -207,37 +210,33 @@ function BusinessHoursForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {Object.keys(dayNames).map((day) => (
-              <div key={day} className="space-y-4">
-                 <FormField
-                  control={form.control}
-                  name={`businessHours.${day}.active` as const}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">
-                          {dayNames[day as keyof typeof dayNames]}
-                        </FormLabel>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                 {form.watch(`businessHours.${day}.active`) && (
-                  <div className="pl-4 ml-4 border-l space-y-4">
-                      <DaySlots day={day} form={form} />
-                  </div>
-                )}
-                {day !== 'saturday' && <Separator />}
-              </div>
+               <div key={day} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start border p-4 rounded-lg">
+                 <div className="md:col-span-1 flex md:flex-col justify-between md:justify-start gap-2">
+                    <FormLabel className="text-base font-semibold capitalize">
+                      {dayNames[day as keyof typeof dayNames]}
+                    </FormLabel>
+                    <FormField
+                      control={form.control}
+                      name={`businessHours.${day}.active` as const}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              aria-label={`Ativar/desativar ${dayNames[day as keyof typeof dayNames]}`}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                 </div>
+                 <DaySlots day={day} form={form} />
+               </div>
             ))}
-             <Button type="submit" disabled={form.formState.isSubmitting}>
+             <Button type="submit" disabled={form.formState.isSubmitting} className="mt-6">
               {form.formState.isSubmitting ? "Salvando..." : "Salvar Horários"}
             </Button>
           </form>
@@ -421,13 +420,12 @@ export default function ConfiguracoesPage() {
                   />
                   
                    <div className="space-y-2">
-                     <Alert variant="destructive" className="[&>svg]:top-3">
-                        <div className="flex items-center gap-2">
-                            <AlertCircle className="h-4 w-4" />
-                            <AlertDescription>
-                                <span className="font-bold">Atenção:</span> O link da sua página pública só pode ser alterado <strong>uma única vez</strong>.
-                            </AlertDescription>
-                        </div>
+                     <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Atenção</AlertTitle>
+                        <AlertDescription>
+                          O link da sua página pública só pode ser alterado <strong>uma única vez</strong>.
+                        </AlertDescription>
                     </Alert>
                     <FormField
                       control={profileForm.control}
