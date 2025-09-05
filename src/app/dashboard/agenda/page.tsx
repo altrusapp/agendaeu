@@ -232,8 +232,8 @@ export default function AgendaPage() {
       });
       
       toast({ variant: "success", title: "Agendamento Criado!", description: "O novo agendamento foi salvo com sucesso." });
-      resetForm();
       setIsAddDialogOpen(false);
+      resetForm();
     } catch (error) {
        toast({ variant: "destructive", title: "Erro ao Salvar", description: "Não foi possível criar o agendamento. Tente novamente." });
     }
@@ -269,8 +269,8 @@ export default function AgendaPage() {
       });
 
       toast({ variant: "success", title: "Agendamento Atualizado!", description: "As alterações foram salvas com sucesso." });
-      resetForm();
       setIsEditDialogOpen(false);
+      resetForm();
     } catch (error) {
       toast({ variant: "destructive", title: "Erro ao Atualizar", description: "Não foi possível salvar as alterações." });
     }
@@ -307,26 +307,19 @@ export default function AgendaPage() {
   const handleSendReminder = (e: React.MouseEvent<HTMLAnchorElement>, appointment: Appointment) => {
     e.preventDefault();
     setIsSendingReminder(appointment.id);
-    // Simulate API call for a better user experience
     setTimeout(() => {
         window.open(generateWhatsAppLink(appointment), '_blank', 'noopener,noreferrer');
         setIsSendingReminder(null);
     }, 500);
   };
 
-  const AppointmentForm = ({ onSubmit, formId, isEditing }: { onSubmit: (e: React.FormEvent) => void, formId: string, isEditing: boolean }) => (
+  const AppointmentForm = ({ onSubmit, formId }: { onSubmit: (e: React.FormEvent) => void, formId: string }) => (
      <form id={formId} onSubmit={onSubmit} className="space-y-4 py-4">
       <div>
         <Label htmlFor="client">Cliente</Label>
         <Select 
           value={selectedClientId} 
-          onValueChange={(value) => {
-            setSelectedClientId(value);
-            if(!isEditing) {
-              // Note: This behavior is part of Task 1 for UX refinement.
-              // It moves to the next logical step instead of closing the dialog.
-            }
-          }}>
+          onValueChange={setSelectedClientId}>
           <SelectTrigger id="client" aria-label="Selecionar cliente">
             <SelectValue placeholder="Selecione um cliente" />
           </SelectTrigger>
@@ -341,12 +334,7 @@ export default function AgendaPage() {
         <Label htmlFor="service">Serviço</Label>
         <Select 
           value={selectedServiceId} 
-          onValueChange={(value) => {
-            setSelectedServiceId(value);
-            if(!isEditing) {
-               // Note: This behavior is part of Task 1 for UX refinement.
-            }
-          }}>
+          onValueChange={setSelectedServiceId}>
           <SelectTrigger id="service" aria-label="Selecionar serviço">
             <SelectValue placeholder="Selecione um serviço" />
           </SelectTrigger>
@@ -403,7 +391,7 @@ export default function AgendaPage() {
                 Selecione o cliente, o serviço e o horário. A data selecionada é {date?.toLocaleDateString('pt-BR') || "Nenhuma"}.
               </DialogDescription>
             </DialogHeader>
-            <AppointmentForm onSubmit={handleAddAppointment} formId="add-appointment-form" isEditing={false} />
+            <AppointmentForm onSubmit={handleAddAppointment} formId="add-appointment-form" />
              <DialogFooter>
               <Button type="submit" form="add-appointment-form">Salvar Agendamento</Button>
             </DialogFooter>
@@ -429,7 +417,7 @@ export default function AgendaPage() {
                   "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
                 ),
                 day_selected: "bg-primary text-primary-foreground hover:bg-primary/90 focus:bg-primary",
-                day_today: "text-accent-foreground",
+                day_today: "bg-accent text-accent-foreground",
               }}
               disabled={(d) => d < new Date(new Date().setDate(new Date().getDate() - 1))}
               locale={ptBR}
@@ -479,7 +467,7 @@ export default function AgendaPage() {
                                         {isSendingReminder === app.id ? (
                                            <RefreshCw className="h-5 w-5 animate-spin" />
                                         ) : (
-                                           <MessageCircle className="h-5 w-5" />
+                                           <MessageCircle className="h-5 w-5 text-success" />
                                         )}
                                     </a>
                                 </Button>
@@ -547,7 +535,7 @@ export default function AgendaPage() {
               Altere os detalhes do agendamento de {selectedAppointment?.clientName}.
             </DialogDescription>
           </DialogHeader>
-          <AppointmentForm onSubmit={handleEditAppointment} formId="edit-appointment-form" isEditing={true}/>
+          <AppointmentForm onSubmit={handleEditAppointment} formId="edit-appointment-form"/>
           <DialogFooter>
             <Button type="submit" form="edit-appointment-form">Salvar Alterações</Button>
           </DialogFooter>

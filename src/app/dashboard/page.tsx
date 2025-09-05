@@ -219,7 +219,7 @@ export default function DashboardPage() {
                                                     {isSendingReminder === app.id ? (
                                                        <RefreshCw className="h-5 w-5 animate-spin" />
                                                     ) : (
-                                                       <MessageCircle className="h-5 w-5" />
+                                                       <MessageCircle className="h-5 w-5 text-success" />
                                                     )}
                                                 </a>
                                             </Button>
@@ -319,11 +319,5 @@ export default function DashboardPage() {
       </div>
     </>
   )
-    
-
-
-    
-
-
 
     
