@@ -8,7 +8,7 @@ import { collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc, getDo
 import { useBusiness } from "@/app/dashboard/layout"
 import { db } from "@/lib/firebase/client"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -319,7 +319,7 @@ export default function ServicosPage() {
                             <span>•</span>
                             <span>R$ {typeof service.price === 'number' ? service.price.toFixed(2) : '0.00'}</span>
                           </div>
-                          <Badge variant={service.active ? "default" : "outline"} className={cn("mt-2 w-fit", service.active ? "bg-green-100 text-green-800 border-green-200 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800" : "")}>
+                          <Badge variant={service.active ? "success" : "outline"} className={cn("mt-2 w-fit")}>
                               {service.active ? "Ativo" : "Inativo"}
                           </Badge>
                       </div>
@@ -348,7 +348,7 @@ export default function ServicosPage() {
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
                                   <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => handleDeleteService(service.id)}>Sim, excluir</AlertDialogAction>
+                                  <AlertDialogAction onClick={() => handleDeleteService(service.id)} className={buttonVariants({ variant: "destructive" })}>Sim, excluir</AlertDialogAction>
                                   </AlertDialogFooter>
                               </AlertDialogContent>
                               </AlertDialog>
@@ -361,7 +361,7 @@ export default function ServicosPage() {
                         <p className="font-medium">{service.name}</p>
                     </div>
                     <div className="hidden md:col-span-2 md:block">
-                      <Badge variant={service.active ? "default" : "outline"} className={service.active ? "bg-green-100 text-green-800 border-green-200 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800" : ""}>
+                      <Badge variant={service.active ? "success" : "outline"}>
                         {service.active ? "Ativo" : "Inativo"}
                       </Badge>
                     </div>
@@ -393,7 +393,7 @@ export default function ServicosPage() {
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDeleteService(service.id)}>Sim, excluir</AlertDialogAction>
+                                <AlertDialogAction onClick={() => handleDeleteService(service.id)} className={buttonVariants({ variant: "destructive" })}>Sim, excluir</AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
                           </AlertDialog>

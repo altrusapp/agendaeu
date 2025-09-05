@@ -203,7 +203,7 @@ export default function DashboardPage() {
                                     </div>
                                     <div className="ml-auto flex items-center gap-2">
                                         {app.clientPhone && (
-                                            <Button asChild size="icon" variant="ghost" className="shrink-0 h-9 w-9 text-green-600 bg-green-100 hover:bg-green-200 dark:bg-green-800/50 dark:hover:bg-green-800">
+                                            <Button asChild size="icon" variant="ghost" className="shrink-0 h-9 w-9 text-success-foreground bg-success/10 hover:bg-success/20">
                                                 <a href={generateWhatsAppLink(app)} target="_blank" rel="noopener noreferrer" aria-label="Enviar lembrete no WhatsApp">
                                                     <MessageCircle className="h-5 w-5" />
                                                 </a>
@@ -236,7 +236,7 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">
               Receita (Mês)
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-green-600" />
+            <DollarSign className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
             {loadingStats ? (
@@ -308,3 +308,4 @@ export default function DashboardPage() {
 
 
     
+

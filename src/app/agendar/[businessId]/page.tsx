@@ -413,7 +413,7 @@ export default function PublicSchedulePage() {
             <Card className="max-w-md w-full">
                 <CardContent className="p-6">
                    <div className="text-center py-10">
-                    <PartyPopper className="h-16 w-16 mx-auto text-green-600" />
+                    <PartyPopper className="h-16 w-16 mx-auto text-success" />
                     <h2 className="text-3xl font-bold font-headline mt-4">Tudo Certo!</h2>
                     <p className="text-muted-foreground mt-2 text-lg">Seu agendamento foi confirmado com sucesso.</p>
                     <Card className="max-w-md mx-auto mt-6 text-left bg-muted/50">

@@ -463,7 +463,7 @@ export default function AgendaPage() {
                         </div>
                         <div className="ml-auto flex items-center gap-2">
                             {app.clientPhone && (
-                                <Button asChild size="icon" variant="ghost" className="shrink-0 h-9 w-9 text-green-600 bg-green-100 hover:bg-green-200 dark:bg-green-800/50 dark:hover:bg-green-800" disabled={isSendingReminder === app.id}>
+                                <Button asChild size="icon" variant="ghost" className="shrink-0 h-9 w-9 text-success-foreground bg-success/10 hover:bg-success/20" disabled={isSendingReminder === app.id}>
                                     <a href={generateWhatsAppLink(app)} onClick={(e) => handleSendReminder(e, app)} target="_blank" rel="noopener noreferrer" aria-label="Enviar lembrete no WhatsApp">
                                         <MessageCircle className="h-5 w-5" />
                                     </a>
@@ -482,9 +482,9 @@ export default function AgendaPage() {
                             <DropdownMenuLabel>Ações</DropdownMenuLabel>
                             <DropdownMenuItem onClick={() => openEditDialog(app)}>Editar</DropdownMenuItem>
                                 {app.clientPhone && (
-                                    <DropdownMenuItem asChild className="focus:bg-green-100 dark:focus:bg-green-800/50" disabled={isSendingReminder === app.id}>
+                                    <DropdownMenuItem asChild className="focus:bg-success/10 dark:focus:bg-success/20" disabled={isSendingReminder === app.id}>
                                         <a href={generateWhatsAppLink(app)} onClick={(e) => handleSendReminder(e, app)} target="_blank" rel="noopener noreferrer">
-                                        <MessageCircle className="mr-2 h-4 w-4 text-green-600"/>
+                                        <MessageCircle className="mr-2 h-4 w-4 text-success"/>
                                         {isSendingReminder === app.id ? "Abrindo..." : "Lembrete WhatsApp"}
                                         </a>
                                     </DropdownMenuItem>
@@ -503,7 +503,7 @@ export default function AgendaPage() {
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDeleteAppointment(app.id)}>
+                                    <AlertDialogAction onClick={() => handleDeleteAppointment(app.id)} className={buttonVariants({ variant: "destructive" })}>
                                         Sim, excluir
                                     </AlertDialogAction>
                                     </AlertDialogFooter>
