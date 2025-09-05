@@ -38,7 +38,7 @@
     --input: 0 0% 92%; /* #ebebeb */
     --ring: 0 0% 0%; /* #000000 */
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
     /* Chart Colors */
     --chart-1: 151 86% 54%; /* #31e183 */
@@ -183,15 +183,14 @@
   }
 
   .day-booked:not(.day-selected)::after {
-    content: '...';
+    content: '';
     position: absolute;
-    bottom: 2px;
+    bottom: 4px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 10px;
-    line-height: 1;
-    color: hsl(var(--primary));
-    letter-spacing: -1px;
-    font-weight: 800;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: hsl(var(--primary) / 0.5);
   }
 }

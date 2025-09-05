@@ -95,6 +95,8 @@ export default function AgendaPage() {
   const [selectedClientId, setSelectedClientId] = React.useState('');
   const [selectedServiceId, setSelectedServiceId] = React.useState('');
   const [appointmentTime, setAppointmentTime] = React.useState('');
+  const [isSendingReminder, setIsSendingReminder] = React.useState<string | null>(null);
+
 
   // Handle pre-selection from query params
   React.useEffect(() => {
@@ -301,6 +303,16 @@ export default function AgendaPage() {
     const message = `Olá, ${appointment.clientName}! Este é um lembrete do seu agendamento para ${appointment.serviceName} no dia ${dateStr} às ${appointment.time}. Estou te esperando, tudo bem? `;
     return `https://wa.me/${phoneWithCountryCode}?text=${encodeURIComponent(message)}`;
   }
+  
+  const handleSendReminder = (e: React.MouseEvent<HTMLAnchorElement>, appointment: Appointment) => {
+    e.preventDefault();
+    setIsSendingReminder(appointment.id);
+    // Simulate API call for a better user experience
+    setTimeout(() => {
+        window.open(generateWhatsAppLink(appointment), '_blank', 'noopener,noreferrer');
+        setIsSendingReminder(null);
+    }, 500);
+  };
 
   const AppointmentForm = ({ onSubmit, formId }: { onSubmit: (e: React.FormEvent) => void, formId: string }) => (
      <form id={formId} onSubmit={onSubmit} className="space-y-4 py-4">
@@ -405,8 +417,8 @@ export default function AgendaPage() {
                   buttonVariants({ variant: "ghost" }),
                   "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
                 ),
-                day_selected: "bg-primary text-primary-foreground hover:bg-primary/90 focus:bg-primary",
-                day_today: "bg-accent/50 text-accent-foreground",
+                day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                day_today: "bg-transparent text-accent-foreground",
               }}
               disabled={(d) => d < new Date(new Date().setDate(new Date().getDate() - 1))}
               locale={ptBR}
@@ -451,8 +463,8 @@ export default function AgendaPage() {
                         </div>
                         <div className="ml-auto flex items-center gap-2">
                             {app.clientPhone && (
-                                <Button asChild size="icon" variant="ghost" className="shrink-0 h-9 w-9 text-green-600 bg-green-100 hover:bg-green-200 dark:bg-green-800/50 dark:hover:bg-green-800">
-                                    <a href={generateWhatsAppLink(app)} target="_blank" rel="noopener noreferrer" aria-label="Enviar lembrete no WhatsApp">
+                                <Button asChild size="icon" variant="ghost" className="shrink-0 h-9 w-9 text-green-600 bg-green-100 hover:bg-green-200 dark:bg-green-800/50 dark:hover:bg-green-800" disabled={isSendingReminder === app.id}>
+                                    <a href={generateWhatsAppLink(app)} onClick={(e) => handleSendReminder(e, app)} target="_blank" rel="noopener noreferrer" aria-label="Enviar lembrete no WhatsApp">
                                         <MessageCircle className="h-5 w-5" />
                                     </a>
                                 </Button>
@@ -470,10 +482,10 @@ export default function AgendaPage() {
                             <DropdownMenuLabel>Ações</DropdownMenuLabel>
                             <DropdownMenuItem onClick={() => openEditDialog(app)}>Editar</DropdownMenuItem>
                                 {app.clientPhone && (
-                                    <DropdownMenuItem asChild className="focus:bg-green-100 dark:focus:bg-green-800/50">
-                                        <a href={generateWhatsAppLink(app)} target="_blank" rel="noopener noreferrer">
+                                    <DropdownMenuItem asChild className="focus:bg-green-100 dark:focus:bg-green-800/50" disabled={isSendingReminder === app.id}>
+                                        <a href={generateWhatsAppLink(app)} onClick={(e) => handleSendReminder(e, app)} target="_blank" rel="noopener noreferrer">
                                         <MessageCircle className="mr-2 h-4 w-4 text-green-600"/>
-                                        Lembrete WhatsApp
+                                        {isSendingReminder === app.id ? "Abrindo..." : "Lembrete WhatsApp"}
                                         </a>
                                     </DropdownMenuItem>
                                 )}
