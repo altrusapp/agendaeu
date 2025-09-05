@@ -314,13 +314,16 @@ export default function AgendaPage() {
     }, 500);
   };
 
-  const AppointmentForm = ({ onSubmit, formId }: { onSubmit: (e: React.FormEvent) => void, formId: string }) => (
+  const AppointmentForm = ({ onSubmit, formId, isEditing }: { onSubmit: (e: React.FormEvent) => void, formId: string, isEditing: boolean }) => (
      <form id={formId} onSubmit={onSubmit} className="space-y-4 py-4">
       <div>
         <Label htmlFor="client">Cliente</Label>
-        <Select value={selectedClientId} onValueChange={(value) => {
-          setSelectedClientId(value);
-        }}>
+        <Select 
+          value={selectedClientId} 
+          onValueChange={(value) => {
+            setSelectedClientId(value);
+            if(isEditing) setIsEditDialogOpen(false); else setIsAddDialogOpen(false);
+          }}>
           <SelectTrigger id="client">
             <SelectValue placeholder="Selecione um cliente" />
           </SelectTrigger>
@@ -333,9 +336,12 @@ export default function AgendaPage() {
       </div>
        <div>
         <Label htmlFor="service">Serviço</Label>
-        <Select value={selectedServiceId} onValueChange={(value) => {
-          setSelectedServiceId(value);
-        }}>
+        <Select 
+          value={selectedServiceId} 
+          onValueChange={(value) => {
+            setSelectedServiceId(value);
+            if(isEditing) setIsEditDialogOpen(false); else setIsAddDialogOpen(false);
+          }}>
           <SelectTrigger id="service">
             <SelectValue placeholder="Selecione um serviço" />
           </SelectTrigger>
@@ -392,7 +398,7 @@ export default function AgendaPage() {
                 Selecione o cliente, o serviço e o horário. A data selecionada é {date?.toLocaleDateString('pt-BR') || "Nenhuma"}.
               </DialogDescription>
             </DialogHeader>
-            <AppointmentForm onSubmit={handleAddAppointment} formId="add-appointment-form" />
+            <AppointmentForm onSubmit={handleAddAppointment} formId="add-appointment-form" isEditing={false} />
              <DialogFooter>
               <Button type="submit" form="add-appointment-form">Salvar Agendamento</Button>
             </DialogFooter>
@@ -532,7 +538,7 @@ export default function AgendaPage() {
               Altere os detalhes do agendamento de {selectedAppointment?.clientName}.
             </DialogDescription>
           </DialogHeader>
-          <AppointmentForm onSubmit={handleEditAppointment} formId="edit-appointment-form" />
+          <AppointmentForm onSubmit={handleEditAppointment} formId="edit-appointment-form" isEditing={true}/>
           <DialogFooter>
             <Button type="submit" form="edit-appointment-form">Salvar Alterações</Button>
           </DialogFooter>
