@@ -14,7 +14,7 @@
     --popover: 0 0% 100%; /* #ffffff - Surface */
     --popover-foreground: 240 6% 12%; /* #1d1b20 - On Surface */
     
-    --primary: 265 82% 60%; /* #8a4cf3 - Primary (Adjusted for contrast) */
+    --primary: 246 76% 62%; /* #6C5CE7 - Primary (NEW) */
     --primary-foreground: 0 0% 100%; /* #ffffff - On Primary */
     
     --secondary: 261 44% 83%; /* #c7bced - Secondary/Primary Container */
@@ -33,7 +33,7 @@
     --success-foreground: 0 0% 100%; /* #FFFFFF - On Success */
 
     --input: 300 38% 92%; /* #ede7f0 - Even lighter version for inputs */
-    --ring: 265 82% 60%; /* Primary for focus rings */
+    --ring: 246 76% 62%; /* Primary for focus rings */
 
     --radius: 1rem;
   }
@@ -48,7 +48,7 @@
     --popover: 240 6% 12%; /* #1d1b20 */
     --popover-foreground: 300_38%_96%; /* #f3edf9 */
 
-    --primary: 265 82% 72%; /* #b589f5 - Lighter Primary for Dark Mode */
+    --primary: 246 76% 72%; /* #9a8ff0 - Lighter Primary for Dark Mode */
     --primary-foreground: 240 6% 12%; /* #1d1b20 */
 
     --secondary: 261 44% 25%; /* #372c50 - Dark Secondary */
@@ -67,7 +67,7 @@
     --success-foreground: 0 0% 100%;
 
     --input: 240 6% 19%; /* Darker input */
-    --ring: 265 82% 72%; /* Lighter Primary for focus rings */
+    --ring: 246 76% 72%; /* Lighter Primary for focus rings */
   }
 }
 
