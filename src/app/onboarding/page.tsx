@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { Upload, Image as ImageIcon, X } from "lucide-react"
+import { Upload, X } from "lucide-react"
 import * as React from "react"
 import { User, onAuthStateChanged } from "firebase/auth"
 import { doc, setDoc, writeBatch, collection } from "firebase/firestore"
@@ -16,6 +16,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { Logo } from "@/components/logo"
 import { auth, db } from "@/lib/firebase/client"
@@ -23,19 +30,41 @@ import { generateSlug } from "@/lib/utils"
 
 const onboardingSchema = z.object({
   businessName: z.string().min(2, { message: "O nome do negócio é obrigatório." }),
+  niche: z.string({ required_error: "Por favor, selecione seu ramo de atividade." }),
   logo: z.any().optional(),
 })
 
 type OnboardingValues = z.infer<typeof onboardingSchema>;
 
-const defaultServices = [
-    { name: "Corte de Cabelo", description: "Corte moderno e estilizado.", duration: "45min", price: 50, active: true },
-    { name: "Manicure Simples", description: "Corte, limpeza, lixamento e esmaltação básica. Rápido e perfeito para o dia a dia.", duration: "45min", price: 30, active: true },
-    { name: "Pedicure Simples", description: "Cuide dos pés com limpeza, lixamento e esmaltação. Conforto e beleza em 40 min.", duration: "40min", price: 35, active: true },
-    { name: "Design de Sobrancelha", description: "Modelagem e design de sobrancelhas.", duration: "30min", price: 40, active: true },
-    { name: "Massagem Relaxante", description: "Massagem para alívio de tensões e relaxamento.", duration: "1h", price: 120, active: true },
-    { name: "Limpeza de Pele", description: "Limpeza profunda com extração e hidratação.", duration: "1h 30min", price: 150, active: true },
-];
+const nicheServices = {
+  salao_beleza: [
+    { name: "Corte Feminino", description: "Corte, lavagem e finalização.", duration: "1h", price: 90, active: true },
+    { name: "Escova Progressiva", description: "Alisamento e redução de volume.", duration: "2h 30min", price: 250, active: true },
+    { name: "Manicure e Pedicure", description: "Cutilagem e esmaltação de mãos e pés.", duration: "1h 30min", price: 75, active: true },
+    { name: "Design de Sobrancelha", description: "Modelagem com pinça ou cera.", duration: "30min", price: 40, active: true },
+    { name: "Limpeza de Pele", description: "Limpeza profunda com extração e hidratação.", duration: "1h 15min", price: 150, active: true },
+  ],
+  barbearia: [
+    { name: "Corte Masculino", description: "Corte com tesoura e/ou máquina.", duration: "45min", price: 45, active: true },
+    { name: "Barba Tradicional", description: "Modelagem com navalha e toalha quente.", duration: "40min", price: 40, active: true },
+    { name: "Corte e Barba", description: "Pacote completo de corte e barba.", duration: "1h 15min", price: 80, active: true },
+    { name: "Hidratação Capilar", description: "Tratamento para fortalecer os fios.", duration: "30min", price: 50, active: true },
+    { name: "Pezinho", description: "Acabamento e desenho do corte.", duration: "15min", price: 15, active: true },
+  ],
+  terapia_bem_estar: [
+      { name: "Sessão de Terapia", description: "Sessão de psicoterapia individual.", duration: "50min", price: 180, active: true },
+      { name: "Massagem Relaxante", description: "Massagem para alívio de tensões e relaxamento.", duration: "1h", price: 120, active: true },
+      { name: "Sessão de Acupuntura", description: "Aplicação de agulhas para tratamento.", duration: "1h", price: 150, active: true },
+      { name: "Consulta de Nutrição", description: "Avaliação e plano alimentar.", duration: "1h", price: 200, active: true },
+      { name: "Aula de Yoga Pessoal", description: "Aula particular de yoga.", duration: "1h", price: 100, active: true },
+  ],
+  outro: [
+     { name: "Sessão de 1 Hora", description: "Serviço padrão com duração de 1 hora.", duration: "1h", price: 100, active: true },
+     { name: "Sessão de 30 Minutos", description: "Serviço padrão com duração de 30 minutos.", duration: "30min", price: 50, active: true },
+     { name: "Consulta Inicial", description: "Primeira avaliação ou consulta.", duration: "1h 15min", price: 150, active: true },
+  ],
+};
+
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -97,9 +126,10 @@ export default function OnboardingPage() {
         publicUrl: `/agendar/${slug}`
       });
 
-      // 2. Create the default services in a subcollection
+      // 2. Create the default services in a subcollection based on the selected niche
+      const servicesToCreate = nicheServices[values.niche as keyof typeof nicheServices] || nicheServices.outro;
       const servicesCollectionRef = collection(db, "businesses", businessId, "services");
-      defaultServices.forEach(service => {
+      servicesToCreate.forEach(service => {
         const serviceRef = doc(servicesCollectionRef);
         batch.set(serviceRef, { ...service, createdAt: new Date() });
       });
@@ -170,7 +200,7 @@ export default function OnboardingPage() {
         <Card>
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-headline">Configure seu Espaço</CardTitle>
-            <CardDescription>Só mais um passo para começar a agendar. Isso aparecerá na sua página pública.</CardDescription>
+            <CardDescription>Só mais alguns passos para começar a agendar. Isso aparecerá na sua página pública.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -190,6 +220,29 @@ export default function OnboardingPage() {
                 />
                 <FormField
                   control={form.control}
+                  name="niche"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Qual seu ramo de atividade?</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione um nicho..." />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="salao_beleza">Salão de Beleza</SelectItem>
+                          <SelectItem value="barbearia">Barbearia</SelectItem>
+                          <SelectItem value="terapia_bem_estar">Terapia & Bem-estar</SelectItem>
+                          <SelectItem value="outro">Outro / Pessoal</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
                   name="logo"
                   render={() => (
                     <FormItem>
@@ -202,7 +255,7 @@ export default function OnboardingPage() {
                                 src={logoPreview} 
                                 alt="Pré-visualização da logo" 
                                 fill 
-                                objectFit="cover" 
+                                style={{ objectFit: 'cover' }}
                                 className="rounded-full"
                               />
                               <Button 
@@ -246,3 +299,5 @@ export default function OnboardingPage() {
     </div>
   )
 }
+
+    
