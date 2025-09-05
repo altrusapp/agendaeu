@@ -33,7 +33,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={ptSans.variable} suppressHydrationWarning>
-      <head />
+      <head>
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="hsl(var(--background))" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="hsl(var(--background))" />
+      </head>
       <body>
         {children}
         <Toaster />
