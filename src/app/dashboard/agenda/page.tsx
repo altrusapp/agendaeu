@@ -79,7 +79,7 @@ export default function AgendaPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
+  const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [appointments, setAppointments] = React.useState<Appointment[]>([]);
   const [clients, setClients] = React.useState<Client[]>([]);
   const [services, setServices] = React.useState<Service[]>([]);
@@ -349,6 +349,7 @@ export default function AgendaPage() {
   }
 
   const cardDescription = () => {
+    if(!date) return "Escolha uma data no calendário para ver os agendamentos.";
     if (loading) return "Carregando...";
     
     if (appointments.length === 0) {
@@ -367,7 +368,7 @@ export default function AgendaPage() {
             if (!isOpen) resetForm();
          }}>
           <DialogTrigger asChild>
-             <Button>
+             <Button disabled={!date}>
               <PlusCircle className="h-4 w-4 mr-2"/>
               Novo Agendamento
             </Button>
@@ -528,5 +529,3 @@ export default function AgendaPage() {
     </>
   )
 }
-
-    

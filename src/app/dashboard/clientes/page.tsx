@@ -297,6 +297,7 @@ export default function ClientesPage() {
                   ref={searchInputRef}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  autoFocus
                 />
             </div>
              <Button size="sm" variant="outline" className="h-9 gap-1" onClick={fetchClients}>
