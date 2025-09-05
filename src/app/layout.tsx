@@ -9,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'AgeNails - Agendamento para Profissionais de Beleza',
-  description: 'A plataforma completa para agendamento, gerenciamento de clientes e pagamentos para salões de beleza, clínicas de estética e barbearias.',
+  title: 'AgendaEu.com - Agendamento Online Simplificado',
+  description: 'A plataforma completa para agendamento, gerenciamento de clientes e pagamentos para profissionais e negócios.',
   manifest: '/manifest.webmanifest',
   viewport: {
     width: 'device-width',

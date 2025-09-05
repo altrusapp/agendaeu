@@ -68,7 +68,7 @@ export default function LoginPage() {
          <div className="flex justify-center mb-6">
            <Link href="/" className="flex items-center gap-2">
               <Logo className="h-10 w-10 text-primary" />
-              <span className="text-3xl font-bold font-headline">AgeNails</span>
+              <span className="text-3xl font-bold font-headline">AgendaEu.com</span>
             </Link>
           </div>
         <Card>
@@ -122,5 +122,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
-    

@@ -12,7 +12,7 @@ export default function Home() {
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Logo className="h-8 w-8 text-primary" />
-          <span className="text-2xl font-bold font-headline">AgeNails</span>
+          <span className="text-2xl font-bold font-headline">AgendaEu.com</span>
         </div>
         <nav className="flex items-center gap-4">
           <Button variant="ghost" asChild>
@@ -27,10 +27,10 @@ export default function Home() {
       <main className="flex-grow">
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-32 text-center">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-headline tracking-tight">
-            Sua agenda de beleza, <span className="text-primary">simplificada</span>.
+            Sua agenda profissional, <span className="text-primary">simplificada</span>.
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground">
-            AgeNails é a plataforma completa para salões de beleza, clínicas de estética e barbearias. Gerencie sua agenda, clientes e pagamentos em um só lugar.
+            AgendaEu.com é a plataforma completa para profissionais e pequenos negócios. Gerencie sua agenda, clientes e pagamentos em um só lugar.
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <Button size="lg" asChild>
@@ -151,7 +151,7 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex justify-between items-center text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <Logo className="h-6 w-6" />
-            <span>© {new Date().getFullYear()} AgeNails. Todos os direitos reservados.</span>
+            <span>© {new Date().getFullYear()} AgendaEu.com. Todos os direitos reservados.</span>
           </div>
           <div className="flex gap-4">
             <Link href="#" className="hover:text-primary">Termos</Link>

@@ -29,16 +29,12 @@ const onboardingSchema = z.object({
 type OnboardingValues = z.infer<typeof onboardingSchema>;
 
 const defaultServices = [
+    { name: "Corte de Cabelo", description: "Corte moderno e estilizado.", duration: "45min", price: 50, active: true },
     { name: "Manicure Simples", description: "Corte, limpeza, lixamento e esmaltação básica. Rápido e perfeito para o dia a dia.", duration: "45min", price: 30, active: true },
     { name: "Pedicure Simples", description: "Cuide dos pés com limpeza, lixamento e esmaltação. Conforto e beleza em 40 min.", duration: "40min", price: 35, active: true },
-    { name: "Gel nas Mãos", description: "Esmalte em gel de longa duração com cabine LED/UV. Brilho e durabilidade extra.", duration: "1h 20min", price: 80, active: true },
-    { name: "Gel nos Pés", description: "Esmaltação em gel para os pés com acabamento impecável e resistência prolongada.", duration: "1h", price: 85, active: true },
-    { name: "Banho de Gel", description: "Camada de gel que fortalece e protege suas unhas naturais. Mais saúde e brilho.", duration: "1h 30min", price: 90, active: true },
-    { name: "Alongamento em Gel", description: "Unhas longas, fortes e elegantes com técnica profissional de extensão em gel.", duration: "2h 30min", price: 200, active: true },
-    { name: "Spa dos Pés", description: "Esfoliação, hidratação e massagem relaxante. Pés renovados e macios.", duration: "50min", price: 60, active: true },
-    { name: "Francesinha Clássica", description: "Borda branca delicada nas unhas. Elegância simples e atemporal.", duration: "20min", price: 10, active: true },
-    { name: "Nail Art Personalizada", description: "Decoração artística com adesivos, pedrarias ou pintura detalhada. Por unha.", duration: "15min", price: 5, active: true },
-    { name: "Remoção de Gel/Acrílico", description: "Retirada cuidadosa de alongamentos preservando a saúde das unhas.", duration: "30min", price: 40, active: true },
+    { name: "Design de Sobrancelha", description: "Modelagem e design de sobrancelhas.", duration: "30min", price: 40, active: true },
+    { name: "Massagem Relaxante", description: "Massagem para alívio de tensões e relaxamento.", duration: "1h", price: 120, active: true },
+    { name: "Limpeza de Pele", description: "Limpeza profunda com extração e hidratação.", duration: "1h 30min", price: 150, active: true },
 ];
 
 export default function OnboardingPage() {
@@ -168,7 +164,7 @@ export default function OnboardingPage() {
         <div className="flex justify-center mb-6">
            <Link href="/" className="flex items-center gap-2">
               <Logo className="h-10 w-10 text-primary" />
-              <span className="text-3xl font-bold font-headline">AgeNails</span>
+              <span className="text-3xl font-bold font-headline">AgendaEu.com</span>
             </Link>
         </div>
         <Card>
@@ -184,9 +180,9 @@ export default function OnboardingPage() {
                   name="businessName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nome do seu Salão / Barbearia</FormLabel>
+                      <FormLabel>Nome do seu Negócio / Espaço</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ex: Espaço Beleza Unica" {...field} />
+                        <Input placeholder="Ex: Estúdio Maria Silva" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -250,5 +246,3 @@ export default function OnboardingPage() {
     </div>
   )
 }
-
-    
