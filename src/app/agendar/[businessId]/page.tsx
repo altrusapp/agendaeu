@@ -473,7 +473,7 @@ export default function PublicSchedulePage() {
                         <div>
                             <h3 className="text-xl font-semibold font-headline mb-4">1. Selecione o Serviço</h3>
                             <Select onValueChange={handleSelectService} value={selectedService || undefined}>
-                              <SelectTrigger className="w-full">
+                              <SelectTrigger className="w-full" aria-label="Selecionar serviço">
                                 <SelectValue placeholder="Escolha um serviço..." />
                               </SelectTrigger>
                               <SelectContent>

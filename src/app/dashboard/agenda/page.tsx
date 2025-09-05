@@ -327,7 +327,7 @@ export default function AgendaPage() {
               // It moves to the next logical step instead of closing the dialog.
             }
           }}>
-          <SelectTrigger id="client">
+          <SelectTrigger id="client" aria-label="Selecionar cliente">
             <SelectValue placeholder="Selecione um cliente" />
           </SelectTrigger>
           <SelectContent>
@@ -347,7 +347,7 @@ export default function AgendaPage() {
                // Note: This behavior is part of Task 1 for UX refinement.
             }
           }}>
-          <SelectTrigger id="service">
+          <SelectTrigger id="service" aria-label="Selecionar serviço">
             <SelectValue placeholder="Selecione um serviço" />
           </SelectTrigger>
           <SelectContent>

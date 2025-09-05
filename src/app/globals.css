@@ -33,7 +33,7 @@
     --success-foreground: 0 0% 98%; /* #fafafa */
 
     --border: 0 0% 89.8%; /* #e5e5e5 */
-    --input: 0 0% 92.9%; /* #ededed */
+    --input: 0 0% 89.8%; /* #e5e5e5 */
     --ring: 262.1 83.3% 57.8%; /* #8B5CF6 */
 
     --radius: 0.75rem;
@@ -90,7 +90,7 @@
     --success-foreground: 0 0% 98%;
 
     --border: 240 6% 20%; /* #313438 */
-    --input: 240 6% 22%; /* #35383c */
+    --input: 240 6% 20%; /* #313438 */
     --ring: 262.1 83.3% 57.8%; /* #8B5CF6 */
     
     /* Inverse Colors */
@@ -190,3 +190,5 @@
     background-color: hsl(var(--primary) / 0.5);
   }
 }
+
+    

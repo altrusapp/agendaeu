@@ -226,7 +226,7 @@ export default function OnboardingPage() {
                       <FormLabel>Qual seu ramo de atividade?</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger aria-label="Selecionar ramo de atividade">
                             <SelectValue placeholder="Selecione um nicho..." />
                           </SelectTrigger>
                         </FormControl>

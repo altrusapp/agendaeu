@@ -381,7 +381,7 @@ export default function ClientesPage() {
                                        {client.notes && (
                                            <Dialog>
                                                <DialogTrigger asChild>
-                                                   <button className="text-muted-foreground">
+                                                   <button className="text-muted-foreground" aria-label="Ver anotações do cliente">
                                                        <NotebookPen className="h-4 w-4" />
                                                    </button>
                                                </DialogTrigger>
@@ -462,7 +462,7 @@ export default function ClientesPage() {
                           {client.notes && (
                               <Tooltip>
                                   <TooltipTrigger asChild>
-                                      <button>
+                                      <button aria-label="Ver anotações do cliente">
                                           <NotebookPen className="h-4 w-4 text-muted-foreground" />
                                       </button>
                                   </TooltipTrigger>
@@ -564,3 +564,5 @@ export default function ClientesPage() {
     </>
   )
 }
+
+    
