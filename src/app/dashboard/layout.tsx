@@ -154,31 +154,17 @@ export default function DashboardLayout({
           </div>
         </div>
         <div className="flex flex-col h-screen bg-background overflow-hidden">
-          <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6 z-10">
-             <div className="w-full flex-1 md:hidden">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="icon">
-                            <Menu className="h-5 w-5" />
-                            <span className="sr-only">Abrir menu</span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start">
-                        {desktopNavItems.map(item => (
-                            <DropdownMenuItem key={item.href} asChild>
-                                <Link href={item.href} className="flex items-center gap-2">
-                                    <item.icon className="h-4 w-4" />
-                                    {item.label}
-                                </Link>
-                            </DropdownMenuItem>
-                        ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
+          <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6 z-10">
+            <Link href="/dashboard" className="flex items-center gap-2 font-semibold md:hidden">
+              <Logo className="h-6 w-6 text-primary" />
+              <span className="font-headline text-lg">{business?.businessName || "AgendaEu"}</span>
+            </Link>
+            
             <div className="w-full flex-1">
-                 <h1 className="font-semibold text-lg">{desktopNavItems.find(item => pathname.startsWith(item.href))?.label}</h1>
+                {/* O título foi removido daqui */}
             </div>
-             <InstallPwaButton />
+            
+            <InstallPwaButton />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="secondary" size="icon" className="rounded-full" aria-label="Abrir menu do usuário">
