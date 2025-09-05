@@ -1,4 +1,6 @@
 
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,7 +13,7 @@
     --card: 0 0% 99%; /* #fdfdfd */
     --card-foreground: 0 0% 0%; /* #000000 */
     
-    --popover: 0 0% 99%; /* #fcfcfc */
+    --popover: 0 0% 98%; /* #fcfcfc */
     --popover-foreground: 0 0% 0%; /* #000000 */
     
     --primary: 246 76% 62%; /* #6c5ce7 */
@@ -110,6 +112,7 @@
 @layer base {
   body {
     @apply bg-background text-foreground;
+    font-family: 'PT Sans', sans-serif;
     -webkit-tap-highlight-color: transparent;
     overscroll-behavior: none;
   }
@@ -117,6 +120,7 @@
 
 @layer components {
     .font-headline {
+        font-family: 'PT Sans', sans-serif;
         font-weight: 700;
     }
 }

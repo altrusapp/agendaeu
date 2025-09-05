@@ -1,11 +1,13 @@
 import type {Metadata} from 'next';
-import { Inter } from 'next/font/google';
+import { PT_Sans } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
-const inter = Inter({ 
+const ptSans = PT_Sans({ 
   subsets: ['latin'],
+  weight: ['400', '700'],
   display: 'swap',
+  variable: '--font-pt-sans',
 });
 
 export const metadata: Metadata = {
@@ -25,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={inter.className} suppressHydrationWarning>
+    <html lang="pt-BR" className={ptSans.variable} suppressHydrationWarning>
       <head />
       <body>
         {children}
