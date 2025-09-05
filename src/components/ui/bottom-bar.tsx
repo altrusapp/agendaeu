@@ -41,3 +41,5 @@ export function BottomBar({ navItems, pathname }: BottomBarProps) {
     </div>
   )
 }
+
+    
