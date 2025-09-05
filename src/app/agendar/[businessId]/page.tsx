@@ -6,7 +6,7 @@ import Image from "next/image"
 import { useParams } from "next/navigation"
 import { Calendar as CalendarIcon, CheckCircle, Clock, PartyPopper, User, Phone, Tag, Calendar as CalendarIconInfo, DollarSign, ChevronRight } from "lucide-react"
 import { doc, getDoc, collection, query, getDocs, DocumentData, addDoc, Timestamp, where, updateDoc, increment, limit } from "firebase/firestore"
-import { getDay } from "date-fns"
+import { getDay, isToday } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
 import { db } from "@/lib/firebase/client"
@@ -107,7 +107,7 @@ export default function PublicSchedulePage() {
   const [loadingTimes, setLoadingTimes] = React.useState(false);
   const [availableTimes, setAvailableTimes] = React.useState<string[]>([]);
 
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
+  const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [selectedService, setSelectedService] = React.useState<string | null>(null);
   const [selectedTime, setSelectedTime] = React.useState<string | null>(null);
   const [clientName, setClientName] = React.useState("");
@@ -182,7 +182,7 @@ export default function PublicSchedulePage() {
             return;
         }
 
-        const generatedTimes: string[] = [];
+        let generatedTimes: string[] = [];
         const dayOfWeek = dayMapping[getDay(date)];
         const businessDay = businessInfo.businessHours?.[dayOfWeek];
 
@@ -191,15 +191,20 @@ export default function PublicSchedulePage() {
             const durationValue = parseInt(durationParts[1] || "60", 10);
             const durationUnit = durationParts[2] || "min";
             const serviceDurationInMinutes = durationUnit === 'h' ? durationValue * 60 : durationValue;
+            
+            const now = new Date();
 
             businessDay.slots.forEach((slot: { start: string, end: string }) => {
                 let currentTime = new Date(`${date.toDateString()} ${slot.start}`);
                 const endTime = new Date(`${date.toDateString()} ${slot.end}`);
 
                 while (currentTime < endTime) {
-                    generatedTimes.push(
-                        currentTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-                    );
+                    const isFutureTime = !isToday(date) || (isToday(date) && currentTime > now);
+                    if(isFutureTime) {
+                        generatedTimes.push(
+                            currentTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+                        );
+                    }
                     currentTime.setMinutes(currentTime.getMinutes() + serviceDurationInMinutes);
                 }
             });
@@ -295,6 +300,21 @@ export default function PublicSchedulePage() {
     const [hours, minutes] = selectedTime.split(':').map(Number);
     const appointmentDate = new Date(date);
     appointmentDate.setHours(hours, minutes, 0, 0);
+
+    // Final check to ensure the appointment is in the future
+    if (appointmentDate < new Date()) {
+        toast({
+            variant: "destructive",
+            title: "Horário Indisponível",
+            description: "Esse horário não está mais disponível. Por favor, escolha outro.",
+        });
+        setSelectedTime(null);
+        // Optionally, refresh available times
+        setAvailableTimes(prev => prev.filter(t => t !== selectedTime));
+        setIsSubmitting(false);
+        return;
+    }
+
     const appointmentTimestamp = Timestamp.fromDate(appointmentDate);
     
     try {
@@ -350,7 +370,7 @@ export default function PublicSchedulePage() {
   const handleRestart = () => {
     setSelectedService(null);
     setSelectedTime(null);
-    setDate(new Date());
+    setDate(undefined);
     setClientName("");
     setClientPhone("");
     setIsSuccess(false);
@@ -533,7 +553,16 @@ export default function PublicSchedulePage() {
                                                 day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
                                                 day_hidden: "invisible",
                                             }}
-                                            disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
+                                            disabled={(d) => {
+                                                const yesterday = new Date();
+                                                yesterday.setDate(yesterday.getDate() - 1);
+                                                yesterday.setHours(0, 0, 0, 0);
+
+                                                if (d < yesterday) return true;
+                                                if (isToday(d) && availableTimes.length === 0 && !loadingTimes) return true;
+
+                                                return false;
+                                            }}
                                             locale={ptBR}
                                         />
                                     </div>
@@ -561,7 +590,10 @@ export default function PublicSchedulePage() {
                                                     {time}
                                                 </Button>
                                                 )) : (
-                                                    <p className="col-span-3 text-center text-muted-foreground">Nenhum horário disponível para este dia.</p>
+                                                    <p className="col-span-3 text-center text-muted-foreground">
+                                                        {isToday(date!) && "Não há mais horários disponíveis hoje."}
+                                                        {!isToday(date!) && "Nenhum horário disponível para este dia."}
+                                                    </p>
                                                 )}
                                             </div>
                                         )}
