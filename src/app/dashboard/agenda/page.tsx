@@ -417,7 +417,7 @@ export default function AgendaPage() {
                   buttonVariants({ variant: "ghost" }),
                   "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
                 ),
-                day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                day_selected: "bg-primary text-primary-foreground hover:bg-primary/90 focus:bg-primary",
                 day_today: "text-accent-foreground",
               }}
               disabled={(d) => d < new Date(new Date().setDate(new Date().getDate() - 1))}
