@@ -400,44 +400,53 @@ export default function PublicSchedulePage() {
             <div className="relative animated-gradient-cover h-48 md:h-64 w-full">
               <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                 <div className="text-center">
-                  <Avatar className="h-24 w-24 mx-auto border-4 border-white shadow-lg">
-                    <AvatarImage src={businessInfo.logoUrl} alt={`Logo de ${businessInfo.name}`} data-ai-hint="logo abstract"/>
-                    <AvatarFallback>{businessInfo.name.substring(0,2)}</AvatarFallback>
-                  </Avatar>
+                   <Avatar className="h-24 w-24 mx-auto border-4 border-white shadow-lg">
+                      <AvatarImage src={businessInfo.logoUrl} alt={`Logo de ${businessInfo.name}`} data-ai-hint="logo abstract"/>
+                      <AvatarFallback>{businessInfo.name.substring(0,2)}</AvatarFallback>
+                    </Avatar>
                   <h1 className="text-3xl md:text-4xl font-bold text-white mt-4 font-headline">{businessInfo.name}</h1>
                 </div>
               </div>
             </div>
           </header>
           <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow flex items-center justify-center">
-            <Card className="max-w-md w-full">
-                <CardContent className="p-6">
-                   <div className="text-center py-10">
-                    <PartyPopper className="h-16 w-16 mx-auto text-success" />
-                    <h2 className="text-3xl font-bold font-headline mt-4">Tudo Certo!</h2>
-                    <p className="text-muted-foreground mt-2 text-lg">Seu agendamento foi confirmado com sucesso.</p>
-                    <Card className="max-w-md mx-auto mt-6 text-left bg-muted/50">
-                      <CardHeader>
-                        <CardTitle className="text-xl">Resumo do Agendamento</CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-2">
-                        <div className="flex justify-between items-center">
-                            <span className="text-muted-foreground">Serviço:</span>
-                            <span className="font-bold">{selectedServiceInfo?.name}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-muted-foreground">Data:</span>
-                            <span className="font-bold">{date?.toLocaleDateString('pt-BR')}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-muted-foreground">Horário:</span>
-                            <span className="font-bold">{selectedTime}</span>
-                          </div>
-                      </CardContent>
-                    </Card>
-                    <Button className="mt-8" onClick={handleRestart}>Fazer Novo Agendamento</Button>
+            <Card className="max-w-lg w-full text-center">
+                <CardHeader>
+                  <div className="mx-auto bg-success/10 p-3 rounded-full w-fit">
+                    <CheckCircle className="h-10 w-10 text-success" />
                   </div>
+                  <CardTitle className="text-2xl mt-4">
+                    🎉 Pronto, {clientName.split(" ")[0]}! Seu horário está confirmado.
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                   <div className="text-left bg-muted/50 p-4 rounded-lg space-y-3">
+                       <div className="flex items-center gap-3">
+                         <CalendarIconInfo className="h-5 w-5 text-muted-foreground" />
+                         <p><strong>Data:</strong> {date?.toLocaleDateString('pt-BR')}</p>
+                       </div>
+                       <div className="flex items-center gap-3">
+                         <Clock className="h-5 w-5 text-muted-foreground" />
+                         <p><strong>Horário:</strong> {selectedTime}</p>
+                       </div>
+                       <div className="flex items-center gap-3">
+                         <Tag className="h-5 w-5 text-muted-foreground" />
+                         <p><strong>Serviço:</strong> {selectedServiceInfo?.name}</p>
+                       </div>
+                       <div className="flex items-center gap-3">
+                         <User className="h-5 w-5 text-muted-foreground" />
+                         <p><strong>Profissional:</strong> {businessInfo.name}</p>
+                       </div>
+                   </div>
+                   <div className="text-sm text-muted-foreground">
+                    <p>👉 Esse horário é exclusivo para você. Se precisar remarcar, fale com {businessInfo.name}.</p>
+                   </div>
+                   <Button onClick={handleRestart} className="w-full">Fazer Novo Agendamento</Button>
                 </CardContent>
+                 <CardFooter className="flex flex-col gap-2 items-center justify-center text-center text-xs text-muted-foreground pt-6 border-t">
+                    <p>✨ Obrigada por confiar no AgendaEu.com</p>
+                    <p>Seu tempo é precioso. Nós ajudamos você a organizá-lo do seu jeito.</p>
+                </CardFooter>
             </Card>
           </main>
          </div>
