@@ -365,7 +365,7 @@ export default function PublicSchedulePage() {
           <Skeleton className="h-48 md:h-64 w-full" />
         </header>
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
-          <Card className="max-w-4xl mx-auto shadow-lg">
+          <Card className="max-w-4xl mx-auto">
             <CardContent className="p-6 space-y-4">
                <Skeleton className="h-8 w-1/2" />
                <Skeleton className="h-px w-full" />
@@ -410,7 +410,7 @@ export default function PublicSchedulePage() {
             </div>
           </header>
           <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow flex items-center justify-center">
-            <Card className="max-w-md w-full shadow-lg">
+            <Card className="max-w-md w-full">
                 <CardContent className="p-6">
                    <div className="text-center py-10">
                     <PartyPopper className="h-16 w-16 mx-auto text-green-600" />
@@ -462,7 +462,7 @@ export default function PublicSchedulePage() {
       </header>
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
-          <Card className="max-w-4xl mx-auto shadow-lg">
+          <Card className="max-w-4xl mx-auto">
             <CardContent className="p-6">
                 <StepIndicator currentStep={currentStep} />
                 <Separator className="my-6" />
