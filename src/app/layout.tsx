@@ -1,3 +1,4 @@
+
 import type {Metadata} from 'next';
 import { PT_Sans } from 'next/font/google';
 import './globals.css';
@@ -19,6 +20,10 @@ export const metadata: Metadata = {
     initialScale: 1,
     maximumScale: 1,
   },
+   themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "hsl(var(--background))" },
+    { media: "(prefers-color-scheme: dark)", color: "hsl(var(--background))" },
+  ],
 };
 
 export default function RootLayout({
