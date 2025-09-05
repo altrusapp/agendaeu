@@ -38,6 +38,11 @@
 
     --radius: 0.75rem;
 
+    /* Inverse Colors */
+    --inverse-surface: 300 3% 18%; /* #302d30 */
+    --inverse-on-surface: 270 20% 96%; /* #f4f2f5 */
+    --inverse-primary: 250 50% 84%; /* #d1c5f4 */
+
     /* Chart Colors */
     --chart-1: 151 86% 54%; /* #31e183 */
     --chart-2: 256 100% 60%; /* #7033ff */
@@ -87,6 +92,11 @@
     --border: 0 0% 15%; /* #262626 */
     --input: 0 0% 12%; /* #1f1f1f */
     --ring: 0 0% 99%; /* #fdfdfd */
+    
+    /* Inverse Colors */
+    --inverse-surface: 270 20% 96%; /* #f4f2f5 */
+    --inverse-on-surface: 300 3% 18%; /* #302d30 */
+    --inverse-primary: 246 76% 62%; /* #6c5ce7 */
 
     /* Chart Colors */
     --chart-1: 151 86% 54%;
