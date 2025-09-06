@@ -6,7 +6,7 @@ import Image from "next/image"
 import { useParams } from "next/navigation"
 import { Calendar as CalendarIcon, CheckCircle, Clock, PartyPopper, User, Phone, Tag, Calendar as CalendarIconInfo, DollarSign, ChevronRight } from "lucide-react"
 import { doc, getDoc, collection, query, getDocs, DocumentData, addDoc, Timestamp, where, updateDoc, increment, limit } from "firebase/firestore"
-import { getDay, isToday } from "date-fns"
+import { getDay, isToday, parse as parseDateFns } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
 import { db } from "@/lib/firebase/client"
@@ -96,6 +96,32 @@ const StepIndicator = ({ currentStep }: { currentStep: number }) => (
 );
 
 
+const parseDuration = (duration: string): number => {
+    if (!duration) return 0;
+
+    let totalMinutes = 0;
+    const hourMatches = duration.match(/(\d+)\s*h/);
+    const minMatches = duration.match(/(\d+)\s*min/);
+
+    if (hourMatches) {
+        totalMinutes += parseInt(hourMatches[1], 10) * 60;
+    }
+    if (minMatches) {
+        totalMinutes += parseInt(minMatches[1], 10);
+    }
+    
+    // Fallback for simple number or "10min" format without space
+    if (totalMinutes === 0) {
+        const simpleMinutes = duration.match(/(\d+)/);
+        if(simpleMinutes) {
+            totalMinutes = parseInt(simpleMinutes[1], 10);
+        }
+    }
+
+    return totalMinutes > 0 ? totalMinutes : 60; // Default to 60 min if parsing fails
+};
+
+
 export default function PublicSchedulePage() {
   const params = useParams();
   const { toast } = useToast();
@@ -103,7 +129,7 @@ export default function PublicSchedulePage() {
   const [services, setServices] = React.useState<Service[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [bookedTimes, setBookedTimes] = React.useState<string[]>([]);
+  const [bookedSlots, setBookedSlots] = React.useState<{start: Date, end: Date}[]>([]);
   const [loadingTimes, setLoadingTimes] = React.useState(false);
   const [availableTimes, setAvailableTimes] = React.useState<string[]>([]);
 
@@ -168,99 +194,114 @@ export default function PublicSchedulePage() {
   }, [businessSlug, toast]);
   
   React.useEffect(() => {
-    if (!date || !businessInfo?.id || !selectedService) {
-        setAvailableTimes([]);
-        setBookedTimes([]);
-        return;
-    };
-
-    const parseDuration = (duration: string): number => {
-        let totalMinutes = 0;
-        const hourMatches = duration.match(/(\d+)\s*h/);
-        const minMatches = duration.match(/(\d+)\s*min/);
-
-        if (hourMatches) {
-            totalMinutes += parseInt(hourMatches[1], 10) * 60;
-        }
-        if (minMatches) {
-            totalMinutes += parseInt(minMatches[1], 10);
-        }
-        
-        // Fallback for simple number or "10min" format without space
-        if (totalMinutes === 0) {
-            const simpleMinutes = duration.match(/(\d+)/);
-            if(simpleMinutes) {
-                totalMinutes = parseInt(simpleMinutes[1], 10);
-            }
-        }
-
-        return totalMinutes > 0 ? totalMinutes : 60; // Default to 60 min if parsing fails
-    };
-
-    const generateAndFetchTimes = async () => {
-        setLoadingTimes(true);
-        const selectedServiceInfo = services.find(s => s.id === selectedService);
-        if (!selectedServiceInfo) {
-            setLoadingTimes(false);
-            return;
-        }
-
-        let generatedTimes: string[] = [];
-        const dayOfWeek = dayMapping[getDay(date)];
-        const businessDay = businessInfo.businessHours?.[dayOfWeek];
-
-        if (businessDay && businessDay.active && businessDay.slots) {
-            const serviceDurationInMinutes = parseDuration(selectedServiceInfo.duration);
-            const now = new Date();
-
-            businessDay.slots.forEach((slot: { start: string, end: string }) => {
-                let currentTime = new Date(`${date.toDateString()} ${slot.start}`);
-                const endTime = new Date(`${date.toDateString()} ${slot.end}`);
-
-                while (currentTime < endTime) {
-                    const isFutureTime = !isToday(date) || (isToday(date) && currentTime > now);
-                    if(isFutureTime) {
-                        generatedTimes.push(
-                            currentTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-                        );
-                    }
-                    currentTime.setMinutes(currentTime.getMinutes() + serviceDurationInMinutes);
-                }
-            });
-        }
-        setAvailableTimes(generatedTimes);
-        
-        const startOfDay = new Date(date);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(date);
-        endOfDay.setHours(23, 59, 59, 999);
-
-        const startTimestamp = Timestamp.fromDate(startOfDay);
-        const endTimestamp = Timestamp.fromDate(endOfDay);
-        
-        try {
-            const appointmentsRef = collection(db, `businesses/${businessInfo.id}/appointments`);
-            const q = query(appointmentsRef, 
-                where("date", ">=", startTimestamp),
-                where("date", "<=", endTimestamp)
-            );
-
-            const querySnapshot = await getDocs(q);
-            const booked = querySnapshot.docs.map(doc => doc.data().time as string);
-            setBookedTimes(booked);
-        } catch (error) {
-            toast({
-                variant: "destructive",
-                title: "Erro ao carregar horários",
-                description: "Não foi possível verificar os horários disponíveis. Tente novamente.",
-            });
-        } finally {
-            setLoadingTimes(false);
-        }
+    if (!date || !businessInfo?.id) {
+      setBookedSlots([]);
+      return;
+    }
+  
+    const fetchAppointments = async () => {
+      setLoadingTimes(true);
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+  
+      const startTimestamp = Timestamp.fromDate(startOfDay);
+      const endTimestamp = Timestamp.fromDate(endOfDay);
+  
+      try {
+        const appointmentsRef = collection(db, `businesses/${businessInfo.id}/appointments`);
+        const q = query(
+          appointmentsRef,
+          where("date", ">=", startTimestamp),
+          where("date", "<=", endTimestamp)
+        );
+  
+        const querySnapshot = await getDocs(q);
+        const appointments = querySnapshot.docs.map(doc => doc.data());
+  
+        const allServicesQuery = query(collection(db, `businesses/${businessInfo.id}/services`));
+        const servicesSnapshot = await getDocs(allServicesQuery);
+        const servicesMap = new Map(servicesSnapshot.docs.map(doc => [doc.id, doc.data() as Service]));
+  
+        const booked = appointments.map(app => {
+          const serviceInfo = servicesMap.get(app.serviceId);
+          const duration = serviceInfo ? parseDuration(serviceInfo.duration) : 60;
+          const startDate = app.date.toDate();
+          const endDate = new Date(startDate.getTime() + duration * 60000);
+          return { start: startDate, end: endDate };
+        });
+  
+        setBookedSlots(booked);
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar horários",
+          description: "Não foi possível verificar os horários. Tente novamente.",
+        });
+      } finally {
+        setLoadingTimes(false);
+      }
     };
   
-    generateAndFetchTimes();
-  }, [date, businessInfo, selectedService, services, toast]);
+    fetchAppointments();
+  }, [date, businessInfo?.id, toast]);
+
+
+  React.useEffect(() => {
+    if (!date || !businessInfo?.businessHours || !selectedService) {
+      setAvailableTimes([]);
+      return;
+    }
+
+    setLoadingTimes(true);
+    
+    const selectedServiceInfo = services.find(s => s.id === selectedService);
+    if (!selectedServiceInfo) {
+      setLoadingTimes(false);
+      return;
+    }
+
+    const serviceDuration = parseDuration(selectedServiceInfo.duration);
+    const dayOfWeek = dayMapping[getDay(date)];
+    const businessDay = businessInfo.businessHours[dayOfWeek];
+    const generatedTimes: string[] = [];
+
+    if (businessDay && businessDay.active && businessDay.slots) {
+        const now = new Date();
+
+        businessDay.slots.forEach((slot: { start: string, end: string }) => {
+            let slotStart = parseDateFns(slot.start, "HH:mm", date);
+            const slotEnd = parseDateFns(slot.end, "HH:mm", date);
+
+            while (slotStart.getTime() + serviceDuration * 60000 <= slotEnd.getTime()) {
+                const potentialSlotEnd = new Date(slotStart.getTime() + serviceDuration * 60000);
+                
+                const isFutureTime = !isToday(date) || slotStart > now;
+                
+                const isAvailable = !bookedSlots.some(bookedSlot => 
+                    (slotStart < bookedSlot.end && potentialSlotEnd > bookedSlot.start)
+                );
+
+                if (isFutureTime && isAvailable) {
+                    generatedTimes.push(
+                        slotStart.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+                    );
+                }
+                
+                // Move to the next slot based on a fixed interval (e.g., 15 minutes) or service duration
+                // Using a smaller, fixed interval like 15 minutes allows for more flexible start times
+                slotStart.setMinutes(slotStart.getMinutes() + 15);
+            }
+        });
+    }
+    
+    // Remove duplicates
+    setAvailableTimes([...new Set(generatedTimes)]);
+    setLoadingTimes(false);
+
+  }, [date, selectedService, businessInfo, bookedSlots, services]);
+
 
 
   const handleSelectService = (serviceId: string) => {
@@ -277,15 +318,6 @@ export default function PublicSchedulePage() {
   
     if (!clientSnapshot.empty) {
         const clientId = clientSnapshot.docs[0].id;
-        const clientRef = doc(db, `businesses/${businessInfo.id}/clients`, clientId);
-        // This update logic is disabled on the public page to avoid permission issues.
-        // It can be moved to a Cloud Function triggered on new appointment creation.
-        /*
-        await updateDoc(clientRef, {
-            totalAppointments: increment(1),
-            lastVisit: Timestamp.now(),
-        });
-        */
         return clientId;
     } else {
         const newClientDoc = await addDoc(clientsRef, {
@@ -328,7 +360,6 @@ export default function PublicSchedulePage() {
             description: "Esse horário não está mais disponível. Por favor, escolha outro.",
         });
         setSelectedTime(null);
-        // Optionally, refresh available times
         setAvailableTimes(prev => prev.filter(t => t !== selectedTime));
         setIsSubmitting(false);
         return;
@@ -337,19 +368,37 @@ export default function PublicSchedulePage() {
     const appointmentTimestamp = Timestamp.fromDate(appointmentDate);
     
     try {
-        const finalCheckQuery = query(collection(db, `businesses/${businessInfo.id}/appointments`),
-            where("date", "==", appointmentTimestamp),
-        );
+        const serviceDuration = parseDuration(selectedServiceInfo.duration);
+        const appointmentEnd = new Date(appointmentDate.getTime() + serviceDuration * 60000);
+        const appointmentEndTimestamp = Timestamp.fromDate(appointmentEnd);
+        
+        // Final availability check
+        const appointmentsRef = collection(db, `businesses/${businessInfo.id}/appointments`);
+        const q = query(appointmentsRef, where("date", "<=", appointmentEndTimestamp));
+        const querySnapshot = await getDocs(q);
+        
+        const allServicesQuery = query(collection(db, `businesses/${businessInfo.id}/services`));
+        const servicesSnapshot = await getDocs(allServicesQuery);
+        const servicesMap = new Map(servicesSnapshot.docs.map(doc => [doc.id, doc.data() as Service]));
 
-        const existingAppointmentSnapshot = await getDocs(finalCheckQuery);
-        if (!existingAppointmentSnapshot.empty) {
-            toast({
+        const isConflict = querySnapshot.docs.some(doc => {
+            const existingApp = doc.data();
+            const existingService = servicesMap.get(existingApp.serviceId);
+            const existingDuration = existingService ? parseDuration(existingService.duration) : 60;
+            const existingStart = existingApp.date.toDate();
+            const existingEnd = new Date(existingStart.getTime() + existingDuration * 60000);
+
+            return (appointmentDate < existingEnd && appointmentEnd > existingStart);
+        });
+
+        if (isConflict) {
+             toast({
                 variant: "destructive",
                 title: "Horário Indisponível",
                 description: `O horário das ${selectedTime} foi agendado por outra pessoa. Por favor, escolha um novo horário.`,
             });
             setSelectedTime(null);
-            setBookedTimes(prev => [...prev, selectedTime]);
+            setBookedSlots(prev => [...prev, { start: appointmentDate, end: appointmentEnd }]);
             setIsSubmitting(false);
             return;
         }
@@ -601,7 +650,6 @@ export default function PublicSchedulePage() {
                                                     key={time} 
                                                     variant={selectedTime === time ? "default" : "outline"} 
                                                     onClick={() => setSelectedTime(time)}
-                                                    disabled={bookedTimes.includes(time)}
                                                     aria-label={`Agendar às ${time}`}
                                                 >
                                                     {time}
@@ -610,6 +658,7 @@ export default function PublicSchedulePage() {
                                                     <p className="col-span-3 text-center text-muted-foreground">
                                                         {date && isToday(date) && "Não há mais horários disponíveis hoje."}
                                                         {date && !isToday(date) && "Nenhum horário disponível para este dia."}
+                                                        {!date && "Selecione um serviço e uma data para ver os horários."}
                                                     </p>
                                                 )}
                                             </div>
