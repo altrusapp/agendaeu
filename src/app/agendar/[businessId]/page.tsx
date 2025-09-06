@@ -4,9 +4,9 @@
 import * as React from "react"
 import Image from "next/image"
 import { useParams } from "next/navigation"
-import { Calendar as CalendarIcon, CheckCircle, Clock, PartyPopper, User, Phone, Tag, Calendar as CalendarIconInfo, DollarSign, ChevronRight } from "lucide-react"
+import { Calendar as CalendarIcon, CheckCircle, Clock, PartyPopper, User, Phone, Tag, Calendar as CalendarIconInfo, DollarSign, ChevronRight, Share2 } from "lucide-react"
 import { doc, getDoc, collection, query, getDocs, DocumentData, addDoc, Timestamp, where, updateDoc, increment, limit } from "firebase/firestore"
-import { getDay, isToday, parse as parseDateFns } from "date-fns"
+import { getDay, isToday, parse as parseDateFns, startOfDay, endOfDay } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
 import { db } from "@/lib/firebase/client"
@@ -97,28 +97,25 @@ const StepIndicator = ({ currentStep }: { currentStep: number }) => (
 
 
 const parseDuration = (duration: string): number => {
-    if (!duration) return 0;
+  if (!duration) return 0;
+  
+  let totalMinutes = 0;
+  const hourMatch = duration.match(/(\d+)\s*h/);
+  const minMatch = duration.match(/(\d+)\s*min/);
 
-    let totalMinutes = 0;
-    const hourMatches = duration.match(/(\d+)\s*h/);
-    const minMatches = duration.match(/(\d+)\s*min/);
+  if (hourMatch) {
+    totalMinutes += parseInt(hourMatch[1], 10) * 60;
+  }
+  if (minMatch) {
+    totalMinutes += parseInt(minMatch[1], 10);
+  }
 
-    if (hourMatches) {
-        totalMinutes += parseInt(hourMatches[1], 10) * 60;
-    }
-    if (minMatches) {
-        totalMinutes += parseInt(minMatches[1], 10);
-    }
-    
-    // Fallback for simple number or "10min" format without space
-    if (totalMinutes === 0) {
-        const simpleMinutes = duration.match(/(\d+)/);
-        if(simpleMinutes) {
-            totalMinutes = parseInt(simpleMinutes[1], 10);
-        }
-    }
+  // Fallback for simple number if no units are found
+  if (totalMinutes === 0 && /^\d+$/.test(duration)) {
+    totalMinutes = parseInt(duration, 10);
+  }
 
-    return totalMinutes > 0 ? totalMinutes : 60; // Default to 60 min if parsing fails
+  return totalMinutes > 0 ? totalMinutes : 60; // Default to 60 min if parsing fails
 };
 
 
@@ -129,10 +126,10 @@ export default function PublicSchedulePage() {
   const [services, setServices] = React.useState<Service[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [bookedSlots, setBookedSlots] = React.useState<{start: Date, end: Date}[]>([]);
-  const [loadingTimes, setLoadingTimes] = React.useState(false);
+  const [bookedSlots, setBookedSlots] = React.useState<Map<string, {start: Date, end: Date}[]>>(new Map());
+  const [loadingTimes, setLoadingTimes] = React.useState(true);
   const [availableTimes, setAvailableTimes] = React.useState<string[]>([]);
-
+  
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [selectedService, setSelectedService] = React.useState<string | null>(null);
   const [selectedTime, setSelectedTime] = React.useState<string | null>(null);
@@ -144,9 +141,10 @@ export default function PublicSchedulePage() {
   
   const currentStep = React.useMemo(() => {
     if (!selectedService) return 1;
-    if (!selectedTime) return 2;
+    if (!date || !selectedTime) return 2;
     return 3;
-  }, [selectedService, selectedTime]);
+  }, [selectedService, date, selectedTime]);
+
 
   React.useEffect(() => {
     if (!businessSlug) return;
@@ -177,6 +175,13 @@ export default function PublicSchedulePage() {
             ...doc.data()
           })) as Service[];
           setServices(servicesData);
+          
+          // Pre-fetch today's appointments to enable/disable calendar correctly
+          const todayKey = new Date().toISOString().split('T')[0];
+          fetchAppointmentsForDate(new Date(), businessId, new Map());
+
+        } else {
+           setBusinessInfo(null);
         }
 
       } catch (error) {
@@ -193,59 +198,68 @@ export default function PublicSchedulePage() {
     fetchBusinessData();
   }, [businessSlug, toast]);
   
-  React.useEffect(() => {
-    if (!date || !businessInfo?.id) {
-      setBookedSlots([]);
-      return;
+
+  const fetchAppointmentsForDate = React.useCallback(async (fetchDate: Date, businessId: string, currentBookedSlots: Map<string, {start: Date, end: Date}[]>) => {
+    const dateKey = fetchDate.toISOString().split('T')[0];
+    if (currentBookedSlots.has(dateKey)) {
+        setLoadingTimes(false);
+        return;
     }
-  
-    const fetchAppointments = async () => {
-      setLoadingTimes(true);
-      const startOfDay = new Date(date);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(date);
-      endOfDay.setHours(23, 59, 59, 999);
-  
-      const startTimestamp = Timestamp.fromDate(startOfDay);
-      const endTimestamp = Timestamp.fromDate(endOfDay);
-  
-      try {
-        const appointmentsRef = collection(db, `businesses/${businessInfo.id}/appointments`);
+
+    setLoadingTimes(true);
+    const start = startOfDay(fetchDate);
+    const end = endOfDay(fetchDate);
+
+    const startTimestamp = Timestamp.fromDate(start);
+    const endTimestamp = Timestamp.fromDate(end);
+
+    try {
+        const appointmentsRef = collection(db, `businesses/${businessId}/appointments`);
         const q = query(
-          appointmentsRef,
-          where("date", ">=", startTimestamp),
-          where("date", "<=", endTimestamp)
+            appointmentsRef,
+            where("date", ">=", startTimestamp),
+            where("date", "<=", endTimestamp)
         );
-  
+
         const querySnapshot = await getDocs(q);
         const appointments = querySnapshot.docs.map(doc => doc.data());
-  
-        const allServicesQuery = query(collection(db, `businesses/${businessInfo.id}/services`));
+
+        const allServicesQuery = query(collection(db, `businesses/${businessId}/services`));
         const servicesSnapshot = await getDocs(allServicesQuery);
         const servicesMap = new Map(servicesSnapshot.docs.map(doc => [doc.id, doc.data() as Service]));
-  
+
         const booked = appointments.map(app => {
-          const serviceInfo = servicesMap.get(app.serviceId);
-          const duration = serviceInfo ? parseDuration(serviceInfo.duration) : 60;
-          const startDate = app.date.toDate();
-          const endDate = new Date(startDate.getTime() + duration * 60000);
-          return { start: startDate, end: endDate };
+            const serviceInfo = servicesMap.get(app.serviceId);
+            const duration = serviceInfo ? parseDuration(serviceInfo.duration) : 60;
+            const startDate = app.date.toDate();
+            const endDate = new Date(startDate.getTime() + duration * 60000);
+            return { start: startDate, end: endDate };
         });
-  
-        setBookedSlots(booked);
-      } catch (error) {
+
+        setBookedSlots(prev => {
+            const newMap = new Map(prev);
+            newMap.set(dateKey, booked);
+            return newMap;
+        });
+    } catch (error) {
         toast({
-          variant: "destructive",
-          title: "Erro ao carregar horários",
-          description: "Não foi possível verificar os horários. Tente novamente.",
+            variant: "destructive",
+            title: "Erro ao carregar horários",
+            description: "Não foi possível verificar os horários. Tente novamente.",
         });
-      } finally {
+    } finally {
         setLoadingTimes(false);
-      }
+    }
+  }, [toast]);
+
+
+  React.useEffect(() => {
+    if (!date || !businessInfo?.id) {
+        setAvailableTimes([]);
+        return;
     };
-  
-    fetchAppointments();
-  }, [date, businessInfo?.id, toast]);
+    fetchAppointmentsForDate(date, businessInfo.id, bookedSlots);
+  }, [date, businessInfo?.id, fetchAppointmentsForDate, bookedSlots]);
 
 
   React.useEffect(() => {
@@ -253,7 +267,7 @@ export default function PublicSchedulePage() {
       setAvailableTimes([]);
       return;
     }
-
+    
     setLoadingTimes(true);
     
     const selectedServiceInfo = services.find(s => s.id === selectedService);
@@ -266,6 +280,10 @@ export default function PublicSchedulePage() {
     const dayOfWeek = dayMapping[getDay(date)];
     const businessDay = businessInfo.businessHours[dayOfWeek];
     const generatedTimes: string[] = [];
+    
+    const dateKey = date.toISOString().split('T')[0];
+    const currentDayBookedSlots = bookedSlots.get(dateKey) || [];
+
 
     if (businessDay && businessDay.active && businessDay.slots) {
         const now = new Date();
@@ -279,7 +297,7 @@ export default function PublicSchedulePage() {
                 
                 const isFutureTime = !isToday(date) || slotStart > now;
                 
-                const isAvailable = !bookedSlots.some(bookedSlot => 
+                const isAvailable = !currentDayBookedSlots.some(bookedSlot => 
                     (slotStart < bookedSlot.end && potentialSlotEnd > bookedSlot.start)
                 );
 
@@ -289,14 +307,11 @@ export default function PublicSchedulePage() {
                     );
                 }
                 
-                // Move to the next slot based on a fixed interval (e.g., 15 minutes) or service duration
-                // Using a smaller, fixed interval like 15 minutes allows for more flexible start times
                 slotStart.setMinutes(slotStart.getMinutes() + 15);
             }
         });
     }
     
-    // Remove duplicates
     setAvailableTimes([...new Set(generatedTimes)]);
     setLoadingTimes(false);
 
@@ -308,6 +323,14 @@ export default function PublicSchedulePage() {
     setSelectedService(serviceId);
     setSelectedTime(null);
   }
+  
+  const handleDateSelect = (selectedDate: Date | undefined) => {
+    if (selectedDate) {
+      setDate(selectedDate);
+      setSelectedTime(null);
+    }
+  }
+
 
   const findOrCreateClient = async () => {
     if (!businessInfo?.id || !clientName || !clientPhone) return null;
@@ -318,6 +341,7 @@ export default function PublicSchedulePage() {
   
     if (!clientSnapshot.empty) {
         const clientId = clientSnapshot.docs[0].id;
+        // Optionally update last visit info here
         return clientId;
     } else {
         const newClientDoc = await addDoc(clientsRef, {
@@ -325,8 +349,8 @@ export default function PublicSchedulePage() {
             phone: clientPhone,
             email: "", 
             createdAt: Timestamp.now(),
-            lastVisit: Timestamp.now(),
-            totalAppointments: 1,
+            lastVisit: null,
+            totalAppointments: 0,
         });
         return newClientDoc.id;
     }
@@ -364,31 +388,19 @@ export default function PublicSchedulePage() {
         setIsSubmitting(false);
         return;
     }
-
+    
     const appointmentTimestamp = Timestamp.fromDate(appointmentDate);
     
     try {
         const serviceDuration = parseDuration(selectedServiceInfo.duration);
         const appointmentEnd = new Date(appointmentDate.getTime() + serviceDuration * 60000);
-        const appointmentEndTimestamp = Timestamp.fromDate(appointmentEnd);
         
         // Final availability check
-        const appointmentsRef = collection(db, `businesses/${businessInfo.id}/appointments`);
-        const q = query(appointmentsRef, where("date", "<=", appointmentEndTimestamp));
-        const querySnapshot = await getDocs(q);
-        
-        const allServicesQuery = query(collection(db, `businesses/${businessInfo.id}/services`));
-        const servicesSnapshot = await getDocs(allServicesQuery);
-        const servicesMap = new Map(servicesSnapshot.docs.map(doc => [doc.id, doc.data() as Service]));
+        const dateKey = date.toISOString().split('T')[0];
+        const currentDayBookedSlots = bookedSlots.get(dateKey) || [];
 
-        const isConflict = querySnapshot.docs.some(doc => {
-            const existingApp = doc.data();
-            const existingService = servicesMap.get(existingApp.serviceId);
-            const existingDuration = existingService ? parseDuration(existingService.duration) : 60;
-            const existingStart = existingApp.date.toDate();
-            const existingEnd = new Date(existingStart.getTime() + existingDuration * 60000);
-
-            return (appointmentDate < existingEnd && appointmentEnd > existingStart);
+        const isConflict = currentDayBookedSlots.some(bookedSlot => {
+            return (appointmentDate < bookedSlot.end && appointmentEnd > bookedSlot.start);
         });
 
         if (isConflict) {
@@ -398,7 +410,12 @@ export default function PublicSchedulePage() {
                 description: `O horário das ${selectedTime} foi agendado por outra pessoa. Por favor, escolha um novo horário.`,
             });
             setSelectedTime(null);
-            setBookedSlots(prev => [...prev, { start: appointmentDate, end: appointmentEnd }]);
+            // Re-run availability check
+             setBookedSlots(prev => {
+                const newMap = new Map(prev);
+                newMap.set(dateKey, [...currentDayBookedSlots, { start: appointmentDate, end: appointmentEnd }]);
+                return newMap;
+            });
             setIsSubmitting(false);
             return;
         }
@@ -419,6 +436,13 @@ export default function PublicSchedulePage() {
             time: selectedTime,
             status: 'Confirmado',
             createdAt: Timestamp.now(),
+        });
+        
+        // Update client's stats
+        const clientRef = doc(db, `businesses/${businessInfo.id}/clients`, clientId);
+        await updateDoc(clientRef, {
+            lastVisit: appointmentTimestamp,
+            totalAppointments: increment(1),
         });
         
         setIsSuccess(true);
@@ -443,6 +467,12 @@ export default function PublicSchedulePage() {
     setClientPhone("");
     setIsSuccess(false);
   };
+  
+  const generateWhatsAppShareLink = () => {
+    if (!businessInfo) return "";
+    const message = `Olha só, marquei meu horário no ${businessInfo.name}! Super fácil e rápido. 😊 Para agendar também, acesse: ${window.location.href}`;
+    return `https://wa.me/?text=${encodeURIComponent(message)}`;
+  }
   
   const selectedServiceInfo = services.find(s => s.id === selectedService);
 
@@ -529,6 +559,12 @@ export default function PublicSchedulePage() {
                    <div className="text-sm text-muted-foreground">
                     <p>👉 Esse horário é exclusivo para você. Se precisar remarcar, fale com {businessInfo.name}.</p>
                    </div>
+                    <Button asChild variant="outline" className="w-full">
+                       <a href={generateWhatsAppShareLink()} target="_blank" rel="noopener noreferrer">
+                         <Share2 className="mr-2 h-4 w-4" />
+                         Compartilhe com uma amiga
+                       </a>
+                   </Button>
                    <Button onClick={handleRestart} className="w-full">Fazer Novo Agendamento</Button>
                 </CardContent>
                  <CardFooter className="flex flex-col gap-2 items-center justify-center text-center text-xs text-muted-foreground pt-6 border-t">
@@ -594,52 +630,47 @@ export default function PublicSchedulePage() {
                                         <Calendar
                                             mode="single"
                                             selected={date}
-                                            onSelect={setDate}
+                                            onSelect={handleDateSelect}
                                             className="p-3 rounded-md border w-full"
-                                            classNames={{
-                                                months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                                                month: "space-y-4",
-                                                caption: "flex justify-center pt-1 relative items-center",
-                                                caption_label: "text-sm font-medium",
-                                                nav: "space-x-1 flex items-center",
-                                                nav_button: cn(buttonVariants({ variant: "outline" }), "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"),
-                                                nav_button_previous: "absolute left-1",
-                                                nav_button_next: "absolute right-1",
-                                                table: "w-full border-collapse space-y-1",
-                                                head_row: "flex justify-between",
-                                                head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-                                                row: "flex w-full mt-2 justify-between",
-                                                cell: "text-center text-sm p-0 relative [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected]:not(.day-outside))]:bg-transparent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                                                day: cn(buttonVariants({ variant: "ghost" }), "h-9 w-9 p-0 font-normal aria-selected:opacity-100"),
-                                                day_range_end: "day-range-end",
-                                                day_selected: "bg-primary text-primary-foreground hover:bg-primary/90 focus:bg-primary",
-                                                day_today: "bg-accent/50 text-accent-foreground",
-                                                day_outside: "day-outside text-muted-foreground aria-selected:bg-accent/50 aria-selected:text-muted-foreground",
-                                                day_disabled: "text-muted-foreground opacity-50",
-                                                day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
-                                                day_hidden: "invisible",
-                                            }}
                                             disabled={(d) => {
                                                 const yesterday = new Date();
                                                 yesterday.setDate(yesterday.getDate() - 1);
-                                                yesterday.setHours(0, 0, 0, 0);
+                                                yesterday.setHours(23, 59, 59, 999);
+                                                
+                                                if (d < startOfDay(new Date())) return true;
 
-                                                if (d < yesterday) return true;
-                                                if (isToday(d) && availableTimes.length === 0 && !loadingTimes) return true;
+                                                const dayOfWeek = dayMapping[getDay(d)];
+                                                const businessDay = businessInfo?.businessHours?.[dayOfWeek];
+                                                if (!businessDay || !businessDay.active) return true;
+                                                
+                                                if(isToday(d) && !loadingTimes) {
+                                                   const todayKey = d.toISOString().split('T')[0];
+                                                   const todaySlots = bookedSlots.get(todayKey);
+                                                   if (!todaySlots) return true; // Disables if today's slots haven't been fetched yet
+                                                }
 
                                                 return false;
                                             }}
-                                            locale={ptBR}
+                                            locale={{
+                                                ...ptBR,
+                                                localize: {
+                                                    ...ptBR.localize,
+                                                    month: (n) => ptBR.localize.month(n).charAt(0).toUpperCase() + ptBR.localize.month(n).slice(1),
+                                                    day: (n) => ptBR.localize.day(n).charAt(0).toUpperCase() + ptBR.localize.day(n).slice(1),
+                                                },
+                                            }}
                                         />
                                     </div>
                                     <div>
-                                        <h4 className="font-medium text-center mb-2">Horários disponíveis</h4>
+                                        <h4 className="font-medium text-center mb-2 capitalize">
+                                            {date ? date.toLocaleDateString('pt-BR', { weekday: 'long' }) : "Horários disponíveis"}
+                                        </h4>
                                         {date && (
-                                            <p className="text-center text-muted-foreground mb-4 text-sm capitalize">
-                                            Para {date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}
+                                            <p className="text-center text-muted-foreground mb-4 text-sm">
+                                            Para {date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}
                                             </p>
                                         )}
-                                        {loadingTimes ? (
+                                        {loadingTimes && date ? (
                                             <div className="grid grid-cols-3 gap-2">
                                                 {Array.from({ length: 9 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
                                             </div>
@@ -656,9 +687,9 @@ export default function PublicSchedulePage() {
                                                 </Button>
                                                 )) : (
                                                     <p className="col-span-3 text-center text-muted-foreground">
+                                                        {!date && "Selecione uma data para ver os horários."}
                                                         {date && isToday(date) && "Não há mais horários disponíveis hoje."}
                                                         {date && !isToday(date) && "Nenhum horário disponível para este dia."}
-                                                        {!date && "Selecione um serviço e uma data para ver os horários."}
                                                     </p>
                                                 )}
                                             </div>
@@ -668,7 +699,7 @@ export default function PublicSchedulePage() {
                             </div>
                         </div>
 
-                        <div className={cn("space-y-8", !selectedTime && "opacity-50 pointer-events-none")}>
+                        <div className={cn("space-y-8", (!selectedTime || !date) && "opacity-50 pointer-events-none")}>
                            <div>
                             <h3 className="text-xl font-semibold font-headline mb-4">3. Seus Detalhes</h3>
                             <form onSubmit={handleConfirmAppointment} className="space-y-4">
@@ -707,3 +738,5 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
+
+    
