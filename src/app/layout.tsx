@@ -15,6 +15,9 @@ export const metadata: Metadata = {
   title: 'AgendaEu.com - Agendamento Online Simplificado',
   description: 'A plataforma completa para agendamento, gerenciamento de clientes e pagamentos para profissionais e negócios.',
   manifest: '/manifest.webmanifest',
+  icons: {
+    icon: '/agendaeu_logo.png',
+  },
   viewport: {
     width: 'device-width',
     initialScale: 1,
