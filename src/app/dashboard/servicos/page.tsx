@@ -65,8 +65,10 @@ const ServiceForm = ({
   formId, 
   serviceName, 
   setServiceName, 
-  duration, 
-  setDuration, 
+  durationHours,
+  setDurationHours,
+  durationMinutes,
+  setDurationMinutes,
   price, 
   setPrice 
 }: { 
@@ -74,8 +76,10 @@ const ServiceForm = ({
   formId: string,
   serviceName: string,
   setServiceName: (value: string) => void,
-  duration: string,
-  setDuration: (value: string) => void,
+  durationHours: number | "",
+  setDurationHours: (value: number | "") => void,
+  durationMinutes: number | "",
+  setDurationMinutes: (value: number | "") => void,
   price: number | "",
   setPrice: (value: number | "") => void
 }) => (
@@ -87,7 +91,16 @@ const ServiceForm = ({
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="duration" className="text-right">Duração</Label>
-          <Input id="duration" value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="Ex: 1h 30min" className="col-span-3" />
+          <div className="col-span-3 grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+                <Label htmlFor="duration-hours" className="text-xs text-muted-foreground">Horas</Label>
+                <Input id="duration-hours" type="number" value={durationHours} onChange={(e) => setDurationHours(e.target.value === '' ? '' : Number(e.target.value))} placeholder="Ex: 1" min="0" />
+            </div>
+             <div className="space-y-1">
+                <Label htmlFor="duration-minutes" className="text-xs text-muted-foreground">Minutos</Label>
+                <Input id="duration-minutes" type="number" value={durationMinutes} onChange={(e) => setDurationMinutes(e.target.value === '' ? '' : Number(e.target.value))} placeholder="Ex: 30" min="0" step="5"/>
+            </div>
+          </div>
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="price" className="text-right">Preço (R$)</Label>
@@ -96,14 +109,50 @@ const ServiceForm = ({
             value={price} 
             onChange={(e) => setPrice(e.target.value === '' ? '' : Number(e.target.value))} 
             type="number" 
-            placeholder="120.00" 
+            placeholder="120,00" 
             className="col-span-3" 
             step="0.01"
+            min="0"
           />
         </div>
       </div>
     </form>
   )
+
+function formatDuration(hours: number, minutes: number): string {
+  const h = Math.floor(hours);
+  const m = Math.floor(minutes);
+
+  if (h > 0 && m > 0) {
+    return `${h}h ${m}min`;
+  }
+  if (h > 0) {
+    return `${h}h`;
+  }
+  if (m > 0) {
+    return `${m}min`;
+  }
+  return '0min';
+}
+
+function parseDuration(duration: string): { hours: number, minutes: number } {
+  if (!duration) return { hours: 0, minutes: 0 };
+  
+  let hours = 0;
+  let minutes = 0;
+
+  const hourMatch = duration.match(/(\d+)\s*h/);
+  if (hourMatch) {
+    hours = parseInt(hourMatch[1], 10);
+  }
+
+  const minMatch = duration.match(/(\d+)\s*min/);
+  if (minMatch) {
+    minutes = parseInt(minMatch[1], 10);
+  }
+
+  return { hours, minutes };
+}
 
 
 export default function ServicosPage() {
@@ -119,12 +168,14 @@ export default function ServicosPage() {
 
   // Form states
   const [serviceName, setServiceName] = React.useState("");
-  const [duration, setDuration] = React.useState("");
+  const [durationHours, setDurationHours] = React.useState<number | "">("");
+  const [durationMinutes, setDurationMinutes] = React.useState<number | "">("");
   const [price, setPrice] = React.useState<number | "">("");
   
   const resetForm = () => {
     setServiceName("");
-    setDuration("");
+    setDurationHours("");
+    setDurationMinutes("");
     setPrice("");
     setSelectedService(null);
   };
@@ -154,9 +205,13 @@ export default function ServicosPage() {
 
   const handleAddService = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const hours = Number(durationHours) || 0;
+    const minutes = Number(durationMinutes) || 0;
+    const duration = formatDuration(hours, minutes);
 
-    if (!business?.id || !serviceName || !duration || price === "") {
-      toast({ variant: "destructive", title: "Erro de Validação", description: "Por favor, preencha todos os campos." });
+    if (!business?.id || !serviceName || duration === '0min' || price === "") {
+      toast({ variant: "destructive", title: "Erro de Validação", description: "Por favor, preencha todos os campos corretamente." });
       return;
     }
 
@@ -179,8 +234,13 @@ export default function ServicosPage() {
   
   const handleEditService = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!business?.id || !selectedService || !serviceName || !duration || price === "") {
-      toast({ variant: "destructive", title: "Erro de Validação", description: "Por favor, preencha todos os campos." });
+
+    const hours = Number(durationHours) || 0;
+    const minutes = Number(durationMinutes) || 0;
+    const duration = formatDuration(hours, minutes);
+
+    if (!business?.id || !selectedService || !serviceName || duration === '0min' || price === "") {
+      toast({ variant: "destructive", title: "Erro de Validação", description: "Por favor, preencha todos os campos corretamente." });
       return;
     }
 
@@ -228,9 +288,11 @@ export default function ServicosPage() {
   };
 
   const openEditDialog = (service: Service) => {
+    const { hours, minutes } = parseDuration(service.duration);
     setSelectedService(service);
     setServiceName(service.name);
-    setDuration(service.duration);
+    setDurationHours(hours || "");
+    setDurationMinutes(minutes || "");
     setPrice(service.price);
     setIsEditDialogOpen(true);
   };
@@ -265,8 +327,10 @@ export default function ServicosPage() {
                     formId="add-service-form"
                     serviceName={serviceName}
                     setServiceName={setServiceName}
-                    duration={duration}
-                    setDuration={setDuration}
+                    durationHours={durationHours}
+                    setDurationHours={setDurationHours}
+                    durationMinutes={durationMinutes}
+                    setDurationMinutes={setDurationMinutes}
                     price={price}
                     setPrice={setPrice}
                 />
@@ -284,7 +348,6 @@ export default function ServicosPage() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-y-2">
-            {/* Header */}
             <div className="hidden md:grid grid-cols-12 items-center gap-4 px-4 text-sm font-medium text-muted-foreground">
                 <div className="col-span-5">Nome do Serviço</div>
                 <div className="col-span-2">Status</div>
@@ -310,7 +373,6 @@ export default function ServicosPage() {
                       "md:grid md:grid-cols-12 md:items-center md:gap-4",
                       index % 2 !== 0 && "md:bg-muted/50"
                   )}>
-                    {/* --- Mobile View --- */}
                     <div className="md:hidden flex items-center justify-between">
                       <div className="flex flex-col gap-1">
                           <p className="font-medium">{service.name}</p>
@@ -356,7 +418,6 @@ export default function ServicosPage() {
                           </DropdownMenu>
                     </div>
 
-                    {/* --- Desktop View --- */}
                     <div className="hidden md:col-span-5 md:flex md:flex-col">
                         <p className="font-medium">{service.name}</p>
                     </div>
@@ -427,8 +488,10 @@ export default function ServicosPage() {
             formId="edit-service-form"
             serviceName={serviceName}
             setServiceName={setServiceName}
-            duration={duration}
-            setDuration={setDuration}
+            durationHours={durationHours}
+            setDurationHours={setDurationHours}
+            durationMinutes={durationMinutes}
+            setDurationMinutes={setDurationMinutes}
             price={price}
             setPrice={setPrice}
             />
@@ -440,5 +503,3 @@ export default function ServicosPage() {
     </>
   )
 }
-
-    
