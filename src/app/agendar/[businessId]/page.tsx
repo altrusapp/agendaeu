@@ -174,6 +174,29 @@ export default function PublicSchedulePage() {
         return;
     };
 
+    const parseDuration = (duration: string): number => {
+        let totalMinutes = 0;
+        const hourMatches = duration.match(/(\d+)\s*h/);
+        const minMatches = duration.match(/(\d+)\s*min/);
+
+        if (hourMatches) {
+            totalMinutes += parseInt(hourMatches[1], 10) * 60;
+        }
+        if (minMatches) {
+            totalMinutes += parseInt(minMatches[1], 10);
+        }
+        
+        // Fallback for simple number or "10min" format without space
+        if (totalMinutes === 0) {
+            const simpleMinutes = duration.match(/(\d+)/);
+            if(simpleMinutes) {
+                totalMinutes = parseInt(simpleMinutes[1], 10);
+            }
+        }
+
+        return totalMinutes > 0 ? totalMinutes : 60; // Default to 60 min if parsing fails
+    };
+
     const generateAndFetchTimes = async () => {
         setLoadingTimes(true);
         const selectedServiceInfo = services.find(s => s.id === selectedService);
@@ -187,11 +210,7 @@ export default function PublicSchedulePage() {
         const businessDay = businessInfo.businessHours?.[dayOfWeek];
 
         if (businessDay && businessDay.active && businessDay.slots) {
-            const durationParts = selectedServiceInfo.duration.match(/(\d+)\s*(h|min)/) || [];
-            const durationValue = parseInt(durationParts[1] || "60", 10);
-            const durationUnit = durationParts[2] || "min";
-            const serviceDurationInMinutes = durationUnit === 'h' ? durationValue * 60 : durationValue;
-            
+            const serviceDurationInMinutes = parseDuration(selectedServiceInfo.duration);
             const now = new Date();
 
             businessDay.slots.forEach((slot: { start: string, end: string }) => {
