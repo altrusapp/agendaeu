@@ -517,7 +517,6 @@ export default function PublicSchedulePage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                    <div className="md:col-span-2 space-y-8">
-                        {/* --- Step 1: Service --- */}
                         <div>
                             <h3 className="text-xl font-semibold font-headline mb-4">1. Selecione o Serviço</h3>
                             <Select onValueChange={handleSelectService} value={selectedService || undefined}>
@@ -538,7 +537,6 @@ export default function PublicSchedulePage() {
                             </Select>
                         </div>
                         
-                        {/* --- Step 2: Date & Time --- */}
                         <div className={cn("space-y-8", !selectedService && "opacity-50 pointer-events-none")}>
                             <div>
                                 <h3 className="text-xl font-semibold font-headline mb-4">2. Escolha a Data e Horário</h3>
@@ -610,8 +608,8 @@ export default function PublicSchedulePage() {
                                                 </Button>
                                                 )) : (
                                                     <p className="col-span-3 text-center text-muted-foreground">
-                                                        {isToday(date!) && "Não há mais horários disponíveis hoje."}
-                                                        {!isToday(date!) && "Nenhum horário disponível para este dia."}
+                                                        {date && isToday(date) && "Não há mais horários disponíveis hoje."}
+                                                        {date && !isToday(date) && "Nenhum horário disponível para este dia."}
                                                     </p>
                                                 )}
                                             </div>
@@ -621,7 +619,6 @@ export default function PublicSchedulePage() {
                             </div>
                         </div>
 
-                        {/* --- Step 3: Details --- */}
                         <div className={cn("space-y-8", !selectedTime && "opacity-50 pointer-events-none")}>
                            <div>
                             <h3 className="text-xl font-semibold font-headline mb-4">3. Seus Detalhes</h3>
