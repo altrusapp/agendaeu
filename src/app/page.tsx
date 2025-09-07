@@ -3,7 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, Users, BarChart, Bell, Scissors, Palette, CreditCard } from "lucide-react"
+import { Check, Calendar, Users, BarChart, Bell, Scissors, Palette, CreditCard } from "lucide-react"
 import { Logo } from "@/components/logo"
 
 export default function Home() {
@@ -25,108 +25,107 @@ export default function Home() {
       </header>
 
       <main className="flex-grow">
+        {/* Hero Section */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-32 text-center">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-headline tracking-tight">
-            Sua agenda profissional, <span className="text-primary">simplificada</span>.
+            👉 “Chega de perder horários e anotar tudo no caderno.”
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground">
-            AgendaEu.com é a plataforma completa para profissionais e pequenos negócios. Gerencie sua agenda, clientes e pagamentos em um só lugar.
+            Com o AgendaEu.com, sua agenda fica online, organizada e funcionando 24 horas por dia.
+            Feito para manicures, barbeiros e pequenos salões que precisam praticidade sem complicação.
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <Button size="lg" asChild>
-              <Link href="/signup">Comece agora, é grátis</Link>
+              <Link href="/signup">Começar Gratuitamente</Link>
             </Button>
           </div>
         </section>
 
+        {/* Seção 1 – A Dor & A Solução */}
+        <section id="solution" className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 text-center">
+            <div className="max-w-3xl mx-auto">
+                <h2 className="text-3xl font-bold font-headline tracking-tight">De um caderno bagunçado para a agenda profissional que resolve</h2>
+                <p className="mt-6 text-lg text-muted-foreground">
+                    Você já se viu anotando horários em cadernos e depois descobrindo que marcou duas clientes no mesmo horário?
+                    Ou pior: esqueceu de confirmar e a cliente não apareceu?
+                </p>
+                <p className="mt-4 text-lg text-muted-foreground">
+                    Foi exatamente assim que nasceu o AgendaEu.com: criado para ajudar profissionais como você a organizar a rotina e nunca mais perder tempo ou dinheiro com desencontros.
+                </p>
+            </div>
+        </section>
+
+
+        {/* Seção 2 – Benefícios */}
         <section id="features" className="bg-muted/50 dark:bg-card">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold font-headline tracking-tight">Tudo que você precisa para crescer</h2>
-              <p className="mt-4 text-lg text-muted-foreground">Ferramentas poderosas e fáceis de usar.</p>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold font-headline tracking-tight">Tudo que você precisa em um só lugar:</h2>
             </div>
-            <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              <Card className="text-center transition-shadow">
-                <CardHeader>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                    <Calendar className="h-6 w-6 text-primary" />
-                  </div>
-                  <CardTitle className="mt-4">Agenda Inteligente</CardTitle>
-                </CardHeader>
-                <CardContent className="text-muted-foreground">
-                  Seus clientes agendam online 24/7. Você tem controle total dos seus horários e serviços.
-                </CardContent>
-              </Card>
-              <Card className="text-center transition-shadow">
-                <CardHeader>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                    <Users className="h-6 w-6 text-primary" />
-                  </div>
-                  <CardTitle className="mt-4">Gestão de Clientes</CardTitle>
-                </CardHeader>
-                <CardContent className="text-muted-foreground">
-                  Mantenha um histórico completo de seus clientes, serviços realizados e preferências.
-                </CardContent>
-              </Card>
-              <Card className="text-center transition-shadow">
-                <CardHeader>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                    <BarChart className="h-6 w-6 text-primary" />
-                  </div>
-                  <CardTitle className="mt-4">Relatórios Simples</CardTitle>
-                </CardHeader>
-                <CardContent className="text-muted-foreground">
-                  Acompanhe seu desempenho com relatórios de agendamentos, faturamento e muito mais.
-                </CardContent>
-              </Card>
-               <Card className="text-center transition-shadow">
-                <CardHeader>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/20">
-                    <Bell className="h-6 w-6 text-accent-foreground" />
-                  </div>
-                  <CardTitle className="mt-4">Lembretes Automáticos</CardTitle>
-                </CardHeader>
-                <CardContent className="text-muted-foreground">
-                  Reduza as faltas com lembretes automáticos por WhatsApp para seus clientes.
-                </CardContent>
-              </Card>
-              <Card className="text-center transition-shadow">
-                <CardHeader>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/20">
-                    <CreditCard className="h-6 w-6 text-accent-foreground" />
-                  </div>
-                  <CardTitle className="mt-4">Pagamento Integrado</CardTitle>
-                </CardHeader>
-                <CardContent className="text-muted-foreground">
-                  Receba um sinal no agendamento e garanta o compromisso do seu cliente.
-                </CardContent>
-              </Card>
-               <Card className="text-center transition-shadow">
-                <CardHeader>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/20">
-                    <Palette className="h-6 w-6 text-accent-foreground" />
-                  </div>
-                  <CardTitle className="mt-4">Sua Marca, Seu Estilo</CardTitle>
-                </CardHeader>
-                <CardContent className="text-muted-foreground">
-                   Configure sua página de agendamento com seu nome e logo em menos de 1 minuto.
-                </CardContent>
-              </Card>
+            <div className="max-w-3xl mx-auto space-y-6">
+                <div className="flex items-start gap-4">
+                    <Check className="h-6 w-6 text-success shrink-0 mt-1" />
+                    <p className="text-lg text-muted-foreground"><strong className="text-foreground">Agenda Online 24/7</strong> – seus clientes marcam sozinhos, sem você parar o trabalho.</p>
+                </div>
+                <div className="flex items-start gap-4">
+                    <Check className="h-6 w-6 text-success shrink-0 mt-1" />
+                    <p className="text-lg text-muted-foreground"><strong className="text-foreground">Gestão de Clientes</strong> – saiba quem marcou, histórico de serviços e preferências.</p>
+                </div>
+                <div className="flex items-start gap-4">
+                    <Check className="h-6 w-6 text-success shrink-0 mt-1" />
+                    <p className="text-lg text-muted-foreground"><strong className="text-foreground">Lembretes sem Esforço</strong> – envie lembretes por WhatsApp e reduza faltas.</p>
+                </div>
+                <div className="flex items-start gap-4">
+                    <Check className="h-6 w-6 text-success shrink-0 mt-1" />
+                    <p className="text-lg text-muted-foreground"><strong className="text-foreground">Pagamentos Garantidos</strong> – receba sinal no agendamento e evite prejuízos.</p>
+                </div>
+                <div className="flex items-start gap-4">
+                    <Check className="h-6 w-6 text-success shrink-0 mt-1" />
+                    <p className="text-lg text-muted-foreground"><strong className="text-foreground">Sua Marca em Destaque</strong> – personalize sua página com nome e logo em 1 minuto.</p>
+                </div>
+                 <div className="flex items-start gap-4">
+                    <Check className="h-6 w-6 text-success shrink-0 mt-1" />
+                    <p className="text-lg text-muted-foreground"><strong className="text-foreground">Relatórios Descomplicados</strong> – acompanhe agendamentos e faturamento sem planilhas.</p>
+                </div>
+            </div>
+             <div className="mt-12 text-center">
+                <Button size="lg" variant="outline" asChild>
+                    <Link href="/signup">Criar Conta Grátis</Link>
+                </Button>
             </div>
           </div>
         </section>
         
+        {/* Seção 3 – Prova & Origem */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
+           <div className="max-w-3xl mx-auto text-center">
+                <h2 className="text-3xl font-bold font-headline tracking-tight">O AgendaEu.com nasceu dentro de casa.</h2>
+                 <p className="mt-6 text-lg text-muted-foreground">
+                    Vi minha irmã — manicure e mãe de duas meninas — tentando se virar com um caderno cheio de anotações.
+                </p>
+                <p className="mt-4 text-lg text-muted-foreground">
+                    O problema? Horários duplicados, compromissos esquecidos e muito estresse.
+                </p>
+                <p className="mt-4 text-lg text-muted-foreground">
+                    Daí surgiu a ideia: transformar toda essa confusão em uma solução simples e prática.
+                    Hoje, o AgendaEu é a agenda + gestão de clientes digital que ajuda profissionais solos a terem mais tranquilidade, foco e tempo para o que realmente importa: cuidar bem dos seus clientes.
+                </p>
+            </div>
+        </section>
+
+        {/* Seção 4 – Promessa Final */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
           <div className="relative isolate overflow-hidden bg-primary/90 px-6 py-24 text-center shadow-2xl rounded-2xl sm:px-16">
             <h2 className="mx-auto max-w-2xl text-3xl font-bold font-headline tracking-tight text-primary-foreground sm:text-4xl">
-              Pronto para transformar seu negócio?
+              Sua agenda pronta em menos de 5 minutos.
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-primary-foreground/90">
-              Crie sua conta e tenha sua agenda online funcionando em menos de 5 minutos.
+              Esqueça complicação de sistemas cheios de botões.
+              No AgendaEu.com você cria sua conta grátis e já sai usando: agendamento, gestão de clientes, lembretes e muito mais.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Button size="lg" variant="secondary" asChild>
-                <Link href="/signup">Começar gratuitamente</Link>
+                <Link href="/signup">Criar Conta Gratuitamente</Link>
               </Button>
             </div>
              <svg
