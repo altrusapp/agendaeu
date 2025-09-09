@@ -314,72 +314,72 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
+        <Card className="bg-pastel-green text-green-900 dark:bg-pastel-green dark:text-green-100 border-green-200 dark:border-green-800">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Receita (Mês)
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-success" />
+            <DollarSign className="h-4 w-4 text-green-800 dark:text-green-200" />
           </CardHeader>
           <CardContent>
             {loadingStats ? (
-              <Skeleton className="h-8 w-3/4" />
+              <Skeleton className="h-8 w-3/4 bg-black/10" />
             ) : (
               <div className="text-2xl font-bold">R$ {stats?.totalRevenue.toFixed(2) ?? '0.00'}</div>
             )}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-green-800/80 dark:text-green-200/80">
               Receita total este mês
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-pastel-blue text-blue-900 dark:bg-pastel-blue dark:text-blue-100 border-blue-200 dark:border-blue-800">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Novos Clientes (Mês)
             </CardTitle>
-            <Users className="h-4 w-4 text-primary" />
+            <Users className="h-4 w-4 text-blue-800 dark:text-blue-200" />
           </CardHeader>
           <CardContent>
              {loadingStats ? (
-              <Skeleton className="h-8 w-1/4" />
+              <Skeleton className="h-8 w-1/4 bg-black/10" />
             ) : (
               <div className="text-2xl font-bold">+{stats?.newClients ?? 0}</div>
             )}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-blue-800/80 dark:text-blue-200/80">
               Clientes cadastrados este mês
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-pastel-purple text-purple-900 dark:bg-pastel-purple dark:text-purple-100 border-purple-200 dark:border-purple-800">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Agendamentos (Mês)</CardTitle>
-            <Calendar className="h-4 w-4 text-primary" />
+            <Calendar className="h-4 w-4 text-purple-800 dark:text-purple-200" />
           </CardHeader>
           <CardContent>
              {loadingStats ? (
-              <Skeleton className="h-8 w-1/4" />
+              <Skeleton className="h-8 w-1/4 bg-black/10" />
             ) : (
               <div className="text-2xl font-bold">+{stats?.monthlyAppointments ?? 0}</div>
             )}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-purple-800/80 dark:text-purple-200/80">
               Agendamentos realizados este mês
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-pastel-pink text-pink-900 dark:bg-pastel-pink dark:text-pink-100 border-pink-200 dark:border-pink-800">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Taxa de Comparecimento
             </CardTitle>
-            <Activity className="h-4 w-4 text-accent-foreground" />
+            <Activity className="h-4 w-4 text-pink-800 dark:text-pink-200" />
           </CardHeader>
           <CardContent>
              {loadingStats ? (
-              <Skeleton className="h-8 w-1/4" />
+              <Skeleton className="h-8 w-1/4 bg-black/10" />
             ) : (
               <div className="text-2xl font-bold">{stats?.attendanceRate ?? 0}%</div>
             )}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-pink-800/80 dark:text-pink-200/80">
               (Funcionalidade em breve)
             </p>
           </CardContent>

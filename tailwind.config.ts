@@ -62,6 +62,10 @@ export default {
         'inverse-surface': 'hsl(var(--inverse-surface))',
         'inverse-on-surface': 'hsl(var(--inverse-on-surface))',
         'inverse-primary': 'hsl(var(--inverse-primary))',
+        'pastel-blue': 'hsl(var(--pastel-blue))',
+        'pastel-green': 'hsl(var(--pastel-green))',
+        'pastel-purple': 'hsl(var(--pastel-purple))',
+        'pastel-pink': 'hsl(var(--pastel-pink))',
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',

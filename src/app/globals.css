@@ -42,6 +42,13 @@
     --inverse-surface: 240 5% 15%; /* #242526 */
     --inverse-on-surface: 0 0% 94%; /* #f0f0f0 */
     --inverse-primary: 217 91% 70%; /* #5ea2ef */
+    
+    /* Pastel Colors for Cards */
+    --pastel-blue: 197 58% 90%; /* #d6eaf8 */
+    --pastel-green: 145 58% 90%; /* #d5f5e3 */
+    --pastel-purple: 278 59% 92%; /* #e8daef */
+    --pastel-pink: 350 70% 93%; /* #fadbdd */
+
 
     /* Chart Colors */
     --chart-1: 151 86% 54%; /* #31e183 */
@@ -97,6 +104,12 @@
     --inverse-surface: 0 0% 94%; /* #f0f0f0 */
     --inverse-on-surface: 240 5% 15%; /* #242526 */
     --inverse-primary: 217 91% 60%; /* #2563eb */
+
+    /* Pastel Colors for Cards */
+    --pastel-blue: 197 40% 20%; /* #243447 */
+    --pastel-green: 145 40% 20%; /* #244734 */
+    --pastel-purple: 278 40% 25%; /* #3c2a47 */
+    --pastel-pink: 350 40% 25%; /* #472a32 */
 
     /* Chart Colors */
     --chart-1: 151 86% 54%;
