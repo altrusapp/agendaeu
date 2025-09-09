@@ -341,7 +341,6 @@ export default function PublicSchedulePage() {
   
     if (!clientSnapshot.empty) {
         const clientId = clientSnapshot.docs[0].id;
-        // Optionally update last visit info here
         return clientId;
     } else {
         const newClientDoc = await addDoc(clientsRef, {
@@ -436,13 +435,6 @@ export default function PublicSchedulePage() {
             time: selectedTime,
             status: 'Confirmado',
             createdAt: Timestamp.now(),
-        });
-        
-        // Update client's stats
-        const clientRef = doc(db, `businesses/${businessInfo.id}/clients`, clientId);
-        await updateDoc(clientRef, {
-            lastVisit: appointmentTimestamp,
-            totalAppointments: increment(1),
         });
         
         setIsSuccess(true);
@@ -738,5 +730,3 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
-
-    

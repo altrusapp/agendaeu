@@ -3,7 +3,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { collection, query, where, getDocs, limit, orderBy, Timestamp, doc, updateDoc } from "firebase/firestore"
+import { collection, query, where, getDocs, limit, orderBy, Timestamp, doc, updateDoc, increment } from "firebase/firestore"
 import { startOfMonth, endOfMonth, format, startOfToday, endOfToday } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { Activity, ArrowUpRight, Calendar, Users, DollarSign, MessageCircle, RefreshCw, CheckCircle } from "lucide-react"
@@ -21,6 +21,7 @@ import { useToast } from "@/hooks/use-toast"
 
 type Appointment = {
   id: string;
+  clientId: string;
   clientName: string;
   clientPhone?: string;
   serviceName: string;
@@ -100,10 +101,8 @@ export default function DashboardPage() {
     }
   }, [business, toast]);
 
-  React.useEffect(() => {
-    if (!business?.id) return;
-
-    async function fetchDashboardData() {
+  const fetchDashboardData = React.useCallback(async () => {
+      if (!business?.id) return;
       setLoadingStats(true);
       try {
         const now = new Date();
@@ -147,26 +146,35 @@ export default function DashboardPage() {
       } finally {
         setLoadingStats(false);
       }
-    }
+    }, [business]);
 
+  React.useEffect(() => {
     fetchDashboardData();
     fetchRecentAppointments();
-  }, [business, fetchRecentAppointments]);
+  }, [fetchDashboardData, fetchRecentAppointments]);
   
-  const handleMarkAsDone = async (appointmentId: string) => {
-    if (!business?.id) return;
-    setIsCompleting(appointmentId);
+  const handleMarkAsDone = async (appointment: Appointment) => {
+    if (!business?.id || !appointment.clientId) return;
+    setIsCompleting(appointment.id);
     try {
-        const appointmentRef = doc(db, `businesses/${business.id}/appointments`, appointmentId);
+        const appointmentRef = doc(db, `businesses/${business.id}/appointments`, appointment.id);
         await updateDoc(appointmentRef, {
             status: 'Concluído'
         });
+
+        const clientRef = doc(db, `businesses/${business.id}/clients`, appointment.clientId);
+        await updateDoc(clientRef, {
+            lastVisit: appointment.date,
+            totalAppointments: increment(1),
+        });
+
         toast({
             variant: "success",
             title: "Atendimento finalizado!",
             description: "O agendamento foi marcado como concluído.",
         });
         fetchRecentAppointments(); // Re-fetch to remove it from the list
+        fetchDashboardData(); // Re-fetch stats
     } catch (error) {
         console.error("Error marking appointment as done:", error);
         toast({
@@ -260,7 +268,7 @@ export default function DashboardPage() {
                                     <div className="ml-auto flex items-center gap-2">
                                         <Tooltip>
                                             <TooltipTrigger asChild>
-                                                <Button size="icon" variant="ghost" className="shrink-0 h-9 w-9" onClick={() => handleMarkAsDone(app.id)} disabled={isCompleting === app.id}>
+                                                <Button size="icon" variant="ghost" className="shrink-0 h-9 w-9" onClick={() => handleMarkAsDone(app)} disabled={isCompleting === app.id}>
                                                     {isCompleting === app.id ? <RefreshCw className="h-5 w-5 animate-spin"/> : <CheckCircle className="h-5 w-5 text-primary"/>}
                                                 </Button>
                                             </TooltipTrigger>
@@ -379,8 +387,3 @@ export default function DashboardPage() {
       </div>
     </TooltipProvider>
   )
-
-    
-
-
-    
