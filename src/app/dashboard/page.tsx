@@ -16,6 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 type Appointment = {
   id: string;
@@ -157,7 +158,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <>
+    <TooltipProvider>
       <div className="flex items-center mb-6">
         <h1 className="text-2xl font-semibold font-headline">Início</h1>
       </div>
@@ -214,15 +215,22 @@ export default function DashboardPage() {
                                     </div>
                                     <div className="ml-auto flex items-center gap-2">
                                         {app.clientPhone && (
-                                            <Button asChild size="icon" variant="ghost" className="shrink-0 h-9 w-9 text-success-foreground bg-success/10 hover:bg-success/20" disabled={isSendingReminder === app.id}>
-                                                <a href={generateWhatsAppLink(app)} onClick={(e) => handleSendReminder(e, app)} target="_blank" rel="noopener noreferrer" aria-label="Enviar lembrete no WhatsApp">
-                                                    {isSendingReminder === app.id ? (
-                                                       <RefreshCw className="h-5 w-5 animate-spin" />
-                                                    ) : (
-                                                       <MessageCircle className="h-5 w-5 text-success" />
-                                                    )}
-                                                </a>
-                                            </Button>
+                                            <Tooltip>
+                                              <TooltipTrigger asChild>
+                                                <Button asChild size="icon" variant="ghost" className="shrink-0 h-9 w-9 text-success-foreground bg-success/10 hover:bg-success/20" disabled={isSendingReminder === app.id}>
+                                                    <a href={generateWhatsAppLink(app)} onClick={(e) => handleSendReminder(e, app)} target="_blank" rel="noopener noreferrer" aria-label="Enviar lembrete no WhatsApp">
+                                                        {isSendingReminder === app.id ? (
+                                                           <RefreshCw className="h-5 w-5 animate-spin" />
+                                                        ) : (
+                                                           <MessageCircle className="h-5 w-5 text-success" />
+                                                        )}
+                                                    </a>
+                                                </Button>
+                                              </TooltipTrigger>
+                                              <TooltipContent>
+                                                <p>Enviar lembrete via WhatsApp</p>
+                                              </TooltipContent>
+                                            </Tooltip>
                                         )}
                                         <div className="font-medium tabular-nums">{app.time}</div>
                                     </div>
@@ -317,7 +325,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-    </>
+    </TooltipProvider>
   )
 
     
