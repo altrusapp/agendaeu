@@ -28,6 +28,7 @@ type Appointment = {
   price: number;
   date: Timestamp;
   clientAvatar?: string;
+  status?: string;
 };
 
 type DashboardStats = {
@@ -66,23 +67,38 @@ export default function DashboardPage() {
     setLoadingAppointments(true);
     try {
        const appointmentsRef = collection(db, `businesses/${business.id}/appointments`);
-       const now = new Date();
-       const end = endOfToday();
-       const upcomingQuery = query(appointmentsRef, 
-          where("date", ">=", Timestamp.fromDate(now)),
-          where("date", "<=", Timestamp.fromDate(end)),
-          where("status", "==", "Confirmado"),
-          orderBy("date"),
+       const todayStart = startOfToday();
+       const todayEnd = endOfToday();
+
+       const q = query(appointmentsRef, 
+          where("date", ">=", Timestamp.fromDate(todayStart)),
+          where("date", "<=", Timestamp.fromDate(todayEnd)),
+          orderBy("date")
       );
-      const snapshot = await getDocs(upcomingQuery);
-      const appointmentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Appointment));
+      
+      const snapshot = await getDocs(q);
+      const now = new Date();
+
+      const appointmentsData = snapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() } as Appointment))
+        .filter(app => {
+            const appDate = app.date.toDate();
+            // Filter for appointments that are "Confirmado" AND are in the future
+            return (app.status === 'Confirmado' || !app.status) && appDate >= now;
+        });
+
       setUpcomingAppointments(appointmentsData);
     } catch (error) {
       console.error("Error fetching recent appointments:", error);
+       toast({
+        variant: "destructive",
+        title: "Erro ao buscar agendamentos",
+        description: "Houve um problema ao carregar seus próximos horários. A equipe já foi notificada.",
+      });
     } finally {
       setLoadingAppointments(false);
     }
-  }, [business]);
+  }, [business, toast]);
 
   React.useEffect(() => {
     if (!business?.id) return;
@@ -363,5 +379,8 @@ export default function DashboardPage() {
       </div>
     </TooltipProvider>
   )
+
+    
+
 
     
