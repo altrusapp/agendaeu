@@ -643,13 +643,12 @@ export default function PublicSchedulePage() {
 
                                                 return false;
                                             }}
-                                            locale={{
-                                                ...ptBR,
-                                                localize: {
-                                                    ...ptBR.localize,
-                                                    month: (n) => ptBR.localize.month(n).charAt(0).toUpperCase() + ptBR.localize.month(n).slice(1),
-                                                    day: (n) => ptBR.localize.day(n).charAt(0).toUpperCase() + ptBR.localize.day(n).slice(1),
-                                                },
+                                            locale={ptBR}
+                                            formatters={{
+                                                formatWeekdayName: (day, options) => {
+                                                    const weekday = options?.locale?.localize?.day(day.getDay(), { width: 'short' }) || '';
+                                                    return weekday.charAt(0).toUpperCase() + weekday.slice(1);
+                                                }
                                             }}
                                         />
                                     </div>
