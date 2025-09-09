@@ -18,7 +18,7 @@ interface BottomBarProps {
 export function BottomBar({ navItems, pathname }: BottomBarProps) {
   return (
     <div className="fixed bottom-0 w-full md:hidden shrink-0 bg-background border-t z-50 rounded-t-[45px]">
-      <nav className="flex h-16 items-center justify-around pb-2 pb-[env(safe-area-inset-bottom)]">
+      <nav className="flex h-16 items-center justify-around pb-[env(safe-area-inset-bottom)]">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
