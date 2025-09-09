@@ -4,7 +4,7 @@
 import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { collection, query, onSnapshot, where, Timestamp, addDoc, DocumentData, orderBy, doc, updateDoc, deleteDoc, getDocs } from "firebase/firestore"
-import { MoreHorizontal, PlusCircle, MessageCircle, ArrowLeft, CalendarPlus, RefreshCw } from "lucide-react"
+import { MoreHorizontal, PlusCircle, MessageCircle, ArrowLeft, CalendarPlus, RefreshCw, CheckCircle } from "lucide-react"
 import { ptBR } from "date-fns/locale"
 import { format, startOfDay, endOfDay, parse, startOfMonth, endOfMonth, isSameDay } from 'date-fns'
 
@@ -64,7 +64,7 @@ type Appointment = {
   clientPhone?: string;
   serviceName: string;
   time: string;
-  status: "Confirmado" | "Pendente" | "Aguardando Sinal" | "Cancelado";
+  status: "Confirmado" | "Pendente" | "Aguardando Sinal" | "Cancelado" | "Concluído";
   clientAvatar?: string;
   clientId?: string;
   serviceId: string;
@@ -370,6 +370,19 @@ export default function AgendaPage() {
 
     return `${appointments.length} agendamento(s) para este dia.`;
   };
+  
+  const getStatusBadgeVariant = (status: Appointment["status"]) => {
+    switch (status) {
+      case "Confirmado":
+        return "default";
+      case "Concluído":
+        return "success";
+      case "Cancelado":
+        return "destructive";
+      default:
+        return "secondary";
+    }
+  }
 
   return (
     <TooltipProvider>
@@ -452,7 +465,7 @@ export default function AgendaPage() {
                ))
             ) : appointments.length > 0 ? (
                 appointments.map((app) => (
-                    <div key={app.id} className={cn("flex items-center gap-4 p-2 rounded-lg")}>
+                    <div key={app.id} className={cn("flex items-center gap-4 p-2 rounded-lg", app.status === 'Concluído' && 'opacity-60')}>
                         <Avatar aria-hidden="true" className="h-10 w-10">
                         <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
                         <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
@@ -462,6 +475,7 @@ export default function AgendaPage() {
                         <p className="text-sm text-muted-foreground">{app.serviceName}</p>
                         </div>
                         <div className="ml-auto flex items-center gap-2">
+                            <Badge variant={getStatusBadgeVariant(app.status)}>{app.status}</Badge>
                             {app.clientPhone && (
                                 <Tooltip>
                                     <TooltipTrigger asChild>
@@ -552,5 +566,3 @@ export default function AgendaPage() {
     </TooltipProvider>
   )
 }
-
-    

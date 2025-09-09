@@ -3,10 +3,10 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { collection, query, where, getDocs, limit, orderBy, Timestamp } from "firebase/firestore"
+import { collection, query, where, getDocs, limit, orderBy, Timestamp, doc, updateDoc } from "firebase/firestore"
 import { startOfMonth, endOfMonth, format, startOfToday, endOfToday } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { Activity, ArrowUpRight, Calendar, Users, DollarSign, MessageCircle, RefreshCw } from "lucide-react"
+import { Activity, ArrowUpRight, Calendar, Users, DollarSign, MessageCircle, RefreshCw, CheckCircle } from "lucide-react"
 
 import { db } from "@/lib/firebase/client"
 import { useBusiness } from "@/app/dashboard/layout"
@@ -17,6 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useToast } from "@/hooks/use-toast"
 
 type Appointment = {
   id: string;
@@ -52,11 +53,36 @@ const groupAppointmentsByDate = (appointments: Appointment[]) => {
 
 export default function DashboardPage() {
   const { business } = useBusiness();
+  const { toast } = useToast();
   const [stats, setStats] = React.useState<DashboardStats | null>(null);
-  const [recentAppointments, setRecentAppointments] = React.useState<Appointment[]>([]);
+  const [upcomingAppointments, setUpcomingAppointments] = React.useState<Appointment[]>([]);
   const [loadingStats, setLoadingStats] = React.useState(true);
   const [loadingAppointments, setLoadingAppointments] = React.useState(true);
   const [isSendingReminder, setIsSendingReminder] = React.useState<string | null>(null);
+  const [isCompleting, setIsCompleting] = React.useState<string | null>(null);
+
+  const fetchRecentAppointments = React.useCallback(async () => {
+    if (!business?.id) return;
+    setLoadingAppointments(true);
+    try {
+       const appointmentsRef = collection(db, `businesses/${business.id}/appointments`);
+       const now = new Date();
+       const end = endOfToday();
+       const upcomingQuery = query(appointmentsRef, 
+          where("date", ">=", Timestamp.fromDate(now)),
+          where("date", "<=", Timestamp.fromDate(end)),
+          where("status", "==", "Confirmado"),
+          orderBy("date"),
+      );
+      const snapshot = await getDocs(upcomingQuery);
+      const appointmentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Appointment));
+      setUpcomingAppointments(appointmentsData);
+    } catch (error) {
+      console.error("Error fetching recent appointments:", error);
+    } finally {
+      setLoadingAppointments(false);
+    }
+  }, [business]);
 
   React.useEffect(() => {
     if (!business?.id) return;
@@ -101,46 +127,49 @@ export default function DashboardPage() {
         });
 
       } catch (error) {
-        // console.error("Error fetching dashboard stats:", error);
+        console.error("Error fetching dashboard stats:", error);
       } finally {
         setLoadingStats(false);
       }
     }
 
-    async function fetchRecentAppointments() {
-      setLoadingAppointments(true);
-      try {
-         const appointmentsRef = collection(db, `businesses/${business.id}/appointments`);
-         const today = startOfToday();
-         const end = endOfToday();
-         const upcomingQuery = query(appointmentsRef, 
-            where("date", ">=", Timestamp.fromDate(today)),
-            where("date", "<=", Timestamp.fromDate(end)),
-            orderBy("date"),
-        );
-        const snapshot = await getDocs(upcomingQuery);
-        const appointmentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Appointment));
-        setRecentAppointments(appointmentsData);
-      } catch (error)
- {
-        // console.error("Error fetching recent appointments:", error);
-      } finally {
-        setLoadingAppointments(false);
-      }
-    }
-
     fetchDashboardData();
     fetchRecentAppointments();
-  }, [business]);
+  }, [business, fetchRecentAppointments]);
+  
+  const handleMarkAsDone = async (appointmentId: string) => {
+    if (!business?.id) return;
+    setIsCompleting(appointmentId);
+    try {
+        const appointmentRef = doc(db, `businesses/${business.id}/appointments`, appointmentId);
+        await updateDoc(appointmentRef, {
+            status: 'Concluído'
+        });
+        toast({
+            variant: "success",
+            title: "Atendimento finalizado!",
+            description: "O agendamento foi marcado como concluído.",
+        });
+        fetchRecentAppointments(); // Re-fetch to remove it from the list
+    } catch (error) {
+        console.error("Error marking appointment as done:", error);
+        toast({
+            variant: "destructive",
+            title: "Erro",
+            description: "Não foi possível atualizar o agendamento.",
+        });
+    } finally {
+        setIsCompleting(null);
+    }
+  }
 
-  const groupedAppointments = groupAppointmentsByDate(recentAppointments);
+  const groupedAppointments = groupAppointmentsByDate(upcomingAppointments);
   const appointmentDates = Object.keys(groupedAppointments).sort();
   let globalAppIndex = 0;
   
   const generateWhatsAppLink = (appointment: Appointment) => {
     if (!appointment.clientPhone) return "";
     const cleanPhone = appointment.clientPhone.replace(/\D/g, '');
-    // Assuming Brazilian numbers, add 55 if not present. This could be improved.
     const phoneWithCountryCode = cleanPhone.length > 11 ? cleanPhone : `55${cleanPhone}`;
     const dateStr = format(appointment.date.toDate(), "dd/MM/yyyy");
     const message = `Olá, ${appointment.clientName}! Este é um lembrete do seu agendamento para ${appointment.serviceName} no dia ${dateStr} às ${appointment.time}. Estou te esperando, tudo bem?`;
@@ -150,7 +179,6 @@ export default function DashboardPage() {
   const handleSendReminder = (e: React.MouseEvent<HTMLAnchorElement>, appointment: Appointment) => {
     e.preventDefault();
     setIsSendingReminder(appointment.id);
-    // Simulate API call for a better user experience
     setTimeout(() => {
         window.open(generateWhatsAppLink(appointment), '_blank', 'noopener,noreferrer');
         setIsSendingReminder(null);
@@ -167,7 +195,7 @@ export default function DashboardPage() {
         <Card className="lg:col-span-1">
            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <CardTitle>Agendamentos de Hoje</CardTitle>
+              <CardTitle>Próximos Atendimentos</CardTitle>
               <CardDescription>
                 Seus compromissos confirmados para hoje.
               </CardDescription>
@@ -214,6 +242,14 @@ export default function DashboardPage() {
                                     </p>
                                     </div>
                                     <div className="ml-auto flex items-center gap-2">
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button size="icon" variant="ghost" className="shrink-0 h-9 w-9" onClick={() => handleMarkAsDone(app.id)} disabled={isCompleting === app.id}>
+                                                    {isCompleting === app.id ? <RefreshCw className="h-5 w-5 animate-spin"/> : <CheckCircle className="h-5 w-5 text-primary"/>}
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent><p>Marcar como concluído</p></TooltipContent>
+                                        </Tooltip>
                                         {app.clientPhone && (
                                             <Tooltip>
                                               <TooltipTrigger asChild>
