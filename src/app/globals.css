@@ -8,8 +8,8 @@
     --background: 0 0% 100%; /* #ffffff */
     --foreground: 0 0% 3.9%; /* #0a0a0a */
     
-    --card: 240 4.8% 95.9%; /* #f4f4f5 - Um pouco mais escuro que o muted */
-    --card-foreground: 0 0% 3.9%; /* #0a0a0a */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
     
     --popover: 0 0% 100%; /* #ffffff */
     --popover-foreground: 0 0% 3.9%; /* #0a0a0a */
