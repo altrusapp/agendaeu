@@ -465,77 +465,62 @@ export default function AgendaPage() {
                ))
             ) : appointments.length > 0 ? (
                 appointments.map((app) => (
-                    <div key={app.id} className={cn("flex items-center gap-4 p-2 rounded-lg", app.status === 'Concluído' && 'opacity-60')}>
-                        <Avatar aria-hidden="true" className="h-10 w-10">
-                        <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
-                        <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
-                        </Avatar>
-                        <div className="grid gap-1 flex-1">
-                        <p className="text-sm font-medium leading-none">{app.clientName}</p>
-                        <p className="text-sm text-muted-foreground">{app.serviceName}</p>
+                    <div key={app.id} className={cn("flex flex-wrap items-center gap-x-4 gap-y-2 p-2 rounded-lg", app.status === 'Concluído' && 'opacity-60')}>
+                        <div className="flex items-center gap-4 flex-1 min-w-[200px]">
+                            <Avatar aria-hidden="true" className="h-10 w-10">
+                                <AvatarImage src={app.clientAvatar} alt="" data-ai-hint="person portrait" />
+                                <AvatarFallback>{app.clientName?.substring(0,2).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            <div className="grid gap-1">
+                                <p className="text-sm font-medium leading-none">{app.clientName}</p>
+                                <p className="text-sm text-muted-foreground">{app.serviceName}</p>
+                            </div>
                         </div>
-                        <div className="ml-auto flex items-center gap-2">
-                            <Badge variant={getStatusBadgeVariant(app.status)}>{app.status}</Badge>
-                            {app.clientPhone && (
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button asChild size="icon" variant="ghost" className="shrink-0 h-9 w-9 text-success-foreground bg-success/10 hover:bg-success/20" disabled={isSendingReminder === app.id}>
-                                            <a href={generateWhatsAppLink(app)} onClick={(e) => handleSendReminder(e, app)} target="_blank" rel="noopener noreferrer" aria-label="Enviar lembrete no WhatsApp">
-                                                {isSendingReminder === app.id ? (
-                                                   <RefreshCw className="h-5 w-5 animate-spin" />
-                                                ) : (
-                                                   <MessageCircle className="h-5 w-5 text-success" />
-                                                )}
-                                            </a>
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Enviar lembrete via WhatsApp</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            )}
+
+                        <div className="flex items-center gap-2 ml-auto">
+                            <Badge variant={getStatusBadgeVariant(app.status)} className="hidden sm:inline-flex">{app.status}</Badge>
                             <div className="text-sm font-medium tabular-nums">{app.time}</div>
+                             <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost" className="h-8 w-8">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                    <span className="sr-only">Toggle menu</span>
+                                </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => openEditDialog(app)}>Editar</DropdownMenuItem>
+                                    {app.clientPhone && (
+                                        <DropdownMenuItem asChild className="focus:bg-success/10 dark:focus:bg-success/20" disabled={isSendingReminder === app.id}>
+                                            <a href={generateWhatsAppLink(app)} onClick={(e) => handleSendReminder(e, app)} target="_blank" rel="noopener noreferrer">
+                                            <MessageCircle className="mr-2 h-4 w-4 text-success"/>
+                                            {isSendingReminder === app.id ? "Abrindo..." : "Lembrete WhatsApp"}
+                                            </a>
+                                        </DropdownMenuItem>
+                                    )}
+                                <DropdownMenuSeparator />
+                                    <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                        <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Esta ação não pode ser desfeita. Isso irá cancelar permanentemente o agendamento.
+                                        </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleDeleteAppointment(app.id)} className={buttonVariants({ variant: "destructive" })}>
+                                            Sim, excluir
+                                        </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                    </AlertDialog>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                            <Button aria-label="Abrir menu de ações" aria-haspopup="true" size="icon" variant="ghost">
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                            </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => openEditDialog(app)}>Editar</DropdownMenuItem>
-                                {app.clientPhone && (
-                                    <DropdownMenuItem asChild className="focus:bg-success/10 dark:focus:bg-success/20" disabled={isSendingReminder === app.id}>
-                                        <a href={generateWhatsAppLink(app)} onClick={(e) => handleSendReminder(e, app)} target="_blank" rel="noopener noreferrer">
-                                        <MessageCircle className="mr-2 h-4 w-4 text-success"/>
-                                        {isSendingReminder === app.id ? "Abrindo..." : "Lembrete WhatsApp"}
-                                        </a>
-                                    </DropdownMenuItem>
-                                )}
-                            <DropdownMenuSeparator />
-                                <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <DropdownMenuItem className="text-destructive" onSelect={(e) => e.preventDefault()}>Excluir</DropdownMenuItem>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                    <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        Esta ação não pode ser desfeita. Isso irá cancelar permanentemente o agendamento.
-                                    </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDeleteAppointment(app.id)} className={buttonVariants({ variant: "destructive" })}>
-                                        Sim, excluir
-                                    </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                                </AlertDialog>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
                     </div>
                 ))
             ) : (
