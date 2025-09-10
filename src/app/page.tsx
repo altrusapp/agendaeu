@@ -7,7 +7,7 @@ import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Calendar, Users, BarChart, MessageCircle, CreditCard, PenTool, CheckCircle, Menu } from "lucide-react"
 import { Logo } from "@/components/logo"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet"
 
 const features = [
   {
@@ -60,6 +60,10 @@ export default function Home() {
                   </Button>
               </SheetTrigger>
               <SheetContent side="right">
+                  <SheetHeader className="sr-only">
+                    <SheetTitle>Menu</SheetTitle>
+                    <SheetDescription>Navegação principal do site para dispositivos móveis.</SheetDescription>
+                  </SheetHeader>
                   <div className="flex flex-col h-full">
                       <nav className="flex flex-col items-center gap-6 mt-16 text-center">
                           <Link href="/login" className="text-lg font-medium" onClick={() => setOpen(false)}>
@@ -270,5 +274,3 @@ export default function Home() {
     </div>
   )
 }
-
-    
