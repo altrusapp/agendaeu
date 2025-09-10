@@ -47,7 +47,7 @@ const AppointmentSummary = ({ service, date, time }: { service: Service | undefi
     </CardHeader>
     <CardContent className="space-y-4">
       <div className="flex items-center gap-3">
-        <Tag className="h-5 w-5 text-muted-foreground" />
+        <Tag className="h-5 w-5 text-primary" />
         <div>
           <p className="text-sm text-muted-foreground">Serviço</p>
           <p className="font-semibold">{service?.name || "Selecione um serviço"}</p>
@@ -55,7 +55,7 @@ const AppointmentSummary = ({ service, date, time }: { service: Service | undefi
       </div>
       <Separator />
       <div className="flex items-center gap-3">
-        <CalendarIconInfo className="h-5 w-5 text-muted-foreground" />
+        <CalendarIconInfo className="h-5 w-5 text-chart-2" />
         <div>
           <p className="text-sm text-muted-foreground">Data e Hora</p>
           <p className="font-semibold">
@@ -66,7 +66,7 @@ const AppointmentSummary = ({ service, date, time }: { service: Service | undefi
       </div>
       <Separator />
       <div className="flex items-center gap-3">
-        <DollarSign className="h-5 w-5 text-accent-foreground" />
+        <DollarSign className="h-5 w-5 text-success" />
         <div>
           <p className="text-sm text-muted-foreground">Preço</p>
           <p className="font-semibold">{service ? `R$ ${service.price}` : "R$ 0,00"}</p>
@@ -532,15 +532,15 @@ export default function PublicSchedulePage() {
                 <CardContent className="space-y-6">
                    <div className="text-left bg-muted/50 p-4 rounded-lg space-y-3">
                        <div className="flex items-center gap-3">
-                         <CalendarIconInfo className="h-5 w-5 text-muted-foreground" />
+                         <CalendarIconInfo className="h-5 w-5 text-chart-2" />
                          <p><strong>Data:</strong> {date?.toLocaleDateString('pt-BR')}</p>
                        </div>
                        <div className="flex items-center gap-3">
-                         <Clock className="h-5 w-5 text-muted-foreground" />
+                         <Clock className="h-5 w-5 text-chart-2" />
                          <p><strong>Horário:</strong> {selectedTime}</p>
                        </div>
                        <div className="flex items-center gap-3">
-                         <Tag className="h-5 w-5 text-muted-foreground" />
+                         <Tag className="h-5 w-5 text-primary" />
                          <p><strong>Serviço:</strong> {selectedServiceInfo?.name}</p>
                        </div>
                        <div className="flex items-center gap-3">
