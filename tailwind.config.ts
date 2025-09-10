@@ -85,10 +85,10 @@ export default {
         },
       },
       borderRadius: {
-        xl: `calc(var(--radius) + 4px)`,
-        lg: `var(--radius)`,
-        md: `calc(var(--radius) - 4px)`,
-        sm: `calc(var(--radius) - 8px)`,
+        xl: `32px`,
+        lg: `32px`,
+        md: `32px`,
+        sm: `32px`,
       },
       keyframes: {
         'accordion-down': {
