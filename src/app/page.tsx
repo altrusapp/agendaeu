@@ -131,12 +131,12 @@ export default function Home() {
                 </div>
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {features.map((feature, index) => (
-                        <div key={index} className="text-left p-6 rounded-lg transition-all hover:bg-muted/50 border bg-card">
+                        <div key={index} className="text-center p-6 rounded-lg transition-all hover:bg-muted/50 border bg-card">
                             <div className="inline-block p-3 bg-primary/10 rounded-lg">
                                 {feature.icon}
                             </div>
-                            <h3 className="mt-4 text-xl font-headline font-semibold">{feature.title}</h3>
-                            <p className="mt-2 text-muted-foreground">{feature.description}</p>
+                            <h3 className="mt-4 text-xl font-headline font-semibold text-left">{feature.title}</h3>
+                            <p className="mt-2 text-muted-foreground text-left">{feature.description}</p>
                         </div>
                     ))}
                 </div>
@@ -270,5 +270,3 @@ export default function Home() {
     </div>
   )
 }
-
-    
