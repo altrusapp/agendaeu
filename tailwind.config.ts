@@ -87,8 +87,8 @@ export default {
       borderRadius: {
         xl: `32px`,
         lg: `32px`,
-        md: `32px`,
-        sm: `32px`,
+        md: `16px`,
+        sm: `12px`,
       },
       keyframes: {
         'accordion-down': {
