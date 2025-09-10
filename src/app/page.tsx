@@ -135,8 +135,8 @@ export default function Home() {
                             <div className="inline-block p-3 bg-primary/10 rounded-lg">
                                 {feature.icon}
                             </div>
-                            <h3 className="mt-4 text-xl font-headline font-semibold text-left">{feature.title}</h3>
-                            <p className="mt-2 text-muted-foreground text-left">{feature.description}</p>
+                            <h3 className="mt-4 text-xl font-headline font-semibold">{feature.title}</h3>
+                            <p className="mt-2 text-muted-foreground">{feature.description}</p>
                         </div>
                     ))}
                 </div>
