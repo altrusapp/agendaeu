@@ -11,24 +11,28 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTr
 
 const features = [
   {
-    icon: <Calendar className="h-8 w-8 text-primary" />,
+    icon: <Calendar className="h-8 w-8 text-chart-1" />,
     title: "Agenda Online 24/7",
     description: "Seus clientes marcam sozinhos, sem você parar o trabalho.",
+    color: "chart-1"
   },
   {
-    icon: <Users className="h-8 w-8 text-primary" />,
+    icon: <Users className="h-8 w-8 text-chart-2" />,
     title: "Gestão de Clientes",
     description: "Saiba quem marcou, histórico de serviços e preferências.",
+    color: "chart-2"
   },
    {
-    icon: <MessageCircle className="h-8 w-8 text-primary" />,
+    icon: <MessageCircle className="h-8 w-8 text-chart-3" />,
     title: "Lembretes sem Esforço",
     description: "Envie lembretes por WhatsApp e reduza as faltas.",
+    color: "chart-3"
   },
   {
-    icon: <BarChart className="h-8 w-8 text-primary" />,
+    icon: <BarChart className="h-8 w-8 text-chart-4" />,
     title: "Relatórios Descomplicados",
     description: "Acompanhe agendamentos e faturamento sem planilhas.",
+    color: "chart-4"
   },
 ]
 
@@ -136,7 +140,7 @@ export default function Home() {
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {features.map((feature, index) => (
                         <div key={index} className="text-center p-6 rounded-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border bg-card">
-                            <div className="inline-block p-3 bg-primary/10 rounded-lg">
+                            <div className={`inline-block p-3 bg-${feature.color}/10 rounded-lg`}>
                                 {feature.icon}
                             </div>
                             <h3 className="mt-4 text-xl font-headline font-semibold">{feature.title}</h3>
@@ -274,3 +278,5 @@ export default function Home() {
     </div>
   )
 }
+
+    
