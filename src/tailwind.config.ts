@@ -17,6 +17,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['var(--font-pt-sans)', 'sans-serif'],
+        headline: ['var(--font-pt-sans)', 'sans-serif'],
+      },
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
@@ -55,6 +59,13 @@ export default {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
+        'inverse-surface': 'hsl(var(--inverse-surface))',
+        'inverse-on-surface': 'hsl(var(--inverse-on-surface))',
+        'inverse-primary': 'hsl(var(--inverse-primary))',
+        'pastel-blue': 'hsl(var(--pastel-blue))',
+        'pastel-green': 'hsl(var(--pastel-green))',
+        'pastel-purple': 'hsl(var(--pastel-purple))',
+        'pastel-pink': 'hsl(var(--pastel-pink))',
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',
@@ -96,10 +107,15 @@ export default {
             height: '0',
           },
         },
+         shimmer: {
+          '0%, 100%': { backgroundPosition: 'calc(-100% - var(--shimmer-width)) 0' },
+          '50%': { backgroundPosition: 'calc(100% + var(--shimmer-width)) 0' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        shimmer: 'shimmer 2s ease-in-out infinite',
       },
     },
   },
