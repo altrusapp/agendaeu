@@ -193,21 +193,21 @@ export default function Home() {
                     </p>
                 </div>
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="border border-border/50 p-8 rounded-xl bg-card shadow-sm flex flex-col items-start text-left">
+                    <div className="border border-border/50 p-8 rounded-xl bg-card shadow-sm flex flex-col items-center text-center">
                         <div className="inline-block p-3 bg-primary/10 rounded-lg">
                            <CreditCard className="h-8 w-8 text-primary" />
                         </div>
                         <h3 className="text-xl font-headline font-semibold mt-4">Pagamentos Garantidos</h3>
                         <p className="text-muted-foreground mt-2">Receba um sinal no agendamento e evite prejuízos. Menos furos, mais faturamento.</p>
                     </div>
-                    <div className="border border-border/50 p-8 rounded-xl bg-card shadow-sm flex flex-col items-start text-left">
+                    <div className="border border-border/50 p-8 rounded-xl bg-card shadow-sm flex flex-col items-center text-center">
                         <div className="inline-block p-3 bg-primary/10 rounded-lg">
                             <PenTool className="h-8 w-8 text-primary" />
                         </div>
                         <h3 className="text-xl font-headline font-semibold mt-4">Sua Marca em Destaque</h3>
                         <p className="text-muted-foreground mt-2">Personalize sua página com nome e logo em 1 minuto. Deixe com a sua cara.</p>
                     </div>
-                     <div className="border border-border/50 p-8 rounded-xl bg-card shadow-sm flex flex-col items-start text-left">
+                     <div className="border border-border/50 p-8 rounded-xl bg-card shadow-sm flex flex-col items-center text-center">
                         <div className="inline-block p-3 bg-primary/10 rounded-lg">
                             <CheckCircle className="h-8 w-8 text-primary" />
                         </div>
