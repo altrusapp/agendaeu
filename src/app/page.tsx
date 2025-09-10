@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight, Calendar, Users, BarChart, MessageCircle, CreditCard, PenTool, CheckCircle, Menu } from "lucide-react"
 import { Logo } from "@/components/logo"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet"
+import { cn } from "@/lib/utils"
 
 const features = [
   {
@@ -139,8 +140,10 @@ export default function Home() {
                 </div>
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {features.map((feature, index) => (
-                        <div key={index} className="text-center p-6 rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border bg-card">
-                            <div className={`inline-block p-3 bg-${feature.color}/10 rounded-lg`}>
+                        <div key={index} className={cn("text-center p-6 rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border bg-card", 
+                          `bg-${feature.color}/[0.05]`
+                        )}>
+                            <div className={cn("inline-block p-3 rounded-lg", `bg-${feature.color}/10`)}>
                                 {feature.icon}
                             </div>
                             <h3 className="mt-4 text-xl font-headline font-semibold">{feature.title}</h3>
@@ -201,21 +204,21 @@ export default function Home() {
                     </p>
                 </div>
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="border p-8 rounded-xl bg-card shadow-sm flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                    <div className="border p-8 rounded-xl bg-card shadow-sm flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-chart-1/[0.05]">
                         <div className="inline-block p-3 bg-chart-1/10 rounded-lg">
                            <CreditCard className="h-8 w-8 text-chart-1" />
                         </div>
                         <h3 className="text-xl font-headline font-semibold mt-4">Pagamentos Garantidos</h3>
                         <p className="text-muted-foreground mt-2">Receba um sinal no agendamento e evite prejuízos. Menos furos, mais faturamento.</p>
                     </div>
-                    <div className="border p-8 rounded-xl bg-card shadow-sm flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                    <div className="border p-8 rounded-xl bg-card shadow-sm flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-chart-2/[0.05]">
                         <div className="inline-block p-3 bg-chart-2/10 rounded-lg">
                             <PenTool className="h-8 w-8 text-chart-2" />
                         </div>
                         <h3 className="text-xl font-headline font-semibold mt-4">Sua Marca em Destaque</h3>
                         <p className="text-muted-foreground mt-2">Personalize sua página com nome e logo em 1 minuto. Deixe com a sua cara.</p>
                     </div>
-                     <div className="border p-8 rounded-xl bg-card shadow-sm flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                     <div className="border p-8 rounded-xl bg-card shadow-sm flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-chart-3/[0.05]">
                         <div className="inline-block p-3 bg-chart-3/10 rounded-lg">
                             <CheckCircle className="h-8 w-8 text-chart-3" />
                         </div>
@@ -278,5 +281,3 @@ export default function Home() {
     </div>
   )
 }
-
-    
