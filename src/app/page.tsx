@@ -1,9 +1,13 @@
 
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
+import * as React from "react"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Calendar, Users, BarChart, MessageCircle, CreditCard, PenTool, CheckCircle } from "lucide-react"
+import { ArrowRight, Calendar, Users, BarChart, MessageCircle, CreditCard, PenTool, CheckCircle, Menu } from "lucide-react"
 import { Logo } from "@/components/logo"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 const features = [
   {
@@ -29,6 +33,8 @@ const features = [
 ]
 
 export default function Home() {
+  const [open, setOpen] = React.useState(false);
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <div className="absolute inset-x-0 top-0 h-[800px] bg-gradient-to-b from-primary/10 to-transparent -z-10"></div>
@@ -45,6 +51,28 @@ export default function Home() {
             <Link href="/signup">Criar Conta Grátis</Link>
           </Button>
         </nav>
+        <div className="md:hidden">
+          <Sheet open={open} onOpenChange={setOpen}>
+              <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                      <Menu className="h-6 w-6" />
+                      <span className="sr-only">Abrir menu</span>
+                  </Button>
+              </SheetTrigger>
+              <SheetContent side="right">
+                  <div className="flex flex-col h-full">
+                      <nav className="flex flex-col items-center gap-6 mt-16 text-center">
+                          <Link href="/login" className="text-lg font-medium" onClick={() => setOpen(false)}>
+                              Entrar
+                          </Link>
+                          <Button asChild size="lg" onClick={() => setOpen(false)}>
+                              <Link href="/signup">Criar Conta Grátis</Link>
+                          </Button>
+                      </nav>
+                  </div>
+              </SheetContent>
+          </Sheet>
+        </div>
       </header>
 
       <main className="flex-grow">
