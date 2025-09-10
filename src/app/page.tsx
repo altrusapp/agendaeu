@@ -141,7 +141,7 @@ export default function Home() {
                     ))}
                 </div>
                  <div className="mt-16 text-center">
-                    <Button variant="outline" size="lg" asChild>
+                    <Button size="lg" asChild>
                         <Link href="/signup">Criar Conta Grátis</Link>
                     </Button>
                 </div>
@@ -270,3 +270,5 @@ export default function Home() {
     </div>
   )
 }
+
+    
