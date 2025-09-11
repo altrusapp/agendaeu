@@ -211,10 +211,6 @@ export default function DashboardPage() {
 
   return (
     <TooltipProvider>
-      <div className="flex items-center mb-6">
-        <h1 className="text-2xl font-semibold font-headline">Início</h1>
-      </div>
-      
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <Card className="lg:col-span-1">
            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -388,5 +384,7 @@ export default function DashboardPage() {
     </TooltipProvider>
   )
 
+
+    
 
     
