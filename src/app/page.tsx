@@ -203,20 +203,20 @@ export default function Home() {
                     </div>
                     <div className="relative aspect-[4/3] w-full max-w-lg mx-auto">
                         <Image
-                            src="https://i.imgur.com/rjNKS7X.jpeg"
-                            alt="Pessoa escrevendo em um caderno"
-                            layout="fill"
-                            objectFit="cover"
-                            className="rounded-lg shadow-md -rotate-3"
-                            data-ai-hint="person writing notebook"
-                        />
-                        <Image
                             src="https://i.imgur.com/9kJt2sZ.png"
                             alt="Mockup do aplicativo sendo usado"
                             layout="fill"
                             objectFit="cover"
-                            className="rounded-lg shadow-xl border-4 border-background rotate-3"
+                            className="rounded-lg shadow-md -rotate-3"
                             data-ai-hint="app schedule"
+                        />
+                        <Image
+                            src="https://i.imgur.com/rjNKS7X.jpeg"
+                            alt="Pessoa escrevendo em um caderno"
+                            layout="fill"
+                            objectFit="cover"
+                            className="rounded-lg shadow-xl border-4 border-background rotate-3"
+                            data-ai-hint="person writing notebook"
                         />
                     </div>
                 </div>
@@ -310,5 +310,3 @@ export default function Home() {
     </div>
   )
 }
-
-    
