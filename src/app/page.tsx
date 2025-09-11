@@ -211,7 +211,7 @@ export default function Home() {
                         data-ai-hint="person writing notebook"
                         />
                        <Image 
-                        src="https://i.imgur.com/Fp6K5El.jpeg" 
+                        src="https://i.imgur.com/9kJt2sZ.png" 
                         alt="Mockup do aplicativo sendo usado" 
                         width={500} 
                         height={350} 
