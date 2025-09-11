@@ -139,11 +139,19 @@ export default function Home() {
                     <h2 className="text-3xl font-bold font-headline tracking-tight">Tudo que você precisa em um só lugar</h2>
                 </div>
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {features.map((feature, index) => (
-                        <div key={index} className={cn("text-center p-6 rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border", 
-                          feature.color === 'primary' ? 'bg-primary/5 border-primary/20' : `bg-${feature.color}/5 border-${feature.color}/20`
+                    {features.map((feature) => (
+                        <div key={feature.title} className={cn("text-center p-6 rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border", 
+                          feature.color === 'chart-1' && 'bg-chart-1/[0.05] border-chart-1/20',
+                          feature.color === 'chart-2' && 'bg-chart-2/[0.05] border-chart-2/20',
+                          feature.color === 'chart-3' && 'bg-chart-3/[0.05] border-chart-3/20',
+                          feature.color === 'primary' && 'bg-primary/5 border-primary/20'
                         )}>
-                            <div className={cn("inline-block p-3 rounded-lg", feature.color === 'primary' ? 'bg-primary/10' : `bg-${feature.color}/10`)}>
+                            <div className={cn("inline-block p-3 rounded-lg", 
+                              feature.color === 'chart-1' && 'bg-chart-1/10',
+                              feature.color === 'chart-2' && 'bg-chart-2/10',
+                              feature.color === 'chart-3' && 'bg-chart-3/10',
+                              feature.color === 'primary' && 'bg-primary/10'
+                            )}>
                                 {feature.icon}
                             </div>
                             <h3 className="mt-4 text-xl font-headline font-semibold">{feature.title}</h3>
