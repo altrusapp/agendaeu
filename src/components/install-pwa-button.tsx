@@ -27,7 +27,9 @@ export function InstallPwaButton() {
 
   React.useEffect(() => {
     const handleBeforeInstallPrompt = (event: BeforeInstallPromptEvent) => {
+      // Previne que o mini-infobar apareça no Chrome
       event.preventDefault();
+      // Guarda o evento para que ele possa ser disparado depois
       setInstallPrompt(event);
     };
 
@@ -39,32 +41,31 @@ export function InstallPwaButton() {
   }, []);
   
   const handleInstallClick = async () => {
-    if (installPrompt) {
-      await installPrompt.prompt();
-      const { outcome } = await installPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setInstallPrompt(null); 
-        toast({
-          variant: "success",
-          title: "Aplicativo Instalado!",
-          description: "O AgendaEu foi adicionado à sua tela de início.",
-        });
-      }
-    } else {
-       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-       if (isStandalone) {
-          toast({
-            title: "Aplicativo já instalado",
-            description: "Você já está rodando o AgendaEu como um aplicativo.",
-          });
-       } else {
-         toast({
-          title: "Instalação não disponível",
-          description: "Use a opção 'Adicionar à tela de início' ou 'Instalar App' no menu do seu navegador.",
-        });
-       }
+    if (!installPrompt) {
+        // Se o prompt não estiver disponível, não faz nada. 
+        // Isso não deve acontecer se o botão está visível.
+        return;
+    }
+    // Mostra o prompt de instalação
+    await installPrompt.prompt();
+    // Espera o usuário responder ao prompt
+    const { outcome } = await installPrompt.userChoice;
+    // Opcionalmente, pode-se enviar análises com o resultado
+    if (outcome === 'accepted') {
+      // Limpa o prompt para que ele não possa ser usado novamente
+      setInstallPrompt(null);
+      toast({
+        variant: "success",
+        title: "Aplicativo Instalado!",
+        description: "O AgendaEu foi adicionado à sua tela de início.",
+      });
     }
   };
+  
+  // Renderiza o botão apenas se o prompt de instalação estiver disponível.
+  if (!installPrompt) {
+    return null;
+  }
   
   return (
     <DropdownMenuItem onClick={handleInstallClick}>
