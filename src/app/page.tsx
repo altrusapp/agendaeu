@@ -203,7 +203,7 @@ export default function Home() {
                     </div>
                     <div className="relative h-96">
                        <Image 
-                        src="https://picsum.photos/500/350?grayscale" 
+                        src="https://i.imgur.com/rjNKS7X.jpeg" 
                         alt="Pessoa escrevendo em um caderno" 
                         width={500} 
                         height={350} 
@@ -211,7 +211,7 @@ export default function Home() {
                         data-ai-hint="person writing notebook"
                         />
                        <Image 
-                        src="https://picsum.photos/500/350" 
+                        src="https://i.imgur.com/Fp6K5El.jpeg" 
                         alt="Mockup do aplicativo sendo usado" 
                         width={500} 
                         height={350} 
