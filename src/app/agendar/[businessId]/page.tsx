@@ -710,11 +710,11 @@ export default function PublicSchedulePage() {
                             <h3 className="text-xl font-semibold font-headline mb-4">3. Seus Detalhes</h3>
                             <form onSubmit={handleConfirmAppointment} className="space-y-4">
                                <div className="relative">
-                                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
                                   <Input type="text" placeholder="Seu nome completo" required value={clientName} onChange={(e) => setClientName(e.target.value)} className="pl-10" />
                                 </div>
                                 <div className="relative">
-                                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
                                   <Input type="tel" placeholder="Seu WhatsApp (para lembretes)" required value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} className="pl-10" />
                                 </div>
                                  <div className="flex items-center space-x-2 pt-2">
@@ -758,3 +758,5 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
+
+    
