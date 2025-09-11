@@ -103,7 +103,7 @@ export default function Home() {
              <div className="absolute top-0 -right-4 w-72 h-72 bg-accent/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
              <div className="absolute -bottom-8 left-20 w-72 h-72 bg-secondary/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
             <Image
-              src="https://i.imgur.com/GXS3oms.jpeg"
+              src="https://i.imgur.com/rjNKS7X.jpeg"
               alt="Mockup do aplicativo AgendaEu.com em um notebook e celular"
               width={1200}
               height={650}
