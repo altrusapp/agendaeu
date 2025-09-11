@@ -30,10 +30,10 @@ const features = [
     color: "chart-3"
   },
   {
-    icon: <BarChart className="h-8 w-8 text-chart-4" />,
+    icon: <BarChart className="h-8 w-8 text-primary" />,
     title: "Relatórios Descomplicados",
     description: "Acompanhe agendamentos e faturamento sem planilhas.",
-    color: "chart-4"
+    color: "primary"
   },
 ]
 
@@ -140,10 +140,10 @@ export default function Home() {
                 </div>
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {features.map((feature, index) => (
-                        <div key={index} className={cn("text-center p-6 rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border bg-card", 
-                          `bg-${feature.color}/[0.05]`
+                        <div key={index} className={cn("text-center p-6 rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border", 
+                          feature.color === 'primary' ? 'bg-primary/5' : `bg-${feature.color}/[0.05]`
                         )}>
-                            <div className={cn("inline-block p-3 rounded-lg", `bg-${feature.color}/10`)}>
+                            <div className={cn("inline-block p-3 rounded-lg", feature.color === 'primary' ? 'bg-primary/10' : `bg-${feature.color}/10`)}>
                                 {feature.icon}
                             </div>
                             <h3 className="mt-4 text-xl font-headline font-semibold">{feature.title}</h3>
