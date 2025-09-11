@@ -27,9 +27,7 @@ export function InstallPwaButton() {
 
   React.useEffect(() => {
     const handleBeforeInstallPrompt = (event: BeforeInstallPromptEvent) => {
-      // Previne que o mini-infobar apareça no Chrome
       event.preventDefault();
-      // Guarda o evento para que ele possa ser disparado depois
       setInstallPrompt(event);
     };
 
@@ -42,17 +40,13 @@ export function InstallPwaButton() {
   
   const handleInstallClick = async () => {
     if (!installPrompt) {
-        // Se o prompt não estiver disponível, não faz nada. 
-        // Isso não deve acontecer se o botão está visível.
-        return;
+      return;
     }
-    // Mostra o prompt de instalação
+    
     await installPrompt.prompt();
-    // Espera o usuário responder ao prompt
+    
     const { outcome } = await installPrompt.userChoice;
-    // Opcionalmente, pode-se enviar análises com o resultado
     if (outcome === 'accepted') {
-      // Limpa o prompt para que ele não possa ser usado novamente
       setInstallPrompt(null);
       toast({
         variant: "success",
@@ -62,7 +56,6 @@ export function InstallPwaButton() {
     }
   };
   
-  // Renderiza o botão apenas se o prompt de instalação estiver disponível.
   if (!installPrompt) {
     return null;
   }
