@@ -14,7 +14,7 @@
     --popover: 0 0% 100%; /* #ffffff */
     --popover-foreground: 0 0% 3.9%; /* #0a0a0a */
     
-    --primary: 252.5 80% 56.9%; /* Novo Roxo Principal */
+    --primary: 231 95% 67%; /* #5c73fa */
     --primary-foreground: 0 0% 98%; /* #fafafa */
     
     --secondary: 0 0% 96.1%; /* #f5f5f5 */
@@ -34,7 +34,7 @@
 
     --border: 0 0% 89.8%; /* #e5e5e5 */
     --input: 0 0% 89.8%; /* #e5e5e5 */
-    --ring: 252.5 80% 56.9%;
+    --ring: 231 95% 67%;
 
     --radius: 0.75rem;
 
@@ -78,7 +78,7 @@
     --popover: 240 6% 10%; /* #1a1b1e */
     --popover-foreground: 0 0% 98%; /* #fafafa */
 
-    --primary: 252.5 80% 56.9%; /* Novo Roxo Principal */
+    --primary: 231 95% 67%; /* #5c73fa */
     --primary-foreground: 0 0% 98%; /* #fafafa */
 
     --secondary: 240 6% 18%; /* #2d2f32 */
@@ -98,7 +98,7 @@
 
     --border: 240 6% 20%; /* #313438 */
     --input: 240 6% 20%; /* #313438 */
-    --ring: 252.5 80% 56.9%;
+    --ring: 231 95% 67%;
     
     /* Inverse Colors */
     --inverse-surface: 0 0% 94%; /* #f0f0f0 */
@@ -217,3 +217,5 @@
     background-color: hsl(var(--primary) / 0.5);
   }
 }
+
+    
