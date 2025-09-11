@@ -30,7 +30,7 @@ export function BottomBar({ navItems, pathname }: BottomBarProps) {
                   isActive && "text-primary"
                 )}
               >
-                 <div className={cn("p-2 rounded-full transition-colors", isActive && "bg-primary/10")}>
+                 <div className={cn("p-1 px-3 rounded-full transition-colors", isActive && "bg-primary/10")}>
                     <item.icon className="h-5 w-5 shrink-0" />
                  </div>
                 <span className={cn("text-xs transition-all", isActive ? "font-semibold" : "font-normal")}>{item.label}</span>
