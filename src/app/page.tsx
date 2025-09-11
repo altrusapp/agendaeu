@@ -15,25 +15,21 @@ const features = [
     icon: <Calendar className="h-8 w-8 text-chart-1" />,
     title: "Agenda Online 24/7",
     description: "Seus clientes marcam sozinhos, sem você parar o trabalho.",
-    color: "chart-1"
   },
   {
     icon: <Users className="h-8 w-8 text-chart-2" />,
     title: "Gestão de Clientes",
     description: "Saiba quem marcou, histórico de serviços e preferências.",
-    color: "chart-2"
   },
    {
     icon: <MessageCircle className="h-8 w-8 text-chart-3" />,
     title: "Lembretes sem Esforço",
     description: "Envie lembretes por WhatsApp e reduza as faltas.",
-    color: "chart-3"
   },
   {
     icon: <BarChart className="h-8 w-8 text-primary" />,
     title: "Relatórios Descomplicados",
     description: "Acompanhe agendamentos e faturamento sem planilhas.",
-    color: "primary"
   },
 ]
 
@@ -91,7 +87,8 @@ export default function Home() {
             Chega de perder horários e anotar tudo no caderno.
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground">
-            Com o AgendaEu.com, sua agenda fica online, organizada e funcionando 24 horas por dia. Feito para manicures, barbeiros e pequenos salões que precisam praticidade sem complicação.
+          AgendaEu.com deixa sua agenda online, organizada e disponível 24h — feito sob medida para manicures, barbeiros e salões que querem praticidade sem complicação.
+
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <Button size="lg" asChild>
@@ -106,7 +103,7 @@ export default function Home() {
              <div className="absolute top-0 -right-4 w-72 h-72 bg-accent/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
              <div className="absolute -bottom-8 left-20 w-72 h-72 bg-secondary/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
             <Image
-              src="https://picsum.photos/1200/650"
+              src="https://i.imgur.com/GXS3oms.jpeg"
               alt="Mockup do aplicativo AgendaEu.com em um notebook e celular"
               width={1200}
               height={650}
@@ -123,10 +120,16 @@ export default function Home() {
                 <div className="text-center max-w-3xl mx-auto">
                     <h2 className="text-3xl font-bold font-headline tracking-tight">Você já passou por isso?</h2>
                     <p className="mt-4 text-lg text-muted-foreground">
-                        Anotando horários em cadernos e descobrindo que marcou duas clientes no mesmo horário? Ou pior: esqueceu de confirmar e a cliente não apareceu?
+                        Anotando horários em cadernos e descobrindo que marcou duas clientes no mesmo horário?
                     </p>
                     <p className="mt-4 text-lg text-muted-foreground">
-                        Foi exatamente assim que nasceu o AgendaEu.com: criado para ajudar profissionais como você a organizar a rotina e nunca mais perder tempo ou dinheiro com desencontros.
+                        Ou pior: esqueceu de confirmar e a cliente não apareceu?
+                    </p>
+                    <p className="mt-4 text-lg text-muted-foreground">
+                        Foi exatamente assim que nasceu o AgendaEu.com:
+                    </p>
+                    <p className="mt-4 text-lg text-muted-foreground">
+                        Criado para ajudar profissionais como você a organizar a rotina e nunca mais perder tempo ou dinheiro com desencontros.
                     </p>
                 </div>
             </div>
@@ -139,25 +142,34 @@ export default function Home() {
                     <h2 className="text-3xl font-bold font-headline tracking-tight">Tudo que você precisa em um só lugar</h2>
                 </div>
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {features.map((feature) => (
-                        <div key={feature.title} className={cn("text-center p-6 rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border", 
-                          feature.color === 'chart-1' && 'bg-chart-1/[0.05] border-chart-1/20',
-                          feature.color === 'chart-2' && 'bg-chart-2/[0.05] border-chart-2/20',
-                          feature.color === 'chart-3' && 'bg-chart-3/[0.05] border-chart-3/20',
-                          feature.color === 'primary' && 'bg-primary/5 border-primary/20'
-                        )}>
-                            <div className={cn("inline-block p-3 rounded-lg", 
-                              feature.color === 'chart-1' && 'bg-chart-1/10',
-                              feature.color === 'chart-2' && 'bg-chart-2/10',
-                              feature.color === 'chart-3' && 'bg-chart-3/10',
-                              feature.color === 'primary' && 'bg-primary/10'
-                            )}>
-                                {feature.icon}
-                            </div>
-                            <h3 className="mt-4 text-xl font-headline font-semibold">{feature.title}</h3>
-                            <p className="mt-2 text-muted-foreground">{feature.description}</p>
+                    <div className="text-center p-6 rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border bg-chart-1/[0.05] border-chart-1/20">
+                        <div className="inline-block p-3 rounded-lg bg-chart-1/10">
+                            {features[0].icon}
                         </div>
-                    ))}
+                        <h3 className="mt-4 text-xl font-headline font-semibold">{features[0].title}</h3>
+                        <p className="mt-2 text-muted-foreground">{features[0].description}</p>
+                    </div>
+                    <div className="text-center p-6 rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border bg-chart-2/[0.05] border-chart-2/20">
+                        <div className="inline-block p-3 rounded-lg bg-chart-2/10">
+                            {features[1].icon}
+                        </div>
+                        <h3 className="mt-4 text-xl font-headline font-semibold">{features[1].title}</h3>
+                        <p className="mt-2 text-muted-foreground">{features[1].description}</p>
+                    </div>
+                    <div className="text-center p-6 rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border bg-chart-3/[0.05] border-chart-3/20">
+                        <div className="inline-block p-3 rounded-lg bg-chart-3/10">
+                            {features[2].icon}
+                        </div>
+                        <h3 className="mt-4 text-xl font-headline font-semibold">{features[2].title}</h3>
+                        <p className="mt-2 text-muted-foreground">{features[2].description}</p>
+                    </div>
+                    <div className="text-center p-6 rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border bg-primary/5 border-primary/20">
+                        <div className="inline-block p-3 rounded-lg bg-primary/10">
+                            {features[3].icon}
+                        </div>
+                        <h3 className="mt-4 text-xl font-headline font-semibold">{features[3].title}</h3>
+                        <p className="mt-2 text-muted-foreground">{features[3].description}</p>
+                    </div>
                 </div>
                  <div className="mt-16 text-center">
                     <Button size="lg" variant="default" asChild>
@@ -174,10 +186,19 @@ export default function Home() {
                     <div className="space-y-4">
                         <h2 className="text-3xl font-bold font-headline tracking-tight">De um caderno bagunçado para a agenda que resolve</h2>
                          <p className="text-lg text-muted-foreground">
-                           O AgendaEu.com nasceu dentro de casa. Vi minha irmã — manicure e mãe de duas meninas — tentando se virar com um caderno cheio de anotações. O problema? Horários duplicados, compromissos esquecidos e muito estresse.
+                           O AgendaEu.com nasceu dentro de casa.
                         </p>
                         <p className="text-lg text-muted-foreground">
-                           Daí surgiu a ideia: transformar toda essa confusão em uma solução simples e prática. Hoje, ajudamos profissionais a terem mais tranquilidade e foco no que realmente importa: cuidar bem dos seus clientes.
+                           Vi minha irmã — manicure e mãe de duas meninas — tentando se virar com um caderno cheio de anotações.
+                        </p>
+                        <p className="text-lg text-muted-foreground">
+                           O problema? Horários duplicados, compromissos esquecidos e muito estresse.
+                        </p>
+                        <p className="text-lg text-muted-foreground">
+                           Daí surgiu a ideia: transformar toda essa confusão em uma solução simples e prática.
+                        </p>
+                        <p className="text-lg text-muted-foreground">
+                           Hoje, ajudamos profissionais a terem mais tranquilidade e foco no que realmente importa: cuidar bem dos seus clientes.
                         </p>
                     </div>
                     <div className="relative h-96">
@@ -245,7 +266,7 @@ export default function Home() {
                   Pronto para transformar seu negócio?
                 </h2>
                 <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-primary-foreground/90">
-                  Junte-se a centenas de profissionais que já simplificaram suas agendas e estão focando no que realmente importa.
+                  Junte-se aos profissionais solos que já simplificaram suas agendas e estão focando no que realmente importa.
                 </p>
                 <div className="mt-10 flex items-center justify-center gap-x-6">
                   <Button size="lg" variant="secondary" asChild>
