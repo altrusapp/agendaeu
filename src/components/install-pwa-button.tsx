@@ -43,7 +43,6 @@ export function InstallPwaButton() {
       await installPrompt.prompt();
       const { outcome } = await installPrompt.userChoice;
       if (outcome === 'accepted') {
-        // O evento não será mais disparado, então limpamos o estado
         setInstallPrompt(null); 
         toast({
           variant: "success",
@@ -52,10 +51,18 @@ export function InstallPwaButton() {
         });
       }
     } else {
-       toast({
-        title: "Instalação não disponível",
-        description: "Seu navegador não suporta a instalação ou o app já está instalado.",
-      });
+       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+       if (isStandalone) {
+          toast({
+            title: "Aplicativo já instalado",
+            description: "Você já está rodando o AgendaEu como um aplicativo.",
+          });
+       } else {
+         toast({
+          title: "Instalação não disponível",
+          description: "Use a opção 'Adicionar à tela de início' ou 'Instalar App' no menu do seu navegador.",
+        });
+       }
     }
   };
   
