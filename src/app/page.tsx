@@ -302,8 +302,8 @@ export default function Home() {
             <span>© {new Date().getFullYear()} AgendaEu.com. Todos os direitos reservados.</span>
           </div>
           <div className="flex gap-4">
-            <Link href="#" className="hover:text-primary">Termos</Link>
-            <Link href="#" className="hover:text-primary">Privacidade</Link>
+            <Link href="/termos" className="hover:text-primary">Termos</Link>
+            <Link href="/privacidade" className="hover:text-primary">Privacidade</Link>
           </div>
         </div>
       </footer>

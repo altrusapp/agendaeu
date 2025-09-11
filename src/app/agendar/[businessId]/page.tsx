@@ -3,6 +3,7 @@
 
 import * as React from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { useParams } from "next/navigation"
 import { Calendar as CalendarIcon, CheckCircle, Clock, PartyPopper, User, Phone, Tag, Calendar as CalendarIconInfo, DollarSign, ChevronRight, Share2 } from "lucide-react"
 import { doc, getDoc, collection, query, getDocs, DocumentData, addDoc, Timestamp, where, updateDoc, increment, limit } from "firebase/firestore"
@@ -27,6 +28,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 
 type Service = { id: string, name: string, duration: string, price: string };
@@ -135,6 +138,7 @@ export default function PublicSchedulePage() {
   const [selectedTime, setSelectedTime] = React.useState<string | null>(null);
   const [clientName, setClientName] = React.useState("");
   const [clientPhone, setClientPhone] = React.useState("");
+  const [termsAccepted, setTermsAccepted] = React.useState(false);
   
   const [isSuccess, setIsSuccess] = React.useState(false);
   const businessSlug = params.businessId as string;
@@ -370,6 +374,16 @@ export default function PublicSchedulePage() {
       setIsSubmitting(false);
       return;
     }
+
+    if (!termsAccepted) {
+      toast({
+        variant: "destructive",
+        title: "Termos e Condições",
+        description: "Você deve aceitar os termos e a política de privacidade para continuar.",
+      });
+      setIsSubmitting(false);
+      return;
+    }
     
     const [hours, minutes] = selectedTime.split(':').map(Number);
     const appointmentDate = new Date(date);
@@ -457,6 +471,7 @@ export default function PublicSchedulePage() {
     setDate(undefined);
     setClientName("");
     setClientPhone("");
+    setTermsAccepted(false);
     setIsSuccess(false);
   };
   
@@ -702,6 +717,20 @@ export default function PublicSchedulePage() {
                                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                                   <Input type="tel" placeholder="Seu WhatsApp (para lembretes)" required value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} className="pl-10" />
                                 </div>
+                                 <div className="flex items-center space-x-2 pt-2">
+                                    <Checkbox id="terms" checked={termsAccepted} onCheckedChange={(checked) => setTermsAccepted(!!checked)} />
+                                    <Label htmlFor="terms" className="text-sm font-normal text-muted-foreground">
+                                      Eu li e concordo com os{" "}
+                                      <Link href="/termos" target="_blank" className="underline hover:text-primary">
+                                        Termos de Serviço
+                                      </Link>{" "}
+                                      e a{" "}
+                                      <Link href="/privacidade" target="_blank" className="underline hover:text-primary">
+                                        Política de Privacidade
+                                      </Link>
+                                      .
+                                    </Label>
+                                  </div>
                                 <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
                                   {isSubmitting ? "Confirmando..." : <><CheckCircle className="mr-2" />Confirmar Agendamento</>}
                                 </Button>

@@ -18,6 +18,8 @@ import { useToast } from "@/hooks/use-toast"
 import { Logo } from "@/components/logo"
 import { auth } from "@/lib/firebase/client"
 import { cn } from "@/lib/utils"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
 
 const signupSchema = z.object({
   name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
@@ -28,6 +30,9 @@ const signupSchema = z.object({
     .regex(/[a-z]/, { message: "Deve conter pelo menos uma letra minúscula." })
     .regex(/[0-9]/, { message: "Deve conter pelo menos um número." })
     .regex(/[^A-Za-z0-9]/, { message: "Deve conter pelo menos um caractere especial." }),
+  terms: z.boolean().refine((val) => val === true, {
+    message: "Você deve aceitar os termos e condições.",
+  }),
 })
 
 const PasswordRequirement = ({ text, met }: { text: string, met: boolean }) => (
@@ -46,6 +51,7 @@ export default function SignupPage() {
       name: "",
       email: "",
       password: "",
+      terms: false,
     },
     mode: "onBlur",
   })
@@ -151,6 +157,31 @@ export default function SignupPage() {
                           <PasswordRequirement text="Um caractere especial" met={passwordRequirements.special} />
                        </div>
                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="terms"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                       <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>
+                           Aceito os Termos e Condições
+                        </FormLabel>
+                         <FormMessage />
+                          <p className="text-xs text-muted-foreground">
+                            Ao continuar, você concorda com nossos{" "}
+                            <Link href="/termos" className="underline hover:text-primary">Termos de Serviço</Link> e {" "}
+                            <Link href="/privacidade" className="underline hover:text-primary">Política de Privacidade</Link>.
+                          </p>
+                      </div>
                     </FormItem>
                   )}
                 />
