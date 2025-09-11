@@ -201,22 +201,22 @@ export default function Home() {
                            Hoje, ajudamos profissionais a terem mais tranquilidade e foco no que realmente importa: cuidar bem dos seus clientes.
                         </p>
                     </div>
-                    <div className="relative h-96">
-                       <Image 
-                        src="https://i.imgur.com/rjNKS7X.jpeg" 
-                        alt="Pessoa escrevendo em um caderno" 
-                        width={500} 
-                        height={350} 
-                        className="rounded-lg shadow-md absolute top-0 left-0"
-                        data-ai-hint="person writing notebook"
+                    <div className="relative aspect-[4/3] w-full max-w-lg mx-auto">
+                        <Image
+                            src="https://i.imgur.com/rjNKS7X.jpeg"
+                            alt="Pessoa escrevendo em um caderno"
+                            layout="fill"
+                            objectFit="cover"
+                            className="rounded-lg shadow-md -rotate-3"
+                            data-ai-hint="person writing notebook"
                         />
-                       <Image 
-                        src="https://i.imgur.com/9kJt2sZ.png" 
-                        alt="Mockup do aplicativo sendo usado" 
-                        width={500} 
-                        height={350} 
-                        className="rounded-lg shadow-xl absolute bottom-0 right-0 border-4 border-background"
-                        data-ai-hint="app schedule"
+                        <Image
+                            src="https://i.imgur.com/9kJt2sZ.png"
+                            alt="Mockup do aplicativo sendo usado"
+                            layout="fill"
+                            objectFit="cover"
+                            className="rounded-lg shadow-xl border-4 border-background rotate-3"
+                            data-ai-hint="app schedule"
                         />
                     </div>
                 </div>
@@ -310,3 +310,5 @@ export default function Home() {
     </div>
   )
 }
+
+    
