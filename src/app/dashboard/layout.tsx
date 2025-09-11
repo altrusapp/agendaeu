@@ -15,7 +15,8 @@ import {
   Settings,
   Menu,
   LifeBuoy,
-  WandSparkles
+  WandSparkles,
+  Download
 } from "lucide-react"
 
 import { auth, db } from "@/lib/firebase/client"
@@ -164,7 +165,6 @@ export default function DashboardLayout({
                 {/* O título foi removido daqui */}
             </div>
             
-            <InstallPwaButton />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="secondary" size="icon" className="rounded-full" aria-label="Abrir menu do usuário">
@@ -178,6 +178,7 @@ export default function DashboardLayout({
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <InstallPwaButton />
                  <DropdownMenuItem asChild>
                   <Link href="/dashboard/configuracoes">
                     <Settings className="mr-2 h-4 w-4"/>Configurações
@@ -201,5 +202,3 @@ export default function DashboardLayout({
     </BusinessContext.Provider>
   )
 }
-
-    

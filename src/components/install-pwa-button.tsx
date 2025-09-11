@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -51,10 +51,9 @@ export function InstallPwaButton() {
   }
 
   return (
-    <Button onClick={handleInstallClick} size="sm" variant="outline">
+    <DropdownMenuItem onClick={handleInstallClick}>
       <Download className="mr-2 h-4 w-4"/>
-      <span className="hidden sm:inline">Instalar App</span>
-      <span className="sr-only sm:hidden">Instalar App</span>
-    </Button>
+      <span>Instalar App</span>
+    </DropdownMenuItem>
   );
 }
