@@ -85,7 +85,7 @@ export default function Home() {
         {/* Hero Section */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center">
            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-headline tracking-tight max-w-4xl mx-auto">
-            Agenda online para salão de beleza e barbearia. Simples e grátis.
+            App de Agendamento de Clientes Online Grátis
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground">
             Cansado de anotar no caderno e perder clientes por falta de organização? O AgendaEu.com deixa sua agenda online e disponível 24h. Feito para manicures, barbeiros e autônomos da beleza.
@@ -344,3 +344,5 @@ export default function Home() {
     </div>
   )
 }
+
+    
