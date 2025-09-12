@@ -88,7 +88,7 @@ export default function Home() {
             App de Agendamento de Clientes Online Grátis
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground">
-            Cansado de anotar no caderno e perder clientes por falta de organização? O AgendaEu.com deixa sua agenda online e disponível 24h. Feito para manicures, barbeiros e autônomos da beleza.
+            Chega de anotações e agendamentos perdidos: o AgendaEu.com coloca sua agenda online, prática, rápida e disponível 24h para seus clientes.
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <Button size="lg" asChild>
@@ -295,7 +295,7 @@ export default function Home() {
         {/* Final CTA Section */}
         <section className="py-20 sm:py-24">
            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-             <div className="relative isolate overflow-hidden bg-primary/90 px-6 py-20 text-center shadow-xl rounded-2xl sm:px-16">
+             <div className="relative isolate overflow-hidden bg-primary/90 px-6 py-20 text-center shadow-xl rounded-xl sm:px-16">
                 <h2 className="mx-auto max-w-2xl text-3xl font-bold font-headline tracking-tight text-primary-foreground sm:text-4xl">
                   Pronto para transformar seu negócio?
                 </h2>
@@ -344,5 +344,3 @@ export default function Home() {
     </div>
   )
 }
-
-    
