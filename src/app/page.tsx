@@ -9,6 +9,7 @@ import { ArrowRight, Calendar, Users, BarChart, MessageCircle, CreditCard, PenTo
 import { Logo } from "@/components/logo"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 
 const features = [
   {
@@ -237,7 +238,10 @@ export default function Home() {
                         <div className="inline-block p-3 bg-chart-1/10 rounded-lg">
                            <CreditCard className="h-8 w-8 text-chart-1" />
                         </div>
-                        <h3 className="text-xl font-headline font-semibold mt-4">Pagamentos Garantidos</h3>
+                        <div className="flex items-center gap-2">
+                           <h3 className="text-xl font-headline font-semibold mt-4">Pagamentos Garantidos</h3>
+                           <Badge variant="outline" className="mt-4">Em breve</Badge>
+                        </div>
                         <p className="text-muted-foreground mt-2">Receba um sinal no agendamento e evite prejuízos. Menos furos, mais faturamento.</p>
                     </div>
                     <div className="p-8 rounded-lg flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-chart-2/[0.05] border border-chart-2/20">
@@ -310,5 +314,3 @@ export default function Home() {
     </div>
   )
 }
-
-    
