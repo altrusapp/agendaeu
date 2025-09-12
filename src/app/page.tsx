@@ -85,16 +85,15 @@ export default function Home() {
         {/* Hero Section */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center">
            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-headline tracking-tight max-w-4xl mx-auto">
-            Chega de perder horários e anotar tudo no caderno.
+            Agenda online para salão de beleza e barbearia. Simples e grátis.
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground">
-          AgendaEu.com deixa sua agenda online, organizada e disponível 24h — feito sob medida para manicures, barbeiros e salões que querem praticidade sem complicação.
-
+            Cansado de anotar no caderno e perder clientes por falta de organização? O AgendaEu.com deixa sua agenda online e disponível 24h. Feito para manicures, barbeiros e autônomos da beleza.
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <Button size="lg" asChild>
               <Link href="/signup">
-                Começar Gratuitamente
+                Criar Minha Agenda Grátis
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Link>
             </Button>
@@ -119,18 +118,12 @@ export default function Home() {
         <section id="story-pain" className="py-20 sm:py-24 bg-muted/50 dark:bg-card">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-3xl mx-auto">
-                    <h2 className="text-3xl font-bold font-headline tracking-tight">Você já passou por isso?</h2>
+                    <h2 className="text-3xl font-bold font-headline tracking-tight">Sua agenda de papel está custando caro?</h2>
                     <p className="mt-4 text-lg text-muted-foreground">
-                        Anotando horários em cadernos e descobrindo que marcou duas clientes no mesmo horário?
+                        Se você já marcou duas clientes no mesmo horário, passou o dia inteiro respondendo WhatsApp para agendar ou perdeu dinheiro com clientes que não apareceram, você sabe do que estamos falando.
                     </p>
                     <p className="mt-4 text-lg text-muted-foreground">
-                        Ou pior: esqueceu de confirmar e a cliente não apareceu?
-                    </p>
-                    <p className="mt-4 text-lg text-muted-foreground">
-                        Foi exatamente assim que nasceu o AgendaEu.com:
-                    </p>
-                    <p className="mt-4 text-lg text-muted-foreground">
-                        Criado para ajudar profissionais como você a organizar a rotina e nunca mais perder tempo ou dinheiro com desencontros.
+                        O AgendaEu.com nasceu exatamente para resolver isso: um sistema de agendamento online simples, que organiza sua rotina e devolve seu tempo.
                     </p>
                 </div>
             </div>
@@ -140,7 +133,7 @@ export default function Home() {
         <section id="benefits" className="py-20 sm:py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-2xl mx-auto">
-                    <h2 className="text-3xl font-bold font-headline tracking-tight">Tudo que você precisa em um só lugar</h2>
+                    <h2 className="text-3xl font-bold font-headline tracking-tight">Tudo que seu salão ou barbearia precisa</h2>
                 </div>
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     <div className="text-center p-6 rounded-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border bg-chart-1/[0.05] border-chart-1/20">
@@ -174,7 +167,7 @@ export default function Home() {
                 </div>
                  <div className="mt-16 text-center">
                     <Button size="lg" variant="default" asChild>
-                        <Link href="/signup">Criar Conta Grátis</Link>
+                        <Link href="/signup">Quero Organizar Minha Agenda</Link>
                     </Button>
                 </div>
             </div>
@@ -265,7 +258,7 @@ export default function Home() {
         <section id="detailed-features" className="py-20 sm:py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                  <div className="text-center max-w-2xl mx-auto">
-                    <h2 className="text-3xl font-bold font-headline tracking-tight">Sua agenda pronta em menos de 5 minutos</h2>
+                    <h2 className="text-3xl font-bold font-headline tracking-tight">Sua agenda online em menos de 5 minutos</h2>
                     <p className="mt-4 text-lg text-muted-foreground">
                         Esqueça complicação. No AgendaEu.com você cria sua conta grátis e já sai usando: agendamento, gestão de clientes, lembretes e muito mais.
                     </p>
@@ -302,17 +295,17 @@ export default function Home() {
         {/* Final CTA Section */}
         <section className="py-20 sm:py-24">
            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-             <div className="relative isolate overflow-hidden bg-primary/90 px-6 py-20 text-center shadow-xl rounded-xl sm:px-16">
+             <div className="relative isolate overflow-hidden bg-primary/90 px-6 py-20 text-center shadow-xl rounded-2xl sm:px-16">
                 <h2 className="mx-auto max-w-2xl text-3xl font-bold font-headline tracking-tight text-primary-foreground sm:text-4xl">
                   Pronto para transformar seu negócio?
                 </h2>
                 <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-primary-foreground/90">
-                  Junte-se aos profissionais solos que já simplificaram suas agendas e estão focando no que realmente importa.
+                  Junte-se aos profissionais que já simplificaram suas agendas e estão focando no que realmente importa: seus clientes.
                 </p>
                 <div className="mt-10 flex items-center justify-center gap-x-6">
                   <Button size="lg" variant="secondary" asChild>
                     <Link href="/signup">
-                        Criar Conta Gratuitamente
+                        Criar Conta Gratuita
                         <ArrowRight className="h-4 w-4 ml-2" />
                     </Link>
                   </Button>
