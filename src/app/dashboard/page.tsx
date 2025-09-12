@@ -90,11 +90,10 @@ export default function DashboardPage() {
 
       setUpcomingAppointments(appointmentsData);
     } catch (error) {
-      console.error("Error fetching recent appointments:", error);
        toast({
         variant: "destructive",
         title: "Erro ao buscar agendamentos",
-        description: "Houve um problema ao carregar seus próximos horários. A equipe já foi notificada.",
+        description: "Houve um problema ao carregar seus próximos horários.",
       });
     } finally {
       setLoadingAppointments(false);
@@ -142,7 +141,7 @@ export default function DashboardPage() {
         });
 
       } catch (error) {
-        console.error("Error fetching dashboard stats:", error);
+        // Silently fail for stats for now
       } finally {
         setLoadingStats(false);
       }
@@ -176,7 +175,6 @@ export default function DashboardPage() {
         fetchRecentAppointments(); // Re-fetch to remove it from the list
         fetchDashboardData(); // Re-fetch stats
     } catch (error) {
-        console.error("Error marking appointment as done:", error);
         toast({
             variant: "destructive",
             title: "Erro",
@@ -384,6 +382,8 @@ export default function DashboardPage() {
     </TooltipProvider>
   )
 
+
+    
 
     
 

@@ -454,11 +454,10 @@ export default function PublicSchedulePage() {
         setIsSuccess(true);
 
     } catch (error) {
-       console.error("Error confirming appointment:", error);
        toast({
         variant: "destructive",
         title: "Erro ao Agendar",
-        description: "Não foi possível confirmar o agendamento. Verifique suas permissões ou tente novamente.",
+        description: "Não foi possível confirmar o agendamento. Por favor, tente novamente.",
       });
     } finally {
       setIsSubmitting(false);
@@ -766,3 +765,5 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
+
+    

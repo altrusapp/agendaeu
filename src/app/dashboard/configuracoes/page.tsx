@@ -422,7 +422,7 @@ export default function ConfiguracoesPage() {
                     />
                     
                      <div className="space-y-2">
-                       <Alert variant="destructive">
+                       <Alert variant="destructive" className="items-center">
                           <AlertCircle className="h-4 w-4" />
                           <AlertDescription>
                             O link da sua página pública só pode ser alterado <strong>uma única vez</strong>.
@@ -549,3 +549,5 @@ export default function ConfiguracoesPage() {
     </>
   )
 }
+
+    

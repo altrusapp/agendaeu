@@ -45,7 +45,6 @@ export default function LoginPage() {
       router.push("/dashboard")
     } catch (error) {
        const firebaseError = error as FirebaseError;
-       console.error("Firebase login error:", firebaseError.message);
        let title = "Erro ao fazer login";
        let description = "Ocorreu um erro inesperado. Por favor, tente novamente.";
 
@@ -122,3 +121,5 @@ export default function LoginPage() {
     </div>
   )
 }
+
+    
