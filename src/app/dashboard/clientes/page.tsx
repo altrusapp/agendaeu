@@ -50,7 +50,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
-import { cn } from "@/lib/utils"
+import { cn, formatPhone } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -99,7 +99,14 @@ const ClientForm = ({
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="phone" className="text-right">WhatsApp</Label>
-          <Input id="phone" value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} placeholder="(11) 99999-9999" className="col-span-3" />
+          <Input 
+            id="phone" 
+            value={clientPhone} 
+            onChange={(e) => setClientPhone(formatPhone(e.target.value))} 
+            placeholder="(11) 99999-9999" 
+            className="col-span-3" 
+            maxLength={15}
+          />
         </div>
         <div className="grid grid-cols-4 items-start gap-4">
           <Label htmlFor="notes" className="text-right pt-2">Anotações</Label>
@@ -564,5 +571,3 @@ export default function ClientesPage() {
     </>
   )
 }
-
-    

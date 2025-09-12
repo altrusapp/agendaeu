@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { cn } from "@/lib/utils"
+import { cn, formatPhone } from "@/lib/utils"
 
 type Service = { id: string, name: string, duration: string, price: string };
 type BusinessInfo = { 
@@ -715,7 +715,15 @@ export default function PublicSchedulePage() {
                                 </div>
                                 <div className="relative">
                                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
-                                  <Input type="tel" placeholder="Seu WhatsApp (para lembretes)" required value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} className="pl-10" />
+                                  <Input 
+                                    type="tel" 
+                                    placeholder="Seu WhatsApp (para lembretes)" 
+                                    required 
+                                    value={clientPhone} 
+                                    onChange={(e) => setClientPhone(formatPhone(e.target.value))} 
+                                    className="pl-10" 
+                                    maxLength={15}
+                                  />
                                 </div>
                                  <div className="flex items-center space-x-2 pt-2">
                                     <Checkbox id="terms" checked={termsAccepted} onCheckedChange={(checked) => setTermsAccepted(!!checked)} />
@@ -758,5 +766,3 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
-
-    
