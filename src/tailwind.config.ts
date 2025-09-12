@@ -85,10 +85,10 @@ export default {
         },
       },
       borderRadius: {
-        xl: `32px`,
-        lg: `32px`,
-        md: `16px`,
-        sm: `12px`,
+        xl: 'calc(var(--radius) * 1.5)',
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) / 1.5)',
+        sm: 'calc(var(--radius) / 2)',
       },
       keyframes: {
         'accordion-down': {
@@ -121,3 +121,4 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
+

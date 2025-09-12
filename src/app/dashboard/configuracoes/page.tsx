@@ -384,165 +384,168 @@ export default function ConfiguracoesPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold font-headline">Configurações</h1>
-      </div>
-      <Tabs defaultValue="profile" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="profile">Perfil do Negócio</TabsTrigger>
-          <TabsTrigger value="hours">Horários</TabsTrigger>
-          <TabsTrigger value="account">Minha Conta</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="profile" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Perfil Público</CardTitle>
-              <CardDescription>
-                Estas são as informações que seus clientes verão na sua página de agendamento.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...profileForm}>
-                <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-8">
-                  <FormField
-                    control={profileForm.control}
-                    name="businessName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nome do Negócio</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Ex: Espaço Beleza Unica" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                   <div className="space-y-2">
-                     <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertDescription>
-                           O link da sua página pública só pode ser alterado <strong>uma única vez</strong>.
-                        </AlertDescription>
-                    </Alert>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold font-headline">Configurações</h1>
+          <p className="text-muted-foreground">Gerencie as configurações do seu negócio e da sua conta.</p>
+        </div>
+        <Tabs defaultValue="profile" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="profile">Perfil do Negócio</TabsTrigger>
+            <TabsTrigger value="hours">Horários</TabsTrigger>
+            <TabsTrigger value="account">Minha Conta</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="profile" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Perfil Público</CardTitle>
+                <CardDescription>
+                  Estas são as informações que seus clientes verão na sua página de agendamento.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Form {...profileForm}>
+                  <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-8">
                     <FormField
                       control={profileForm.control}
-                      name="slug"
+                      name="businessName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Link da Página Pública</FormLabel>
-                           <div className="flex items-center gap-2">
-                            <span className="p-2 rounded-l-md bg-muted text-muted-foreground text-sm">/agendar/</span>
-                            <FormControl>
-                              <Input 
-                                {...field} 
-                                onBlur={handleSlugBlur}
-                                placeholder="ex-espaco-beleza" 
-                                className="rounded-l-none"
-                                disabled={business?.slugHasBeenChanged}
-                              />
-                            </FormControl>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                   </div>
-
-                   <FormField
-                    control={profileForm.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Descrição Curta</FormLabel>
-                        <FormControl>
-                          <Textarea placeholder="Fale um pouco sobre seu negócio..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={profileForm.control}
-                    name="logoUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Link da sua Logo</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://exemplo.com/logo.png" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={profileForm.control}
-                    name="coverImageUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Link da Imagem de Capa</FormLabel>
-                        <FormControl>
-                           <Input placeholder="https://exemplo.com/capa.png" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" disabled={profileForm.formState.isSubmitting}>
-                     {profileForm.formState.isSubmitting ? "Salvando..." : "Salvar Alterações"}
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="hours" className="space-y-4">
-          <BusinessHoursForm />
-        </TabsContent>
-
-         <TabsContent value="account" className="space-y-4">
-           <Card>
-            <CardHeader>
-              <CardTitle>Conta</CardTitle>
-              <CardDescription>
-                Gerencie as configurações da sua conta pessoal.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <Form {...accountForm}>
-                  <form onSubmit={accountForm.handleSubmit(onAccountSubmit)} className="space-y-8">
-                    <FormField
-                      control={accountForm.control}
-                      name="ownerAvatarUrl"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>URL do seu Avatar</FormLabel>
+                          <FormLabel>Nome do Negócio</FormLabel>
                           <FormControl>
-                            <Input placeholder="https://exemplo.com/minha-foto.png" {...field} />
+                            <Input placeholder="Ex: Espaço Beleza Unica" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <div className="space-y-2">
-                       <Label>Email</Label>
-                        <Input value={business?.ownerEmail || "Carregando..."} disabled />
-                        <p className="text-sm text-muted-foreground">
-                            Para alterar seu email ou senha, entre em contato com o suporte.
-                        </p>
-                    </div>
+                    
+                     <div className="space-y-2">
+                       <Alert variant="destructive">
+                          <AlertCircle className="h-4 w-4" />
+                          <AlertDescription>
+                            O link da sua página pública só pode ser alterado <strong>uma única vez</strong>.
+                          </AlertDescription>
+                      </Alert>
+                      <FormField
+                        control={profileForm.control}
+                        name="slug"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Link da Página Pública</FormLabel>
+                             <div className="flex items-center gap-2">
+                              <span className="p-2 rounded-l-md bg-muted text-muted-foreground text-sm">/agendar/</span>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  onBlur={handleSlugBlur}
+                                  placeholder="ex-espaco-beleza" 
+                                  className="rounded-l-none"
+                                  disabled={business?.slugHasBeenChanged}
+                                />
+                              </FormControl>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                     </div>
 
-                    <Button type="submit" disabled={accountForm.formState.isSubmitting}>
-                      {accountForm.formState.isSubmitting ? "Salvando..." : "Salvar Alterações da Conta"}
+                     <FormField
+                      control={profileForm.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Descrição Curta</FormLabel>
+                          <FormControl>
+                            <Textarea placeholder="Fale um pouco sobre seu negócio..." {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={profileForm.control}
+                      name="logoUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Link da sua Logo</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://exemplo.com/logo.png" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={profileForm.control}
+                      name="coverImageUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Link da Imagem de Capa</FormLabel>
+                          <FormControl>
+                             <Input placeholder="https://exemplo.com/capa.png" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" disabled={profileForm.formState.isSubmitting}>
+                       {profileForm.formState.isSubmitting ? "Salvando..." : "Salvar Alterações"}
                     </Button>
                   </form>
                 </Form>
-            </CardContent>
-          </Card>
-         </TabsContent>
-      </Tabs>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="hours" className="space-y-6">
+            <BusinessHoursForm />
+          </TabsContent>
+
+           <TabsContent value="account" className="space-y-6">
+             <Card>
+              <CardHeader>
+                <CardTitle>Conta</CardTitle>
+                <CardDescription>
+                  Gerencie as configurações da sua conta pessoal.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                  <Form {...accountForm}>
+                    <form onSubmit={accountForm.handleSubmit(onAccountSubmit)} className="space-y-8">
+                      <FormField
+                        control={accountForm.control}
+                        name="ownerAvatarUrl"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>URL do seu Avatar</FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://exemplo.com/minha-foto.png" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="space-y-2">
+                         <Label>Email</Label>
+                          <Input value={business?.ownerEmail || "Carregando..."} disabled />
+                          <p className="text-sm text-muted-foreground">
+                              Para alterar seu email ou senha, entre em contato com o suporte.
+                          </p>
+                      </div>
+
+                      <Button type="submit" disabled={accountForm.formState.isSubmitting}>
+                        {accountForm.formState.isSubmitting ? "Salvando..." : "Salvar Alterações da Conta"}
+                      </Button>
+                    </form>
+                  </Form>
+              </CardContent>
+            </Card>
+           </TabsContent>
+        </Tabs>
+      </div>
     </>
   )
 }
