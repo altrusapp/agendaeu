@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import * as React from "react"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Calendar, Users, BarChart, MessageCircle, CreditCard, PenTool, CheckCircle, Menu } from "lucide-react"
+import { ArrowRight, Calendar, Users, BarChart, MessageCircle, CreditCard, PenTool, CheckCircle, Menu, BookX, CalendarX2, Frown, Sparkles, Smile, Heart } from "lucide-react"
 import { Logo } from "@/components/logo"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
@@ -183,42 +183,79 @@ export default function Home() {
         {/* Storytelling Section */}
         <section id="story" className="py-20 sm:py-24 bg-muted/50 dark:bg-card">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid md:grid-cols-2 gap-12 items-center">
-                    <div className="space-y-4">
-                        <h2 className="text-3xl font-bold font-headline tracking-tight">De um caderno bagunçado para a agenda que resolve</h2>
-                         <p className="text-lg text-muted-foreground">
-                           O AgendaEu.com nasceu dentro de casa.
-                        </p>
-                        <p className="text-lg text-muted-foreground">
-                           Vi minha irmã — manicure e mãe de duas meninas — tentando se virar com um caderno cheio de anotações.
-                        </p>
-                        <p className="text-lg text-muted-foreground">
-                           O problema? Horários duplicados, compromissos esquecidos e muito estresse.
-                        </p>
-                        <p className="text-lg text-muted-foreground">
-                           Daí surgiu a ideia: transformar toda essa confusão em uma solução simples e prática.
-                        </p>
-                        <p className="text-lg text-muted-foreground">
-                           Hoje, ajudamos profissionais a terem mais tranquilidade e foco no que realmente importa: cuidar bem dos seus clientes.
-                        </p>
+                <div className="text-center max-w-2xl mx-auto">
+                    <h2 className="text-3xl font-bold font-headline tracking-tight">De um caderno bagunçado para a agenda que resolve</h2>
+                    <p className="mt-4 text-lg text-muted-foreground">
+                        O AgendaEu.com nasceu da necessidade real de uma manicure e mãe que, como você, precisava de mais organização e menos estresse.
+                    </p>
+                </div>
+                <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+                    {/* The Problem (Before) */}
+                    <div className="bg-destructive/5 dark:bg-destructive/10 border border-destructive/20 rounded-lg p-8 space-y-6">
+                        <h3 className="text-2xl font-bold font-headline text-center text-destructive">O Problema (Antes)</h3>
+                        <ul className="space-y-4">
+                            <li className="flex items-start gap-4">
+                                <div className="p-2 bg-destructive/10 rounded-full">
+                                    <BookX className="h-6 w-6 text-destructive" />
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold">Caderno bagunçado</h4>
+                                    <p className="text-muted-foreground">Anotações difíceis de ler, rasuras e horários perdidos.</p>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-4">
+                                <div className="p-2 bg-destructive/10 rounded-full">
+                                    <CalendarX2 className="h-6 w-6 text-destructive" />
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold">Horários duplicados</h4>
+                                    <p className="text-muted-foreground">Marcar duas clientes no mesmo horário e gerar frustração.</p>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-4">
+                                <div className="p-2 bg-destructive/10 rounded-full">
+                                    <Frown className="h-6 w-6 text-destructive" />
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold">Estresse e preocupação</h4>
+                                    <p className="text-muted-foreground">Medo constante de ter esquecido algo ou de perder dinheiro.</p>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
-                    <div className="relative aspect-[4/3] w-full max-w-lg mx-auto">
-                        <Image
-                            src="https://i.imgur.com/9kJt2sZ.png"
-                            alt="Mockup do aplicativo sendo usado"
-                            layout="fill"
-                            objectFit="cover"
-                            className="rounded-lg shadow-md -rotate-3"
-                            data-ai-hint="app schedule"
-                        />
-                        <Image
-                            src="https://i.imgur.com/rjNKS7X.jpeg"
-                            alt="Pessoa escrevendo em um caderno"
-                            layout="fill"
-                            objectFit="cover"
-                            className="rounded-lg shadow-xl border-4 border-background rotate-3"
-                            data-ai-hint="person writing notebook"
-                        />
+
+                    {/* The Solution (After) */}
+                    <div className="bg-success/5 dark:bg-success/10 border border-success/20 rounded-lg p-8 space-y-6">
+                        <h3 className="text-2xl font-bold font-headline text-center text-success">A Solução (Depois)</h3>
+                        <ul className="space-y-4">
+                            <li className="flex items-start gap-4">
+                                <div className="p-2 bg-success/10 rounded-full">
+                                    <Sparkles className="h-6 w-6 text-success" />
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold">Agenda que Resolve</h4>
+                                    <p className="text-muted-foreground">Tudo online, organizado e acessível de qualquer lugar.</p>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-4">
+                                <div className="p-2 bg-success/10 rounded-full">
+                                    <Smile className="h-6 w-6 text-success" />
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold">Mais tranquilidade</h4>
+                                    <p className="text-muted-foreground">Deixe os clientes agendarem sozinhos e foque no seu trabalho.</p>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-4">
+                                <div className="p-2 bg-success/10 rounded-full">
+                                    <Heart className="h-6 w-6 text-success" />
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold">Foco no Cliente</h4>
+                                    <p className="text-muted-foreground">Use seu tempo para cuidar bem de quem confia em você.</p>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
