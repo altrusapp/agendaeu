@@ -420,10 +420,11 @@ export default function ConfiguracoesPage() {
                   />
                   
                    <div className="space-y-2">
-                     <Alert variant="destructive">
+                     <Alert variant="destructive" className="flex items-center">
                         <AlertCircle className="h-4 w-4" />
-                        <AlertTitle>Atenção</AlertTitle>
-                        <AlertDescription>O link da sua página pública só pode ser alterado <strong>uma única vez</strong>.</AlertDescription>
+                        <AlertDescription className="ml-2">
+                           O link da sua página pública só pode ser alterado <strong>uma única vez</strong>.
+                        </AlertDescription>
                     </Alert>
                     <FormField
                       control={profileForm.control}
@@ -545,3 +546,5 @@ export default function ConfiguracoesPage() {
     </>
   )
 }
+
+    
