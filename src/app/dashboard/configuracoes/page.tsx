@@ -423,9 +423,7 @@ export default function ConfiguracoesPage() {
                      <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>Atenção</AlertTitle>
-                        <AlertDescription>
-                          O link da sua página pública só pode ser alterado <strong>uma única vez</strong>.
-                        </AlertDescription>
+                        <AlertDescription>O link da sua página pública só pode ser alterado <strong>uma única vez</strong>.</AlertDescription>
                     </Alert>
                     <FormField
                       control={profileForm.control}
@@ -547,5 +545,3 @@ export default function ConfiguracoesPage() {
     </>
   )
 }
-
-    
