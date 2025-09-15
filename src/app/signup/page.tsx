@@ -72,6 +72,7 @@ export default function SignupPage() {
 
   async function onSubmit(values: z.infer<typeof signupSchema>) {
     const auth = getFirebaseAuth();
+    form.formState.isSubmitting = true;
     try {
       await createUserWithEmailAndPassword(auth, values.email, values.password);
       toast({
@@ -95,6 +96,8 @@ export default function SignupPage() {
           description: "Ocorreu um erro inesperado. Tente novamente.",
         })
       }
+    } finally {
+      form.formState.isSubmitting = false;
     }
   }
 

@@ -36,6 +36,7 @@ export default function LoginPage() {
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     const auth = getFirebaseAuth();
+    form.formState.isSubmitting = true;
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({
@@ -59,6 +60,8 @@ export default function LoginPage() {
         title: title,
         description: description,
       });
+    } finally {
+        form.formState.isSubmitting = false;
     }
   }
 
