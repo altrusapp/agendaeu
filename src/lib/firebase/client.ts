@@ -1,3 +1,4 @@
+
 // src/lib/firebase/client.ts
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
 import { getAuth, Auth } from "firebase/auth";
@@ -30,8 +31,3 @@ export const getFirebaseDb = (): Firestore => {
   const app = getFirebaseApp();
   return getFirestore(app);
 };
-
-// For direct app instance if needed, though functions are safer
-export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
