@@ -10,7 +10,7 @@ import { doc, getDoc, collection, query, getDocs, DocumentData, addDoc, Timestam
 import { getDay, isToday, parse as parseDateFns, startOfDay, endOfDay } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
-import { db } from "@/lib/firebase/client"
+import { getFirebaseDb } from "@/lib/firebase/client"
 import { useToast } from "@/hooks/use-toast"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -152,7 +152,7 @@ export default function PublicSchedulePage() {
 
   React.useEffect(() => {
     if (!businessSlug) return;
-
+    const db = getFirebaseDb();
     const fetchBusinessData = async () => {
       setLoading(true);
       try {
@@ -204,6 +204,7 @@ export default function PublicSchedulePage() {
   
 
   const fetchAppointmentsForDate = React.useCallback(async (fetchDate: Date, businessId: string, currentBookedSlots: Map<string, {start: Date, end: Date}[]>) => {
+    const db = getFirebaseDb();
     const dateKey = fetchDate.toISOString().split('T')[0];
     if (currentBookedSlots.has(dateKey)) {
         setLoadingTimes(false);
@@ -338,7 +339,7 @@ export default function PublicSchedulePage() {
 
   const findOrCreateClient = async () => {
     if (!businessInfo?.id || !clientName || !clientPhone) return null;
-  
+    const db = getFirebaseDb();
     const clientsRef = collection(db, `businesses/${businessInfo.id}/clients`);
     const q = query(clientsRef, where("phone", "==", clientPhone), limit(1));
     const clientSnapshot = await getDocs(q);
@@ -362,6 +363,7 @@ export default function PublicSchedulePage() {
   const handleConfirmAppointment = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    const db = getFirebaseDb();
     
     const selectedServiceInfo = services.find(s => s.id === selectedService);
 
@@ -765,5 +767,3 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
-
-    

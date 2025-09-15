@@ -7,7 +7,7 @@ import { MoreHorizontal, PlusCircle, Search, RefreshCw, NotebookPen, CalendarPlu
 import { collection, addDoc, query, onSnapshot, DocumentData, orderBy, limit, startAfter, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore"
 
 import { useBusiness } from "@/app/dashboard/layout"
-import { db } from "@/lib/firebase/client"
+import { getFirebaseDb } from "@/lib/firebase/client"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -160,6 +160,7 @@ export default function ClientesPage() {
   const fetchClients = React.useCallback(async () => {
     if (!business?.id) return;
     setLoading(true);
+    const db = getFirebaseDb();
     try {
       const first = query(
         collection(db, `businesses/${business.id}/clients`),
@@ -185,6 +186,7 @@ export default function ClientesPage() {
   const fetchMoreClients = async () => {
     if (!business?.id || !lastVisible || !hasMore) return;
     setLoadingMore(true);
+    const db = getFirebaseDb();
     try {
       const next = query(
         collection(db, `businesses/${business.id}/clients`),
@@ -215,7 +217,7 @@ export default function ClientesPage() {
       toast({ variant: "destructive", title: "Erro de Validação", description: "Nome e WhatsApp são obrigatórios." });
       return;
     }
-
+    const db = getFirebaseDb();
     try {
       await addDoc(collection(db, `businesses/${business.id}/clients`), {
         name: clientName,
@@ -241,7 +243,7 @@ export default function ClientesPage() {
       toast({ variant: "destructive", title: "Erro de Validação", description: "Nome e WhatsApp são obrigatórios." });
       return;
     }
-
+    const db = getFirebaseDb();
     try {
       const clientRef = doc(db, `businesses/${business.id}/clients`, selectedClient.id);
       await updateDoc(clientRef, {
@@ -260,6 +262,7 @@ export default function ClientesPage() {
 
   const handleDeleteClient = async (clientId: string) => {
     if (!business?.id) return;
+    const db = getFirebaseDb();
     try {
       await deleteDoc(doc(db, `businesses/${business.id}/clients`, clientId));
       toast({ variant: "success", title: "Cliente Excluído", description: "O cliente foi removido da sua lista." });
@@ -571,5 +574,3 @@ export default function ClientesPage() {
     </>
   )
 }
-
-    

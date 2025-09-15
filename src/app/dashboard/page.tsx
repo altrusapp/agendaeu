@@ -8,7 +8,7 @@ import { startOfMonth, endOfMonth, format, startOfToday, endOfToday } from "date
 import { ptBR } from "date-fns/locale"
 import { Activity, ArrowUpRight, Calendar, Users, DollarSign, MessageCircle, RefreshCw, CheckCircle } from "lucide-react"
 
-import { db } from "@/lib/firebase/client"
+import { getFirebaseDb } from "@/lib/firebase/client"
 import { useBusiness } from "@/app/dashboard/layout"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -66,6 +66,7 @@ export default function DashboardPage() {
   const fetchRecentAppointments = React.useCallback(async () => {
     if (!business?.id) return;
     setLoadingAppointments(true);
+    const db = getFirebaseDb();
     try {
        const appointmentsRef = collection(db, `businesses/${business.id}/appointments`);
        const todayStart = startOfToday();
@@ -103,6 +104,7 @@ export default function DashboardPage() {
   const fetchDashboardData = React.useCallback(async () => {
       if (!business?.id) return;
       setLoadingStats(true);
+      const db = getFirebaseDb();
       try {
         const now = new Date();
         const startOfCurrentMonth = startOfMonth(now);
@@ -155,6 +157,7 @@ export default function DashboardPage() {
   const handleMarkAsDone = async (appointment: Appointment) => {
     if (!business?.id || !appointment.clientId) return;
     setIsCompleting(appointment.id);
+    const db = getFirebaseDb();
     try {
         const appointmentRef = doc(db, `businesses/${business.id}/appointments`, appointment.id);
         await updateDoc(appointmentRef, {

@@ -19,7 +19,7 @@ import {
   Download
 } from "lucide-react"
 
-import { auth, db } from "@/lib/firebase/client"
+import { getFirebaseAuth, getFirebaseDb } from "@/lib/firebase/client"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -78,6 +78,8 @@ export default function DashboardLayout({
   const pathname = usePathname();
 
   React.useEffect(() => {
+    const auth = getFirebaseAuth();
+    const db = getFirebaseDb();
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser)
@@ -120,6 +122,11 @@ export default function DashboardLayout({
     ...navItems,
     { href: "/dashboard/configuracoes", icon: Settings, label: "Configurações" },
   ]
+  
+  const handleSignOut = () => {
+      const auth = getFirebaseAuth();
+      auth.signOut();
+  }
 
   return (
     <BusinessContext.Provider value={{ business, loading }}>
@@ -155,7 +162,7 @@ export default function DashboardLayout({
           </div>
         </div>
         <div className="flex flex-col h-screen bg-background overflow-hidden">
-          <header className="flex h-14 shrink-0 items-center justify-between gap-4 bg-muted/40 px-4 lg:h-[60px] lg:px-6 z-10">
+          <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 z-10">
             <Link href="/dashboard" className="flex items-center gap-2 font-semibold md:hidden">
               <Logo className="h-6 w-6 text-primary" />
               <span className="font-headline text-lg">{business?.businessName || "AgendaEu"}</span>
@@ -189,7 +196,7 @@ export default function DashboardLayout({
                   Suporte
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => auth.signOut()}><LogOut className="mr-2 h-4 w-4"/>Sair</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSignOut}><LogOut className="mr-2 h-4 w-4"/>Sair</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </header>

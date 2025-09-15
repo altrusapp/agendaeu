@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { Logo } from "@/components/logo"
-import { auth, db } from "@/lib/firebase/client"
+import { getFirebaseAuth, getFirebaseDb } from "@/lib/firebase/client"
 import { generateSlug } from "@/lib/utils"
 
 const onboardingSchema = z.object({
@@ -76,6 +76,7 @@ export default function OnboardingPage() {
   const fileRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
+    const auth = getFirebaseAuth();
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser)
@@ -106,6 +107,7 @@ export default function OnboardingPage() {
       return
     }
     
+    const db = getFirebaseDb();
     // Note: Logo upload logic to Firebase Storage is not yet implemented.
     // The logo from the form is currently for preview only.
 

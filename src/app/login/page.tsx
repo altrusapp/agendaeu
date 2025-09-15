@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { useToast } from "@/hooks/use-toast"
 import { Logo } from "@/components/logo"
-import { auth } from "@/lib/firebase/client"
+import { getFirebaseAuth } from "@/lib/firebase/client"
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Por favor, insira um email válido." }),
@@ -35,6 +35,7 @@ export default function LoginPage() {
   })
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
+    const auth = getFirebaseAuth();
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({

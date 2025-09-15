@@ -9,7 +9,7 @@ import * as z from "zod"
 import { AlertCircle, PlusCircle, Trash2 } from "lucide-react"
 
 import { useBusiness } from "@/app/dashboard/layout"
-import { db } from "@/lib/firebase/client"
+import { getFirebaseDb } from "@/lib/firebase/client"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -183,6 +183,7 @@ function BusinessHoursForm() {
 
   async function onSubmit(data: HoursFormValues) {
     if (!business?.id) return;
+    const db = getFirebaseDb();
     try {
       const businessRef = doc(db, "businesses", business.id);
       await updateDoc(businessRef, {
@@ -309,7 +310,7 @@ export default function ConfiguracoesPage() {
         profileForm.setValue("slug", business.slug);
         return;
     }
-
+    const db = getFirebaseDb();
     if (data.slug !== business.slug) {
         const q = query(collection(db, "businesses"), where("slug", "==", data.slug));
         const querySnapshot = await getDocs(q);
@@ -361,7 +362,7 @@ export default function ConfiguracoesPage() {
       });
       return;
     }
-
+    const db = getFirebaseDb();
     try {
       const businessRef = doc(db, "businesses", business.id);
       await updateDoc(businessRef, {
@@ -549,5 +550,3 @@ export default function ConfiguracoesPage() {
     </>
   )
 }
-
-    

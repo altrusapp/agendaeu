@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { useToast } from "@/hooks/use-toast"
 import { Logo } from "@/components/logo"
-import { auth } from "@/lib/firebase/client"
+import { getFirebaseAuth } from "@/lib/firebase/client"
 import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
@@ -71,6 +71,7 @@ export default function SignupPage() {
 
 
   async function onSubmit(values: z.infer<typeof signupSchema>) {
+    const auth = getFirebaseAuth();
     try {
       await createUserWithEmailAndPassword(auth, values.email, values.password);
       toast({

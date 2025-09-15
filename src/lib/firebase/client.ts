@@ -12,16 +12,26 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-let app: FirebaseApp;
-if (typeof window !== "undefined") {
-    if (!getApps().length) {
-        app = initializeApp(firebaseConfig);
-    } else {
-        app = getApp();
-    }
-}
+// Helper function to initialize and get the Firebase app
+const getFirebaseApp = (): FirebaseApp => {
+  if (getApps().length === 0) {
+    return initializeApp(firebaseConfig);
+  }
+  return getApp();
+};
 
-const auth = getAuth(app!);
-const db = getFirestore(app!);
+// Export functions that return the initialized services
+export const getFirebaseAuth = (): Auth => {
+  const app = getFirebaseApp();
+  return getAuth(app);
+};
 
-export { app, auth, db };
+export const getFirebaseDb = (): Firestore => {
+  const app = getFirebaseApp();
+  return getFirestore(app);
+};
+
+// For direct app instance if needed, though functions are safer
+export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const db = getFirestore(app);

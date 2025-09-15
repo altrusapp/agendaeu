@@ -10,7 +10,7 @@ import { format, startOfDay, endOfDay, parse, startOfMonth, endOfMonth, isSameDa
 
 
 import { useBusiness } from "@/app/dashboard/layout"
-import { db } from "@/lib/firebase/client"
+import { getFirebaseDb } from "@/lib/firebase/client"
 import { Badge } from "@/components/ui/badge"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -113,7 +113,7 @@ export default function AgendaPage() {
   // Fetch clients and services for the dropdowns
   React.useEffect(() => {
     if (!business?.id) return;
-
+    const db = getFirebaseDb();
     const clientsQuery = query(collection(db, `businesses/${business.id}/clients`));
     const clientsUnsub = onSnapshot(clientsQuery, (snapshot) => {
       setClients(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client)));
@@ -138,7 +138,7 @@ export default function AgendaPage() {
         return;
     };
     setLoading(true);
-
+    const db = getFirebaseDb();
     const start = startOfDay(date);
     const end = endOfDay(date);
     
@@ -174,7 +174,7 @@ export default function AgendaPage() {
   // Fetch all booked days for the current month
   React.useEffect(() => {
     if (!business?.id) return;
-
+    const db = getFirebaseDb();
     const start = startOfMonth(currentMonth);
     const end = endOfMonth(currentMonth);
     const startTimestamp = Timestamp.fromDate(start);
@@ -211,6 +211,7 @@ export default function AgendaPage() {
       return;
     }
     
+    const db = getFirebaseDb();
     const [hours, minutes] = appointmentTime.split(':').map(Number);
     const appointmentDate = new Date(date);
     appointmentDate.setHours(hours, minutes, 0, 0);
@@ -247,6 +248,7 @@ export default function AgendaPage() {
       return;
     }
 
+    const db = getFirebaseDb();
     const [hours, minutes] = appointmentTime.split(':').map(Number);
     const appointmentDate = selectedAppointment.date.toDate();
     appointmentDate.setHours(hours, minutes, 0, 0);
@@ -279,6 +281,7 @@ export default function AgendaPage() {
 
   const handleDeleteAppointment = async (appointmentId: string) => {
     if (!business?.id) return;
+    const db = getFirebaseDb();
     const appointmentRef = doc(db, `businesses/${business.id}/appointments`, appointmentId);
     try {
       await deleteDoc(appointmentRef);
@@ -551,5 +554,3 @@ export default function AgendaPage() {
     </TooltipProvider>
   )
 }
-
-    

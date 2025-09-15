@@ -6,7 +6,7 @@ import { MoreHorizontal, PlusCircle, RefreshCw } from "lucide-react"
 import { collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc, getDocs, orderBy } from "firebase/firestore"
 
 import { useBusiness } from "@/app/dashboard/layout"
-import { db } from "@/lib/firebase/client"
+import { getFirebaseDb } from "@/lib/firebase/client"
 import { Badge } from "@/components/ui/badge"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
@@ -183,6 +183,7 @@ export default function ServicosPage() {
   const fetchServices = React.useCallback(async () => {
       if (!business?.id) return;
       setLoading(true);
+      const db = getFirebaseDb();
       try {
         const servicesCollectionRef = collection(db, `businesses/${business.id}/services`);
         const q = query(servicesCollectionRef, orderBy("createdAt", "desc"));
@@ -205,7 +206,7 @@ export default function ServicosPage() {
 
   const handleAddService = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    const db = getFirebaseDb();
     const hours = Number(durationHours) || 0;
     const minutes = Number(durationMinutes) || 0;
     const duration = formatDuration(hours, minutes);
@@ -234,7 +235,7 @@ export default function ServicosPage() {
   
   const handleEditService = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    const db = getFirebaseDb();
     const hours = Number(durationHours) || 0;
     const minutes = Number(durationMinutes) || 0;
     const duration = formatDuration(hours, minutes);
@@ -262,6 +263,7 @@ export default function ServicosPage() {
 
   const handleDeleteService = async (serviceId: string) => {
     if (!business?.id) return;
+    const db = getFirebaseDb();
     try {
       await deleteDoc(doc(db, `businesses/${business.id}/services`, serviceId));
       toast({ variant: "success", title: "Serviço Excluído", description: "O serviço foi removido da sua lista." });
@@ -273,6 +275,7 @@ export default function ServicosPage() {
   
   const handleToggleActive = async (service: Service) => {
     if (!business?.id) return;
+    const db = getFirebaseDb();
     try {
       const serviceRef = doc(db, `businesses/${business.id}/services`, service.id);
       await updateDoc(serviceRef, { active: !service.active });
