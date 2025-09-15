@@ -35,8 +35,8 @@ export default function LoginPage() {
   })
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
-    const auth = getFirebaseAuth();
     try {
+      const auth = getFirebaseAuth();
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({
         variant: "success",
