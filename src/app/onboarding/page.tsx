@@ -144,7 +144,6 @@ export default function OnboardingPage() {
       })
       router.push(`/dashboard`)
     } catch (error) {
-      console.error("Error creating business: ", error)
       toast({
         variant: "destructive",
         title: "Erro ao criar seu espaço.",

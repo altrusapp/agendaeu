@@ -81,7 +81,6 @@ export default function SignupPage() {
       router.push("/onboarding")
     } catch (error) {
       const firebaseError = error as FirebaseError;
-      console.error("Firebase signup error:", firebaseError.message)
       if (firebaseError.code === "auth/email-already-in-use") {
         toast({
           variant: "destructive",
