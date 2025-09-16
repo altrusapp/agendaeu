@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { FirebaseError } from "firebase/app"
+import * as React from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,6 +26,8 @@ const loginSchema = z.object({
 export default function LoginPage() {
   const router = useRouter()
   const { toast } = useToast()
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -35,6 +38,7 @@ export default function LoginPage() {
   })
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
+    setIsSubmitting(true);
     try {
       const auth = getFirebaseAuth();
       await signInWithEmailAndPassword(auth, values.email, values.password);
@@ -52,6 +56,9 @@ export default function LoginPage() {
        if (firebaseError.code === 'auth/user-not-found' || firebaseError.code === 'auth/wrong-password' || firebaseError.code === 'auth/invalid-credential') {
           title = "Credenciais inválidas";
           description = "O email ou a senha estão incorretos. Verifique seus dados e tente novamente.";
+       } else if (firebaseError.code === 'auth/invalid-api-key') {
+          title = "Erro de Configuração";
+          description = "A chave de API do Firebase é inválida. Verifique suas variáveis de ambiente."
        }
        
        toast({
@@ -59,6 +66,8 @@ export default function LoginPage() {
         title: title,
         description: description,
       });
+    } finally {
+        setIsSubmitting(false);
     }
   }
 
@@ -105,8 +114,8 @@ export default function LoginPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                   {form.formState.isSubmitting ? "Entrando..." : "Entrar"}
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                   {isSubmitting ? "Entrando..." : "Entrar"}
                 </Button>
               </form>
             </Form>

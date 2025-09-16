@@ -12,21 +12,21 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Helper function to initialize and get the Firebase app
+// Helper function to initialize and get the Firebase app, implementing a singleton pattern.
 const getFirebaseApp = (): FirebaseApp => {
   if (getApps().length === 0) {
+    // Initialize the app only if it's not already initialized.
     return initializeApp(firebaseConfig);
   }
+  // Return the existing app instance.
   return getApp();
 };
 
 // Export functions that return the initialized services
 export const getFirebaseAuth = (): Auth => {
-  const app = getFirebaseApp();
-  return getAuth(app);
+  return getAuth(getFirebaseApp());
 };
 
 export const getFirebaseDb = (): Firestore => {
-  const app = getFirebaseApp();
-  return getFirestore(app);
+  return getFirestore(getFirebaseApp());
 };

@@ -9,6 +9,7 @@ import * as z from "zod"
 import { FirebaseError } from "firebase/app"
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { Check } from "lucide-react"
+import * as React from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -44,6 +45,8 @@ const PasswordRequirement = ({ text, met }: { text: string, met: boolean }) => (
 export default function SignupPage() {
   const router = useRouter()
   const { toast } = useToast()
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
 
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
@@ -71,8 +74,9 @@ export default function SignupPage() {
 
 
   async function onSubmit(values: z.infer<typeof signupSchema>) {
-    const auth = getFirebaseAuth();
+    setIsSubmitting(true);
     try {
+      const auth = getFirebaseAuth();
       await createUserWithEmailAndPassword(auth, values.email, values.password);
       toast({
         variant: "success",
@@ -95,6 +99,8 @@ export default function SignupPage() {
           description: "Ocorreu um erro inesperado. Tente novamente.",
         })
       }
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -185,8 +191,8 @@ export default function SignupPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting ? "Criando conta..." : "Criar conta"}
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? "Criando conta..." : "Criar conta"}
                 </Button>
               </form>
             </Form>
