@@ -150,9 +150,9 @@ export default function PublicSchedulePage() {
   }, [selectedService, date, selectedTime]);
 
 
-  const fetchAppointmentsForDate = React.useCallback(async (fetchDate: Date, businessId: string) => {
+  const fetchAppointmentsForDate = React.useCallback(async (fetchDate: Date, businessId: string, servicesList: Service[]) => {
     const dateKey = fetchDate.toISOString().split('T')[0];
-    if (bookedSlots.has(dateKey)) {
+    if (bookedSlots.has(dateKey) || servicesList.length === 0) {
         setLoadingTimes(false);
         return;
     }
@@ -175,9 +175,7 @@ export default function PublicSchedulePage() {
         const querySnapshot = await getDocs(q);
         const appointments = querySnapshot.docs.map(doc => doc.data());
 
-        const servicesQuery = query(collection(db, `businesses/${businessId}/services`));
-        const servicesSnapshot = await getDocs(servicesQuery);
-        const servicesMap = new Map(servicesSnapshot.docs.map(doc => [doc.id, doc.data() as Service]));
+        const servicesMap = new Map(servicesList.map(service => [service.id, service]));
 
         const booked = appointments.map(app => {
             const serviceInfo = servicesMap.get(app.serviceId);
@@ -233,8 +231,10 @@ export default function PublicSchedulePage() {
           })) as Service[];
           setServices(servicesData);
           
-          // Pre-fetch today's appointments
-          fetchAppointmentsForDate(new Date(), businessId);
+          if(servicesData.length > 0) {
+            // Pre-fetch today's appointments once services are loaded
+            await fetchAppointmentsForDate(new Date(), businessId, servicesData);
+          }
 
         } else {
            setBusinessInfo(null);
@@ -255,12 +255,12 @@ export default function PublicSchedulePage() {
   }, [businessSlug, toast, fetchAppointmentsForDate]);
   
   React.useEffect(() => {
-    if (!date || !businessInfo?.id) {
+    if (!date || !businessInfo?.id || services.length === 0) {
         setAvailableTimes([]);
         return;
     };
-    fetchAppointmentsForDate(date, businessInfo.id);
-  }, [date, businessInfo?.id, fetchAppointmentsForDate]);
+    fetchAppointmentsForDate(date, businessInfo.id, services);
+  }, [date, businessInfo?.id, services, fetchAppointmentsForDate]);
 
 
   React.useEffect(() => {
@@ -763,3 +763,5 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
+
+    
