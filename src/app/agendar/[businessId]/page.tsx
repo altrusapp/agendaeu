@@ -150,59 +150,6 @@ export default function PublicSchedulePage() {
   }, [selectedService, date, selectedTime]);
 
 
-  React.useEffect(() => {
-    if (!businessSlug) return;
-    const db = getFirebaseDb();
-    const fetchBusinessData = async () => {
-      setLoading(true);
-      try {
-        const businessQuery = query(collection(db, "businesses"), where("slug", "==", businessSlug));
-        const businessSnapshot = await getDocs(businessQuery);
-
-        if (!businessSnapshot.empty) {
-          const businessDoc = businessSnapshot.docs[0];
-          const data = businessDoc.data() as DocumentData;
-          const businessId = businessDoc.id;
-          
-          setBusinessInfo({
-            id: businessId,
-            name: data.businessName || "Negócio sem nome",
-            logoUrl: data.logoUrl || "https://picsum.photos/100",
-            businessHours: data.businessHours,
-            description: data.description || "Siga os passos para agendar seu horário."
-          });
-
-          const servicesQuery = query(collection(db, `businesses/${businessId}/services`));
-          const servicesSnapshot = await getDocs(servicesQuery);
-          const servicesData = servicesSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          })) as Service[];
-          setServices(servicesData);
-          
-          // Pre-fetch today's appointments to enable/disable calendar correctly
-          const todayKey = new Date().toISOString().split('T')[0];
-          fetchAppointmentsForDate(new Date(), businessId, new Map());
-
-        } else {
-           setBusinessInfo(null);
-        }
-
-      } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "Erro ao carregar dados",
-          description: "Não foi possível carregar as informações do negócio. Tente novamente.",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBusinessData();
-  }, [businessSlug, toast]);
-  
-
   const fetchAppointmentsForDate = React.useCallback(async (fetchDate: Date, businessId: string, currentBookedSlots: Map<string, {start: Date, end: Date}[]>) => {
     const db = getFirebaseDb();
     const dateKey = fetchDate.toISOString().split('T')[0];
@@ -229,8 +176,8 @@ export default function PublicSchedulePage() {
         const querySnapshot = await getDocs(q);
         const appointments = querySnapshot.docs.map(doc => doc.data());
 
-        const allServicesQuery = query(collection(db, `businesses/${businessId}/services`));
-        const servicesSnapshot = await getDocs(allServicesQuery);
+        const servicesQuery = query(collection(db, `businesses/${businessId}/services`));
+        const servicesSnapshot = await getDocs(servicesQuery);
         const servicesMap = new Map(servicesSnapshot.docs.map(doc => [doc.id, doc.data() as Service]));
 
         const booked = appointments.map(app => {
@@ -257,7 +204,58 @@ export default function PublicSchedulePage() {
     }
   }, [toast]);
 
+  React.useEffect(() => {
+    if (!businessSlug) return;
+    
+    const fetchBusinessData = async () => {
+      setLoading(true);
+      const db = getFirebaseDb();
+      try {
+        const businessQuery = query(collection(db, "businesses"), where("slug", "==", businessSlug));
+        const businessSnapshot = await getDocs(businessQuery);
 
+        if (!businessSnapshot.empty) {
+          const businessDoc = businessSnapshot.docs[0];
+          const data = businessDoc.data() as DocumentData;
+          const businessId = businessDoc.id;
+          
+          setBusinessInfo({
+            id: businessId,
+            name: data.businessName || "Negócio sem nome",
+            logoUrl: data.logoUrl || "https://picsum.photos/100",
+            businessHours: data.businessHours,
+            description: data.description || "Siga os passos para agendar seu horário."
+          });
+
+          const servicesQuery = query(collection(db, `businesses/${businessId}/services`));
+          const servicesSnapshot = await getDocs(servicesQuery);
+          const servicesData = servicesSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as Service[];
+          setServices(servicesData);
+          
+          // Pre-fetch today's appointments to enable/disable calendar correctly
+          fetchAppointmentsForDate(new Date(), businessId, new Map());
+
+        } else {
+           setBusinessInfo(null);
+        }
+
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar dados",
+          description: "Não foi possível carregar as informações do negócio. Tente novamente.",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBusinessData();
+  }, [businessSlug, toast, fetchAppointmentsForDate]);
+  
   React.useEffect(() => {
     if (!date || !businessInfo?.id) {
         setAvailableTimes([]);
@@ -767,3 +765,5 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
+
+    
