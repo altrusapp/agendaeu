@@ -150,22 +150,21 @@ export default function PublicSchedulePage() {
   }, [selectedService, date, selectedTime]);
 
 
-  const fetchAppointmentsForDate = React.useCallback(async (fetchDate: Date, businessId: string, currentBookedSlots: Map<string, {start: Date, end: Date}[]>) => {
-    const db = getFirebaseDb();
+  const fetchAppointmentsForDate = React.useCallback(async (fetchDate: Date, businessId: string) => {
     const dateKey = fetchDate.toISOString().split('T')[0];
-    if (currentBookedSlots.has(dateKey)) {
+    if (bookedSlots.has(dateKey)) {
         setLoadingTimes(false);
         return;
     }
 
     setLoadingTimes(true);
-    const start = startOfDay(fetchDate);
-    const end = endOfDay(fetchDate);
-
-    const startTimestamp = Timestamp.fromDate(start);
-    const endTimestamp = Timestamp.fromDate(end);
-
     try {
+        const db = getFirebaseDb();
+        const start = startOfDay(fetchDate);
+        const end = endOfDay(fetchDate);
+        const startTimestamp = Timestamp.fromDate(start);
+        const endTimestamp = Timestamp.fromDate(end);
+
         const appointmentsRef = collection(db, `businesses/${businessId}/appointments`);
         const q = query(
             appointmentsRef,
@@ -188,11 +187,7 @@ export default function PublicSchedulePage() {
             return { start: startDate, end: endDate };
         });
 
-        setBookedSlots(prev => {
-            const newMap = new Map(prev);
-            newMap.set(dateKey, booked);
-            return newMap;
-        });
+        setBookedSlots(prev => new Map(prev).set(dateKey, booked));
     } catch (error) {
         toast({
             variant: "destructive",
@@ -202,15 +197,17 @@ export default function PublicSchedulePage() {
     } finally {
         setLoadingTimes(false);
     }
-  }, [toast]);
+  }, [toast, bookedSlots]);
+
 
   React.useEffect(() => {
     if (!businessSlug) return;
     
     const fetchBusinessData = async () => {
       setLoading(true);
-      const db = getFirebaseDb();
+      
       try {
+        const db = getFirebaseDb();
         const businessQuery = query(collection(db, "businesses"), where("slug", "==", businessSlug));
         const businessSnapshot = await getDocs(businessQuery);
 
@@ -219,13 +216,14 @@ export default function PublicSchedulePage() {
           const data = businessDoc.data() as DocumentData;
           const businessId = businessDoc.id;
           
-          setBusinessInfo({
+          const info = {
             id: businessId,
             name: data.businessName || "Negócio sem nome",
             logoUrl: data.logoUrl || "https://picsum.photos/100",
             businessHours: data.businessHours,
             description: data.description || "Siga os passos para agendar seu horário."
-          });
+          };
+          setBusinessInfo(info);
 
           const servicesQuery = query(collection(db, `businesses/${businessId}/services`));
           const servicesSnapshot = await getDocs(servicesQuery);
@@ -235,8 +233,8 @@ export default function PublicSchedulePage() {
           })) as Service[];
           setServices(servicesData);
           
-          // Pre-fetch today's appointments to enable/disable calendar correctly
-          fetchAppointmentsForDate(new Date(), businessId, new Map());
+          // Pre-fetch today's appointments
+          fetchAppointmentsForDate(new Date(), businessId);
 
         } else {
            setBusinessInfo(null);
@@ -261,8 +259,8 @@ export default function PublicSchedulePage() {
         setAvailableTimes([]);
         return;
     };
-    fetchAppointmentsForDate(date, businessInfo.id, bookedSlots);
-  }, [date, businessInfo?.id, fetchAppointmentsForDate, bookedSlots]);
+    fetchAppointmentsForDate(date, businessInfo.id);
+  }, [date, businessInfo?.id, fetchAppointmentsForDate]);
 
 
   React.useEffect(() => {
@@ -361,7 +359,6 @@ export default function PublicSchedulePage() {
   const handleConfirmAppointment = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    const db = getFirebaseDb();
     
     const selectedServiceInfo = services.find(s => s.id === selectedService);
 
@@ -405,6 +402,7 @@ export default function PublicSchedulePage() {
     const appointmentTimestamp = Timestamp.fromDate(appointmentDate);
     
     try {
+        const db = getFirebaseDb();
         const serviceDuration = parseDuration(selectedServiceInfo.duration);
         const appointmentEnd = new Date(appointmentDate.getTime() + serviceDuration * 60000);
         
@@ -765,5 +763,3 @@ export default function PublicSchedulePage() {
     </div>
   )
 }
-
-    
