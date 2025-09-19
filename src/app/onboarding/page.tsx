@@ -108,9 +108,6 @@ export default function OnboardingPage() {
     }
     
     const db = getFirebaseDb();
-    // Note: Logo upload logic to Firebase Storage is not yet implemented.
-    // The logo from the form is currently for preview only.
-
     const businessId = user.uid;
     const slug = generateSlug(values.businessName);
 
@@ -146,6 +143,7 @@ export default function OnboardingPage() {
       })
       router.push(`/dashboard`)
     } catch (error) {
+      console.error("Error during onboarding:", error);
       toast({
         variant: "destructive",
         title: "Erro ao criar seu espaço.",
