@@ -187,6 +187,7 @@ export default function PublicSchedulePage() {
 
         setBookedSlots(prev => new Map(prev).set(dateKey, booked));
     } catch (error) {
+        console.error("Error fetching appointments: ", error);
         toast({
             variant: "destructive",
             title: "Erro ao carregar horários",
@@ -241,6 +242,7 @@ export default function PublicSchedulePage() {
         }
 
       } catch (error) {
+        console.error("Error fetching business data: ", error);
         toast({
           variant: "destructive",
           title: "Erro ao carregar dados",
@@ -332,30 +334,6 @@ export default function PublicSchedulePage() {
     }
   }
 
-
-  const findOrCreateClient = async () => {
-    if (!businessInfo?.id || !clientName || !clientPhone) return null;
-    const db = getFirebaseDb();
-    const clientsRef = collection(db, `businesses/${businessInfo.id}/clients`);
-    const q = query(clientsRef, where("phone", "==", clientPhone), limit(1));
-    const clientSnapshot = await getDocs(q);
-  
-    if (!clientSnapshot.empty) {
-        const clientId = clientSnapshot.docs[0].id;
-        return clientId;
-    } else {
-        const newClientDoc = await addDoc(clientsRef, {
-            name: clientName,
-            phone: clientPhone,
-            email: "", 
-            createdAt: Timestamp.now(),
-            lastVisit: null,
-            totalAppointments: 0,
-        });
-        return newClientDoc.id;
-    }
-  };
-
   const handleConfirmAppointment = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -431,13 +409,8 @@ export default function PublicSchedulePage() {
             return;
         }
 
-        const clientId = await findOrCreateClient();
-        if (!clientId) {
-          throw new Error("Não foi possível encontrar ou criar o cliente.");
-        }
-
+        // Save the client info directly in the appointment
         await addDoc(collection(db, `businesses/${businessInfo.id}/appointments`), {
-            clientId: clientId, 
             clientName,
             clientPhone,
             serviceId: selectedServiceInfo.id,
@@ -452,6 +425,7 @@ export default function PublicSchedulePage() {
         setIsSuccess(true);
 
     } catch (error) {
+       console.error("Error confirming appointment: ", error);
        toast({
         variant: "destructive",
         title: "Erro ao Agendar",
